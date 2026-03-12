@@ -1,0 +1,138 @@
+# -----------------------------
+
+# OS
+
+# -----------------------------
+
+.DS_Store
+Thumbs.db
+
+# -----------------------------
+
+# Logs
+
+# -----------------------------
+
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# -----------------------------
+
+# Environment variables
+
+# -----------------------------
+
+.env
+.env.*
+!.env.example
+
+# -----------------------------
+
+# Visual Studio / .NET
+
+# -----------------------------
+
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider / JetBrains
+
+.idea/
+
+# Build outputs
+
+[Bb]uild/
+[Rr]elease/
+[Dd]ebug/
+x64/
+x86/
+
+# NuGet
+
+*.nupkg
+packages/
+*.nuget.props
+*.nuget.targets
+
+# ASP.NET publish
+
+publish/
+*.publishsettings
+
+# Entity Framework
+
+*.db
+
+# -----------------------------
+
+# Node / Frontend
+
+# -----------------------------
+
+node_modules/
+dist/
+build/
+coverage/
+
+# Vite
+
+.vite/
+
+# npm / yarn cache
+
+.npm/
+.yarn/
+.pnpm-store/
+
+# TypeScript
+
+*.tsbuildinfo
+
+# -----------------------------
+
+# Testing
+
+# -----------------------------
+
+TestResults/
+coverage/
+
+# -----------------------------
+
+# IDEs / Editors
+
+# -----------------------------
+
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# -----------------------------
+
+# Temporary files
+
+# -----------------------------
+
+*.tmp
+*.temp
+*.swp
+*.bak
+*~
+
+# -----------------------------
+
+# Docker (if added later)
+
+# -----------------------------
+
+docker-compose.override.yml
