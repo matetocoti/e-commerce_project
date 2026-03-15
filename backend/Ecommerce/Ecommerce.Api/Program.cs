@@ -1,4 +1,7 @@
-﻿// Ponto de entrada da aplicação (equivalente ao main em Java)
+﻿using Ecommerce.Api.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+
+// Ponto de entrada da aplicação (equivalente ao main em Java)
 // Aqui configuramos toda a aplicação ASP.NET antes de iniciá-la.
 
 // Cria o builder da aplicação.
@@ -19,12 +22,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Habilita suporte a Controllers (REST API)
 builder.Services.AddControllers();
-
 // Necessário para gerar metadados da API (usado pelo Swagger)
 builder.Services.AddEndpointsApiExplorer();
-
 // Adiciona suporte ao Swagger (documentação e teste da API)
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+);
 
 
 
