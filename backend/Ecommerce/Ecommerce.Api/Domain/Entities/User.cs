@@ -1,6 +1,50 @@
-﻿namespace Ecommerce.Api.Domain.Entities
+﻿namespace Ecommerce.Api.Domain.Entities;
+using Ecommerce.Api.Domain.Enums;
+
+
+
+public class User
 {
-    public class User
+    #region Properties
+    public Guid Id { get; set; }
+    public string Username { get; set; } = null!;
+    public string Email { get; set; } = null!;
+    public string PasswordHash { get; set; } = null!;
+    public UserRole Role { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    #endregion
+
+    #region Relationships
+    public List<Order> Orders { get; set; } = new();
+    public Cart? Cart { get; set; } = null;
+    #endregion
+
+    #region Constructors
+    public User() { } 
+
+    public User(string username, string email, string passwordHash, UserRole role)
     {
+        Id = Guid.NewGuid();
+        Username = username;
+        Email = email;
+        PasswordHash = passwordHash;
+        Role = role;
+        CreatedAt = DateTime.UtcNow;
+        UpdatedAt = DateTime.UtcNow;
     }
+    #endregion
+
+    #region Methods
+    public override bool Equals(object? obj)
+    {
+        return obj is User user && Id == user.Id;
+    }
+
+    public override int GetHashCode()
+    {
+        return Id.GetHashCode();
+    }
+    #endregion
+
 }
