@@ -1,4 +1,5 @@
-﻿using Ecommerce.Api.Infrastructure.Persistence;
+﻿using Ecommerce.Api.Application.Services;
+using Ecommerce.Api.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -21,7 +22,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
-
+builder.Services.AddScoped<OrderService>();
 
 
 // -------------------------------
