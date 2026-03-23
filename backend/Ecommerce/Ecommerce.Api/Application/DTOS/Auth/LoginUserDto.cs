@@ -2,7 +2,8 @@
 
 public class LoginUserDto
 {
-    public string Username { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
+    // For simplicity, we allow users to login with either their email or username
+    // simply by using a single "Login" field. The AuthService will handle the logic to determine
+    public string Login { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
 }

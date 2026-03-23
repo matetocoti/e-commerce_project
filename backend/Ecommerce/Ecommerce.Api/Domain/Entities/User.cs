@@ -23,7 +23,7 @@ public class User
     #region Constructors
     public User() { } 
 
-    public User(string username, string email, string passwordHash, UserRole role)
+    public User(string username, string email, string passwordHash, UserRole role = UserRole.Customer)
     {
         Id = Guid.NewGuid();
         Username = username;

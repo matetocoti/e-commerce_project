@@ -23,6 +23,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<CartService>();
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<AuthService>();
 
 
 // -------------------------------

@@ -6,13 +6,8 @@ using Ecommerce.Api.Application.Services;
 
 [ApiController]
 [Route("api/[controller]")]
-public class OrderController : ControllerBase
+public class OrderController(OrderService orderService) : ControllerBase
 {
-    private readonly OrderService _orderService;
-    public OrderController(OrderService orderService)
-    {
-        _orderService = orderService;
-    }
 
     #region Endpoints
     [HttpPost("checkout")]
@@ -20,7 +15,7 @@ public class OrderController : ControllerBase
     {
         try
         {
-            var order = await _orderService.CheckoutAsync(userId);
+            var order = await orderService.CheckoutAsync(userId);
             return Ok(order);
         }
         catch (Exception ex)
@@ -34,7 +29,7 @@ public class OrderController : ControllerBase
     {
         try
         {
-            var orders = await _orderService.GetOrdersByUserIdAsync(userId);
+            var orders = await orderService.GetOrdersByUserIdAsync(userId);
             return Ok(orders);
         }
         catch (Exception ex)
@@ -48,7 +43,7 @@ public class OrderController : ControllerBase
     {
         try
         {
-            var order = await _orderService.GetOrderByIdAsync(id);
+            var order = await orderService.GetOrderByIdAsync(id);
             if (order == null)
                 return NotFound();
             return Ok(order);

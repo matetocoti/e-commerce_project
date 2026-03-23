@@ -24,11 +24,10 @@ public class Order
 
     public Order() { }
 
-    public Order(User user, List<OrderItem> orderItems)
+    public Order(Guid userId, List<OrderItem> orderItems)
     {
         Id = Guid.NewGuid();
-        User = user;
-        UserId = user.Id;
+        UserId = userId;
         OrderItems = orderItems;
         TotalAmount = orderItems.Sum(item => item.Subtotal);
         Status = OrderStatus.Pending;

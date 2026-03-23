@@ -7,15 +7,9 @@ using Microsoft.EntityFrameworkCore;
 
 
 
-public class OrderService
+public class OrderService(AppDbContext context)
 {
-    private readonly AppDbContext _context;
-
-    // Injeção de dependência do DbContext
-    public OrderService(AppDbContext context)
-    {
-        _context = context;
-    }
+    private readonly AppDbContext _context = context;
 
     // Método para checkout do carrinho e criação do pedido
     // Este método realiza as seguintes etapas:
@@ -28,17 +22,16 @@ public class OrderService
     // 7. Retorna um OrderDto com os detalhes do pedido criado
     public async Task<OrderDto> CheckoutAsync(Guid userId)
     {
-        // 1. Buscar cart com itens e produtos
+        using var transaction = await _context.Database.BeginTransactionAsync();
+
         var cart = await _context.Carts
             .Include(c => c.CartItems)
                 .ThenInclude(ci => ci.Product)
             .FirstOrDefaultAsync(c => c.UserId == userId);
 
-        // 2. Validação
         if (cart == null || !cart.CartItems.Any())
-            throw new Exception("Cart is empty");
+            throw new InvalidOperationException("Cart is empty");
 
-        // 3. Criar OrderItems
         var orderItems = cart.CartItems.Select(ci => new OrderItem
         {
             Id = Guid.NewGuid(),
@@ -48,18 +41,16 @@ public class OrderService
             Quantity = ci.Quantity,
         }).ToList();
 
-        // 4. Criar Order
-        var order = new Order(cart.User, orderItems);
+        var order = new Order(userId, orderItems);
 
-        // 5. Persistir
         _context.Orders.Add(order);
 
-        // 6. Remover cart
-        _context.Carts.Remove(cart);
+        cart.CartItems.Clear();
+        cart.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
+        await transaction.CommitAsync();
 
-        // 7. Retornar DTO
         return MapToDto(order);
     }
     public async Task<List<OrderDto>> GetOrdersByUserIdAsync(Guid userId)
@@ -80,8 +71,6 @@ public class OrderService
         return MapToDto(order);
     }
 
-    // Método que converte a entidade Order para OrderDto, incluindo os itens do pedido
-    // Auxiliar para mapear entidade Order para OrderDto
     private OrderDto MapToDto(Order order)
     {
         return new OrderDto
