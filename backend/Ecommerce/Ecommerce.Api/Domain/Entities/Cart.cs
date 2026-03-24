@@ -30,6 +30,25 @@ public class Cart
     #endregion
 
     #region Methods
+
+    public void AddItem(Guid productId, int quantity)
+    {
+        var existingItem = CartItems.FirstOrDefault(ci => ci.ProductId == productId);
+
+        if (existingItem != null)
+        {
+            existingItem.Quantity += quantity;
+        }
+        else
+        {
+            CartItems.Add(new CartItem
+            {
+                ProductId = productId,
+                Quantity = quantity
+            });
+        }
+    }
+
     public override bool Equals(object? obj)
     {
         return obj is Cart cart && Id == cart.Id;

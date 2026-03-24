@@ -23,11 +23,11 @@ public class CartController(CartService cartService) : ControllerBase
         }
     }
     [HttpPost("add")]
-    public async Task<IActionResult> AddItem(Guid userId, CartItemDto itemDto)
+    public async Task<IActionResult> AddItem(Guid userId, AddCartItemDto dto)
     {
         try
         {
-            await cartService.AddItemToCartAsync(userId, itemDto);
+            await cartService.AddItemToCartAsync(userId, dto);
             return Ok();
         }
         catch (Exception ex)

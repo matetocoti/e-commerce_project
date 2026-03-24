@@ -20,29 +20,21 @@ public class CartService(AppDbContext context)
         return MapToCartDto(cart);
     }
 
-    public async Task AddItemToCartAsync(Guid userId, CartItemDto itemDto)
+    public async Task AddItemToCartAsync(Guid userId, AddCartItemDto dto)
     {
         var cart = await _context.Carts
             .Include(c => c.CartItems)
             .FirstOrDefaultAsync(c => c.UserId == userId);
+
         if (cart == null)
         {
             cart = new Cart { UserId = userId, CartItems = new List<CartItem>() };
             _context.Carts.Add(cart);
         }
-        var existingItem = cart.CartItems.FirstOrDefault(ci => ci.ProductId == itemDto.ProductId);
-        if (existingItem != null)
-        {
-            existingItem.Quantity += itemDto.Quantity;
-        }
-        else
-        {
-            cart.CartItems.Add(new CartItem
-            {
-                ProductId = itemDto.ProductId,
-                Quantity = itemDto.Quantity
-            });
-        }
+
+        
+        cart.AddItem(dto.ProductId ,dto.Quantity);
+
         await _context.SaveChangesAsync();
     }
 
