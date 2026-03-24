@@ -48,7 +48,9 @@ public class UserService(AppDbContext context)
             Id = user.Id,
             Username = user.Username,
             Email = user.Email,
-            Role = user.Role
+            Role = user.Role,
+            CreatedAt = user.CreatedAt,
+            UpdatedAt = user.UpdatedAt
         };
     }
 }

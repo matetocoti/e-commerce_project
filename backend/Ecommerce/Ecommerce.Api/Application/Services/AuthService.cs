@@ -32,13 +32,15 @@ public class AuthService(UserService userService)
 
         var createdUser = await _userService.CreateAsync(user);
 
-        // 📤 retorno correto (DTO de saída)
+        
         return new UserDto
         {
             Id = createdUser.Id,
             Username = createdUser.Username,
             Email = createdUser.Email,
-            Role = createdUser.Role
+            Role = createdUser.Role,
+            CreatedAt = createdUser.CreatedAt,
+            UpdatedAt = createdUser.UpdatedAt
         };
     }
     public async Task<UserDto> LoginAsync(LoginUserDto request)
@@ -51,7 +53,9 @@ public class AuthService(UserService userService)
             Id = user.Id,
             Username = user.Username,
             Email = user.Email,
-            Role = user.Role
+            Role = user.Role,
+            CreatedAt = user.CreatedAt,
+            UpdatedAt = user.UpdatedAt
         };
     }
 }
