@@ -9,11 +9,11 @@ public class Payment
     public decimal Amount { get; set; }
     public PaymentMethod Method { get; set; }
     public PaymentStatus Status { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
     // Marca quando o pagamento foi confirmado (pode ser nulo até confirmação)
-    public DateTime? ConfirmedAt { get; set; }
+    public DateTime? ConfirmedAt { get; set; } 
     #endregion
 
     #region Relationships

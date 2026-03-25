@@ -9,8 +9,8 @@ public class Product
     public decimal Price { get; set; }
     public int Stock { get; set; }
     public bool IsActive { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     #endregion
 
     #region Relationships

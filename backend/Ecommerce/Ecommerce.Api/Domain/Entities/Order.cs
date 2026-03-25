@@ -1,6 +1,7 @@
 ﻿namespace Ecommerce.Api.Domain.Entities;
 
 using Ecommerce.Api.Domain.Enums;
+using Microsoft.AspNetCore.Mvc;
 
 public class Order
 {
@@ -8,9 +9,9 @@ public class Order
     public Guid Id { get; set; }
     public OrderStatus Status { get; set; }
     public decimal TotalAmount { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
-    public DateTime ExpiresAt { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime ExpiresAt { get; set; } = DateTime.UtcNow.AddHours(1);
     #endregion
 
     #region Relationships

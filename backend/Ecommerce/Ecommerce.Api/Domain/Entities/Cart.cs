@@ -4,8 +4,8 @@ public class Cart
 {
     #region Properties
     public Guid Id { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     #endregion
 
     #region Relationships
