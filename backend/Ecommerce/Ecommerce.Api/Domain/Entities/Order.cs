@@ -1,7 +1,8 @@
 ﻿namespace Ecommerce.Api.Domain.Entities;
 
+using Ecommerce.Api.Domain.Entities.ValueObject;
 using Ecommerce.Api.Domain.Enums;
-using Microsoft.AspNetCore.Mvc;
+
 
 public class Order
 {
@@ -12,6 +13,8 @@ public class Order
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     public DateTime ExpiresAt { get; set; } = DateTime.UtcNow.AddHours(1);
+    // Simple value object to hold shipping details, can be expanded as needed
+    public Address Address { get; set; } = new();
     #endregion
 
     #region Relationships
@@ -35,6 +38,7 @@ public class Order
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = CreatedAt;
         ExpiresAt = CreatedAt.AddHours(1);
+
     }
     #endregion
 

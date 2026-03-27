@@ -16,7 +16,7 @@ public class CartService(AppDbContext context)
                 .ThenInclude(ci => ci.Product)
             .FirstOrDefaultAsync(c => c.UserId == userId);
         if (cart == null)
-            return new CartDto { Items = new List<CartItemDto>() };
+            return new CartDto {Items = new List<CartItemDto>() };
         return MapToCartDto(cart);
     }
 
@@ -25,16 +25,12 @@ public class CartService(AppDbContext context)
         var cart = await _context.Carts
             .Include(c => c.CartItems)
             .FirstOrDefaultAsync(c => c.UserId == userId);
-
         if (cart == null)
         {
             cart = new Cart { UserId = userId, CartItems = new List<CartItem>() };
             _context.Carts.Add(cart);
         }
-
-        
         cart.AddItem(dto.ProductId ,dto.Quantity);
-
         await _context.SaveChangesAsync();
     }
 
@@ -53,9 +49,10 @@ public class CartService(AppDbContext context)
     }
 
     private static CartDto MapToCartDto(Cart cart)
-    {
+    {   
         return new CartDto
-        {
+        {   
+            Id = cart.Id,
             Items = cart.CartItems.Select(ci => new CartItemDto
             {
                 ProductId = ci.ProductId,

@@ -34,7 +34,8 @@ public class Cart
     public void AddItem(Guid productId, int quantity)
     {
         var existingItem = CartItems.FirstOrDefault(ci => ci.ProductId == productId);
-
+        
+        
         if (existingItem != null)
         {
             existingItem.Quantity += quantity;
