@@ -11,24 +11,21 @@ public class AuthService(UserService userService)
 
     public async Task<UserDto> RegisterAsync(RegisterUserDto request)
     {
-        
-        var existingUser = await _userService.GetByEmailOrUsernameAsync(request.Email);
 
-        if (existingUser == null)
-        {
-            existingUser = await _userService.GetByEmailOrUsernameAsync(request.Username);
-        }
+        var existingUser = await _userService
+            .GetByEmailOrUsernameAsync(request.Email)
+            ?? await _userService.GetByEmailOrUsernameAsync(request.Username);
 
         if (existingUser != null)
             throw new Exception("Email or username already in use.");
+        if (request.Password != request.ConfirmPassword)
+            throw new Exception("Passwords do not match.");
 
-        
-        var user = new User
-        {
-            Username = request.Username,
-            Email = request.Email,
-            PasswordHash = BCrypt.HashPassword(request.Password),
-        };
+        var user = new User(
+            request.Username,
+            request.Email,
+            BCrypt.HashPassword(request.Password)
+        );
 
         var createdUser = await _userService.CreateAsync(user);
 
