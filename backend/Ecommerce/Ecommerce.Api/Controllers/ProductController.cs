@@ -8,10 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 public class ProductController(ProductService productService) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAllProducts()
+    public async Task<IActionResult> GetAll(int page = 1, int pageSize = 10)
     {
-        var products = await productService.GetAllProductsAsync();
-        return Ok(products);
+        var result = await productService.GetAllAsync(page, pageSize);
+        return Ok(result);
     }
 
     [HttpGet("{id}")]

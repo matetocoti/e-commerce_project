@@ -9,10 +9,19 @@ public class ProductService(AppDbContext context)
 {
 
     #region Methods
-    public async Task<List<ProductDto>> GetAllProductsAsync()
+    public async Task<List<ProductDto>> GetAllAsync(int page, int pageSize)
     {
-        var products = await context.Products.Where(p => p.IsActive).ToListAsync();
-        return products.Select(MapToDto).ToList();
+        return await context.Products
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(p => new ProductDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Price = p.Price,
+                Description = p.Description
+            })
+            .ToListAsync();
     }
 
     public async Task<ProductDto> GetProductByIdAsync(Guid id)
