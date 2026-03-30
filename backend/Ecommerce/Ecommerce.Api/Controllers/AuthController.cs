@@ -19,12 +19,12 @@ public class AuthController(AuthService authService) : ControllerBase
         }
         catch (Exception ex)
         {
-            return BadRequest(ex.Message);
+            return BadRequest(new { message = ex.Message });
         }
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<UserDto>> Login(LoginUserDto request)
+    public async Task<ActionResult<AuthResponseDto>> Login(LoginUserDto request)
     {
         try
         {
@@ -33,7 +33,7 @@ public class AuthController(AuthService authService) : ControllerBase
         }
         catch (Exception ex)
         {
-            return Unauthorized(ex.Message);
+            return Unauthorized(new { message = ex.Message });
         }
     }
 }

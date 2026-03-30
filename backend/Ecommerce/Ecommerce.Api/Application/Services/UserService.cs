@@ -15,12 +15,9 @@ public class UserService(AppDbContext context)
     }
     public async Task<User?> GetByEmailOrUsernameAsync(string login)
     {
-        login = login.ToLower();
-
         return await _context.Users
-            .FirstOrDefaultAsync(u =>
-                u.Email.ToLower() == login ||
-                u.Username.ToLower() == login);
+        .FirstOrDefaultAsync(u =>
+            u.Email == login || u.Username == login);
     }
 
     public async Task<User> CreateAsync(User user)
