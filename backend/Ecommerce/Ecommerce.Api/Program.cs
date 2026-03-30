@@ -5,9 +5,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using DotNetEnv;
+using Ecommerce.Api.Api.Middleware;
 
 
-// Carrega as variáveis de ambiente do arquivo .env para o ambiente de execução, permitindo que a aplicação acesse essas variáveis usando Environment.GetEnvironmentVariable ou através da configuração do builder.Configuration.
+
 DotNetEnv.Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
@@ -95,6 +96,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseHttpsRedirection();
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

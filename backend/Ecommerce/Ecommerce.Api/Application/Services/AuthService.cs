@@ -2,6 +2,7 @@
 using BCrypt.Net;
 using Ecommerce.Api.Application.DTOS.Auth;
 using Ecommerce.Api.Application.DTOS.User;
+using Ecommerce.Api.Application.Exceptions;
 using Ecommerce.Api.Domain.Entities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -13,15 +14,15 @@ public class AuthService(UserService userService, IConfiguration config)
 {
     public async Task<UserDto> RegisterAsync(RegisterUserDto request)
     {
-
         var existingUser = await userService
             .GetByEmailOrUsernameAsync(request.Email)
             ?? await userService.GetByEmailOrUsernameAsync(request.Username);
 
         if (existingUser != null)
-            throw new Exception("Email or username already in use.");
+            throw new BadRequestException("Email or username already in use.");
+        
         if (request.Password != request.ConfirmPassword)
-            throw new Exception("Passwords do not match.");
+            throw new BadRequestException("Passwords do not match.");
 
         var user = new User(
             request.Username,
@@ -31,7 +32,6 @@ public class AuthService(UserService userService, IConfiguration config)
 
         var createdUser = await userService.CreateAsync(user);
 
-        
         return new UserDto
         {
             Id = createdUser.Id,
@@ -42,12 +42,13 @@ public class AuthService(UserService userService, IConfiguration config)
             UpdatedAt = createdUser.UpdatedAt
         };
     }
+    
     public async Task<AuthResponseDto> LoginAsync(LoginUserDto request)
     {
         var user = await userService.GetByEmailOrUsernameAsync(request.Login);
 
         if (user == null || !BCrypt.Verify(request.Password, user.PasswordHash))
-            throw new Exception("Invalid login credentials.");
+            throw new UnauthorizedException("Invalid login credentials.");
 
         var token = GenerateToken(user);
 
@@ -69,7 +70,7 @@ public class AuthService(UserService userService, IConfiguration config)
     private string GenerateToken(User user)
     {
         var keyString = config["Jwt:Key"]
-            ?? throw new Exception("JWT Key not configured");
+            ?? throw new UnauthorizedException("JWT Key not configured");
 
         var key = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(keyString)
@@ -78,13 +79,15 @@ public class AuthService(UserService userService, IConfiguration config)
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-        new Claim(ClaimTypes.Email, user.Email),
-        new Claim(ClaimTypes.Role, user.Role.ToString())
-    };
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Role, user.Role.ToString())
+        };
 
-        var expiresMinutes = int.Parse(config["Jwt:ExpiresMinutes"]!);
+        var expiresMinutes = int.TryParse(config["Jwt:ExpiresMinutes"], out var minutes) 
+            ? minutes 
+            : 60;
 
         var token = new JwtSecurityToken(
             issuer: config["Jwt:Issuer"],
@@ -96,5 +99,4 @@ public class AuthService(UserService userService, IConfiguration config)
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
-
 }

@@ -3,6 +3,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Ecommerce.Api.Application.Services;
 using Ecommerce.Api.Application.DTOS.CartItem;
+using Ecommerce.Api.Application.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
@@ -15,31 +16,17 @@ public class CartController(CartService cartService) : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetCart()
     {
-        try
-        {
-            var userId = GetUserIdFromToken();
-            var cart = await cartService.GetCartByUserIdAsync(userId);
-            return Ok(cart);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        var userId = GetUserIdFromToken();
+        var cart = await cartService.GetCartByUserIdAsync(userId);
+        return Ok(cart);
     }
 
     [HttpPost("add")]
     public async Task<IActionResult> AddItem(AddCartItemDto dto)
     {
-        try
-        {
-            var userId = GetUserIdFromToken();
-            await cartService.AddItemToCartAsync(userId, dto);
-            return Ok();
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        var userId = GetUserIdFromToken();
+        await cartService.AddItemToCartAsync(userId, dto);
+        return Ok();
     }
 
     [HttpDelete("items/{productId}")]
@@ -57,13 +44,13 @@ public class CartController(CartService cartService) : ControllerBase
     /// Garante que o usuário só possa acessar seu próprio carrinho.
     /// </summary>
     /// <returns>ID do usuário autenticado</returns>
-    /// <exception cref="UnauthorizedAccessException">Lançada se o token não contiver um NameIdentifier válido</exception>
+    /// <exception cref="UnauthorizedException">Lançada se o token não contiver um NameIdentifier válido</exception>
     private Guid GetUserIdFromToken()
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
         
         if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
-            throw new UnauthorizedAccessException("Token inválido ou usuário não autenticado.");
+            throw new UnauthorizedException("Token inválido ou usuário não autenticado.");
         
         return userId;
     }
