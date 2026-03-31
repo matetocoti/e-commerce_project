@@ -2,8 +2,9 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Ecommerce.Api.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 
-
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class OrderController(OrderService orderService) : ControllerBase

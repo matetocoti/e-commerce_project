@@ -30,10 +30,10 @@ public class CartController(CartService cartService) : ControllerBase
     }
 
     [HttpDelete("items/{productId}")]
-    public async Task<IActionResult> RemoveItem(Guid productId)
+    public async Task<IActionResult> RemoveItem(Guid productId, [FromQuery] int? quantityToRemove = null)
     {
         var userId = GetUserIdFromToken();
-        await cartService.RemoveItemFromCartAsync(userId, productId);
+        await cartService.RemoveItemFromCartAsync(userId, productId, quantityToRemove ?? 0);
         return NoContent();
     }
     #endregion
