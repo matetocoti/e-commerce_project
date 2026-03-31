@@ -39,12 +39,7 @@ public class CartController(CartService cartService) : ControllerBase
     #endregion
 
     #region Helper Methods
-    /// <summary>
-    /// Extrai o ID do usuário do token JWT no contexto de autenticação.
-    /// Garante que o usuário só possa acessar seu próprio carrinho.
-    /// </summary>
-    /// <returns>ID do usuário autenticado</returns>
-    /// <exception cref="UnauthorizedException">Lançada se o token não contiver um NameIdentifier válido</exception>
+    
     private Guid GetUserIdFromToken()
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);

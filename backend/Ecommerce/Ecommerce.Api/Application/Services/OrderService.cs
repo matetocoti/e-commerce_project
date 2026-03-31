@@ -2,6 +2,7 @@
 using Ecommerce.Api.Application.DTOS.Order;
 using Ecommerce.Api.Application.DTOS.OrderItem;
 using Ecommerce.Api.Domain.Entities;
+using Ecommerce.Api.Domain.Entities.ValueObject;
 using Ecommerce.Api.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,7 +21,7 @@ public class OrderService(AppDbContext context)
     // 5. Persiste o Order no banco de dados
     // 6. Remove o carrinho do usuário
     // 7. Retorna um OrderDto com os detalhes do pedido criado
-    public async Task<OrderDto> CheckoutAsync(Guid userId)
+    public async Task<OrderDto> CheckoutAsync(Guid userId, CreateOrderDto createOrderDto)
     {
         using var transaction = await _context.Database.BeginTransactionAsync();
 
@@ -42,6 +43,14 @@ public class OrderService(AppDbContext context)
         }).ToList();
 
         var order = new Order(userId, orderItems);
+        order.Address = new Address
+        {
+            Street = createOrderDto.Street,
+            City = createOrderDto.City,
+            ZipCode = createOrderDto.ZipCode,
+            State = createOrderDto.State,
+            Notes = createOrderDto.Notes
+        };
 
         _context.Orders.Add(order);
 
