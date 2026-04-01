@@ -1,6 +1,9 @@
 ﻿namespace Ecommerce.Api.Application.Services;
+
+using Ecommerce.Api.Application.Common.Security;
 using Ecommerce.Api.Application.DTOS.Order;
 using Ecommerce.Api.Application.DTOS.OrderItem;
+using Ecommerce.Api.Application.Exceptions;
 using Ecommerce.Api.Domain.Entities;
 using Ecommerce.Api.Domain.Entities.ValueObject;
 using Ecommerce.Api.Infrastructure.Persistence;
@@ -31,7 +34,9 @@ public class OrderService(AppDbContext context)
             .FirstOrDefaultAsync(c => c.UserId == userId);
 
         if (cart == null || !cart.CartItems.Any())
-            throw new InvalidOperationException("Cart is empty");
+            throw new BadRequestException("Cart is empty.");
+
+        AddressValidator.Validate(createOrderDto);
 
         var orderItems = cart.CartItems.Select(ci => new OrderItem
         {
@@ -43,6 +48,7 @@ public class OrderService(AppDbContext context)
         }).ToList();
 
         var order = new Order(userId, orderItems);
+
         order.Address = new Address
         {
             Street = createOrderDto.Street,
