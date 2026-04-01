@@ -3,6 +3,7 @@ using BCrypt.Net;
 using Ecommerce.Api.Application.DTOS.Auth;
 using Ecommerce.Api.Application.DTOS.User;
 using Ecommerce.Api.Application.Exceptions;
+using Ecommerce.Api.Application.Common.Security;
 using Ecommerce.Api.Domain.Entities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -23,6 +24,10 @@ public class AuthService(UserService userService, IConfiguration config)
         
         if (request.Password != request.ConfirmPassword)
             throw new BadRequestException("Passwords do not match.");
+
+        var (isValid, errorMessage) = PasswordValidator.Validate(request.Password);
+        if (!isValid)
+            throw new BadRequestException(errorMessage);
 
         var user = new User(
             request.Username,
