@@ -89,6 +89,7 @@ public class OrderService(AppDbContext context)
             TotalAmount = order.TotalAmount,
             CreatedAt = order.CreatedAt,
             ExpiresAt = order.ExpiresAt,
+            Address = order.Address,
             Items = order.OrderItems.Select(item => new OrderItemDto
             {
                 ProductName = item.ProductName,
