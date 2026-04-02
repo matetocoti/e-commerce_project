@@ -1,5 +1,9 @@
 ﻿namespace Ecommerce.Api.Controllers;
+
+using Ecommerce.Api.Application.DTOS.Product;
 using Ecommerce.Api.Application.Services;
+using Ecommerce.Api.Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -27,4 +31,14 @@ public class ProductController(ProductService productService) : ControllerBase
             return NotFound();
         }
     }
+
+
+    [Authorize(Roles = nameof(UserRole.Admin))]
+    [HttpPost]
+    public async Task<IActionResult> CreateProduct([FromBody] CreateProductDto createDto)
+    {
+        var createdProduct = await productService.CreateProductAsync(createDto);
+        return CreatedAtAction(nameof(GetProductById), new { id = createdProduct.Id }, createdProduct);
+    }
+
 }

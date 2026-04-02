@@ -32,6 +32,13 @@ public class ProductService(AppDbContext context)
         return MapToDto(product);
     }
 
+    public async Task<ProductDto> CreateProductAsync(CreateProductDto createDto)
+    {
+        var product = new Product(createDto.Name, createDto.Description, createDto.Price, createDto.Stock);
+        context.Products.Add(product);
+        await context.SaveChangesAsync();
+        return MapToDto(product);
+    }
 
     private ProductDto MapToDto(Product product)
     {
