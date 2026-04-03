@@ -21,13 +21,19 @@ public class AuthService(UserService userService, IConfiguration config)
 
         if (existingUser != null)
             throw new BadRequestException("Email or username already in use.");
-        
+
         if (request.Password != request.ConfirmPassword)
             throw new BadRequestException("Passwords do not match.");
+
+
+        var (isEmailValid, emailError) = EmailValidator.Validate(request.Email);
+        if (!isEmailValid)
+            throw new BadRequestException(emailError);
 
         var (isValid, errorMessage) = PasswordValidator.Validate(request.Password);
         if (!isValid)
             throw new BadRequestException(errorMessage);
+        
 
         var user = new User(
             request.Username,
@@ -47,7 +53,7 @@ public class AuthService(UserService userService, IConfiguration config)
             UpdatedAt = createdUser.UpdatedAt
         };
     }
-    
+
     public async Task<AuthResponseDto> LoginAsync(LoginUserDto request)
     {
         var user = await userService.GetByEmailOrUsernameAsync(request.Login);
@@ -90,8 +96,8 @@ public class AuthService(UserService userService, IConfiguration config)
             new Claim(ClaimTypes.Role, user.Role.ToString())
         };
 
-        var expiresMinutes = int.TryParse(config["Jwt:ExpiresMinutes"], out var minutes) 
-            ? minutes 
+        var expiresMinutes = int.TryParse(config["Jwt:ExpiresMinutes"], out var minutes)
+            ? minutes
             : 60;
 
         var token = new JwtSecurityToken(

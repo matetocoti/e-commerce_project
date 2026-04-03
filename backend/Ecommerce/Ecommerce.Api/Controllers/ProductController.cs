@@ -35,10 +35,9 @@ public class ProductController(ProductService productService) : ControllerBase
 
     [Authorize(Roles = nameof(UserRole.Admin))]
     [HttpPost]
-    public async Task<IActionResult> CreateProduct([FromBody] CreateProductDto createDto)
+    public async Task<IActionResult> CreateProduct([FromBody] CreateProductDto dto)
     {
-        var createdProduct = await productService.CreateProductAsync(createDto);
+        var createdProduct = await productService.CreateProductAsync(dto);
         return CreatedAtAction(nameof(GetProductById), new { id = createdProduct.Id }, createdProduct);
     }
-
 }

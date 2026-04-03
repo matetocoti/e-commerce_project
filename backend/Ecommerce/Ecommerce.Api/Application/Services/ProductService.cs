@@ -1,6 +1,8 @@
 ﻿namespace Ecommerce.Api.Application.Services;
 using Ecommerce.Api.Application.DTOS.Product;
+using Ecommerce.Api.Application.Exceptions;
 using Ecommerce.Api.Domain.Entities;
+using Ecommerce.Api.Domain.Enums;
 using Ecommerce.Api.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,9 +34,9 @@ public class ProductService(AppDbContext context)
         return MapToDto(product);
     }
 
-    public async Task<ProductDto> CreateProductAsync(CreateProductDto createDto)
+    public async Task<ProductDto> CreateProductAsync(CreateProductDto dto)
     {
-        var product = new Product(createDto.Name, createDto.Description, createDto.Price, createDto.Stock);
+        var product = new Product(dto.Name, dto.Description, dto.Price, dto.Stock);
         context.Products.Add(product);
         await context.SaveChangesAsync();
         return MapToDto(product);

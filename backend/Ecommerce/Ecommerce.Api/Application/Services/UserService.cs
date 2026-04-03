@@ -22,7 +22,7 @@ public class UserService(AppDbContext context)
 
     public async Task<User> CreateAsync(User user)
     {
-        
+
         if (string.IsNullOrWhiteSpace(user.Email) || string.IsNullOrWhiteSpace(user.Username))
             throw new ArgumentException("Invalid user data");
 

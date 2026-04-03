@@ -8,7 +8,6 @@ using DotNetEnv;
 using Ecommerce.Api.Api.Middleware;
 
 
-
 DotNetEnv.Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
