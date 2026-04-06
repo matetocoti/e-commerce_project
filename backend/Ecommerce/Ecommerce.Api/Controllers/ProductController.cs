@@ -18,14 +18,7 @@ public class ProductController(ProductService productService) : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetProductById(Guid id)
     {
-        try
-        {
-            var product = await productService.GetProductByIdAsync(id);
-            return Ok(product);
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound();
-        }
+        var result = await productService.GetProductByIdAsync(id);
+        return Ok(result);
     }
 }
