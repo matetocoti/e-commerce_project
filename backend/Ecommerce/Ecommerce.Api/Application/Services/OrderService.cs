@@ -58,6 +58,7 @@ public class OrderService(AppDbContext context)
             Notes = createOrderDto.Notes
         };
 
+   
         _context.Orders.Add(order);
 
         cart.CartItems.Clear();

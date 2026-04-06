@@ -1,9 +1,6 @@
 ﻿namespace Ecommerce.Api.Controllers;
 
-using Ecommerce.Api.Application.DTOS.Product;
 using Ecommerce.Api.Application.Services;
-using Ecommerce.Api.Domain.Enums;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -12,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 public class ProductController(ProductService productService) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll(int page = 1, int pageSize = 10)
+    public async Task<IActionResult> GetAll(int page = 1, int pageSize = 2)
     {
         var result = await productService.GetAllAsync(page, pageSize);
         return Ok(result);
@@ -30,14 +27,5 @@ public class ProductController(ProductService productService) : ControllerBase
         {
             return NotFound();
         }
-    }
-
-
-    [Authorize(Roles = nameof(UserRole.Admin))]
-    [HttpPost]
-    public async Task<IActionResult> CreateProduct([FromBody] CreateProductDto dto)
-    {
-        var createdProduct = await productService.CreateProductAsync(dto);
-        return CreatedAtAction(nameof(GetProductById), new { id = createdProduct.Id }, createdProduct);
     }
 }

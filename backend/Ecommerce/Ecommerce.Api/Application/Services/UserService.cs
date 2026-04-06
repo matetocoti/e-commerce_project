@@ -3,6 +3,7 @@ using Ecommerce.Api.Application.DTOS.User;
 using Ecommerce.Api.Domain.Entities;
 using Ecommerce.Api.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Ecommerce.Api.Application.Exceptions;
 
 public class UserService(AppDbContext context)
 {
@@ -14,12 +15,12 @@ public class UserService(AppDbContext context)
         return MapToDto(user);
     }
     public async Task<User?> GetByEmailOrUsernameAsync(string login)
-    {
-        return await _context.Users
+    {   
+        var user = await _context.Users
         .FirstOrDefaultAsync(u =>
             u.Email == login || u.Username == login);
+        return user;
     }
-
     public async Task<User> CreateAsync(User user)
     {
 
@@ -37,7 +38,6 @@ public class UserService(AppDbContext context)
 
         return user;
     }
-
     private UserDto MapToDto(User user)
     {
         return new UserDto
