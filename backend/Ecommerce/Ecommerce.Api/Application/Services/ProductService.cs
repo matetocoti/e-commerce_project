@@ -3,6 +3,7 @@ using Ecommerce.Api.Application.DTOS.Product;
 using Ecommerce.Api.Domain.Entities;
 using Ecommerce.Api.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Ecommerce.Api.Application.Exceptions;
 
 
 public class ProductService(AppDbContext context)
@@ -74,6 +75,15 @@ public class ProductService(AppDbContext context)
             .ToListAsync();
     }
 
+    public async Task<AdminProductDto> UpdateProductAsync(Guid id, UpdateProductDto dto)
+    {
+        var product = await context.Products.FirstOrDefaultAsync(p => p.Id == id);
+        if (product == null)
+            throw new NotFoundException("Product Not Found!");
+        product.Update(dto.Name, dto.Description, dto.Price, dto.Stock);
+        await context.SaveChangesAsync();
+        return MapToAdminDto(product);
+    }
     #endregion
 
     #region private methods

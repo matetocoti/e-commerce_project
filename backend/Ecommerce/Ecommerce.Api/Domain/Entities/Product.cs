@@ -1,4 +1,5 @@
 ﻿namespace Ecommerce.Api.Domain.Entities;
+using Ecommerce.Api.Domain.Entities.Exceptions;
 
 public class Product
 {
@@ -35,6 +36,21 @@ public class Product
     #endregion
 
     #region Methods
+    public void Update(string name, string description, decimal price, int stock)
+    {
+        if (price < 0)
+            throw new DomainException("Price cannot be negative");
+
+        if (stock < 0)
+            throw new DomainException("Stock cannot be negative");
+
+        Name = name;
+        Description = description;
+        Price = price;
+        Stock = stock;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
     public override bool Equals(object? obj)
     {
         return obj is Product product && Id == product.Id;

@@ -10,19 +10,11 @@ using Microsoft.AspNetCore.Mvc;
 public class AdminProductController(ProductService productService) : ControllerBase
 {
 
-
     [HttpGet("{id}")]
     public async Task<IActionResult> GetProductById(Guid id)
     {
-        try
-        {
-            var product = await productService.GetProductAdminAsync(id);
-            return Ok(product);
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound();
-        }
+        var product = await productService.GetProductAdminAsync(id);
+        return Ok(product);
     }
 
     [HttpGet]
@@ -32,7 +24,6 @@ public class AdminProductController(ProductService productService) : ControllerB
         return Ok(products);
     }
 
-
     [HttpPost]
     public async Task<IActionResult> CreateProduct([FromBody] CreateProductDto dto)
     {
@@ -40,5 +31,11 @@ public class AdminProductController(ProductService productService) : ControllerB
         return CreatedAtAction(nameof(GetProductById), new { id = createdProduct.Id }, createdProduct);
     }
 
- 
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] UpdateProductDto dto)
+    {
+        var updatedProduct = await productService.UpdateProductAsync(id, dto);
+        return Ok(updatedProduct);
+    }
+     
 }
