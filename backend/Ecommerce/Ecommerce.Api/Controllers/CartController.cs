@@ -36,10 +36,19 @@ public class CartController(CartService cartService) : ControllerBase
         await cartService.RemoveItemFromCartAsync(userId, productId, quantityToRemove ?? 0);
         return NoContent();
     }
+
+    [HttpDelete("clear")]
+    public async Task<IActionResult> ClearCart()
+    {
+        var userId = GetUserIdFromToken();
+        await cartService.ClearCartAsync(userId);
+        return NoContent();
+    }
+
     #endregion
 
     #region Helper Methods
-    
+
     private Guid GetUserIdFromToken()
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);

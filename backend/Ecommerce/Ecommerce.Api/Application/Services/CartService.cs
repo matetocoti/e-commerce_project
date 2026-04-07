@@ -78,6 +78,17 @@ public class CartService(AppDbContext context)
         await _context.SaveChangesAsync();
     }
 
+    public async Task ClearCartAsync(Guid userId)
+    {
+        var cart = await _context.Carts
+            .Include(c => c.CartItems)
+            .FirstOrDefaultAsync(c => c.UserId == userId);
+        if (cart == null)
+            throw new NotFoundException("Cart not found.");
+        cart.CartItems.Clear();
+        await _context.SaveChangesAsync();
+    }
+
     private static CartDto MapToCartDto(Cart cart)
     {   
         return new CartDto

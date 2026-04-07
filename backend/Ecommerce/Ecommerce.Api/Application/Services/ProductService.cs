@@ -26,7 +26,7 @@ public class ProductService(AppDbContext context)
     {
         var product = await context.Products.FirstOrDefaultAsync(p => p.Id == id && p.IsActive);
         if (product == null)
-            throw new KeyNotFoundException("Product not found.");
+            throw new NotFoundException("Product not found.");
         return MapToDto(product);
     }
 
@@ -45,7 +45,7 @@ public class ProductService(AppDbContext context)
     {
         var product = await context.Products.FirstOrDefaultAsync(p => p.Id == id);
         if (product == null)
-            throw new KeyNotFoundException("Product not found.");
+            throw new NotFoundException("Product not found.");
         return MapToAdminDto(product);
     }
 
@@ -115,7 +115,6 @@ public class ProductService(AppDbContext context)
         };
     }
     #endregion
-
 
     #endregion
 }

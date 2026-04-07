@@ -31,7 +31,7 @@ public class UserService(AppDbContext context)
             .AnyAsync(u => u.Email == user.Email || u.Username == user.Username);
 
         if (exists)
-            throw new Exception("User already exists");
+            throw new BadRequestException("User already exists");
 
         _context.Users.Add(user);
         await _context.SaveChangesAsync();

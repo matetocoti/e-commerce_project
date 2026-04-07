@@ -35,11 +35,8 @@ public class OrderController(OrderService orderService) : ControllerBase
     {
         var userId = GetUserIdFromToken();
         var order = await orderService.GetOrderByIdAsync(id);
-        
-        
         if (order == null)
             throw new NotFoundException("Order not found.");
-        
         return Ok(order);
     }
     #endregion
