@@ -51,6 +51,12 @@ public class Product
         UpdatedAt = DateTime.UtcNow;
     }
 
+    public void Deactivate()
+    {
+        IsActive = false;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
     public override bool Equals(object? obj)
     {
         return obj is Product product && Id == product.Id;

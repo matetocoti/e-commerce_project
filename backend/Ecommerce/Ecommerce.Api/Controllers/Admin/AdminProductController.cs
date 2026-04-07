@@ -37,5 +37,12 @@ public class AdminProductController(ProductService productService) : ControllerB
         var updatedProduct = await productService.UpdateProductAsync(id, dto);
         return Ok(updatedProduct);
     }
-     
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeactivateProduct(Guid id)
+    {
+        await productService.DeactivateProductAsync(id);
+        return NoContent();
+    }
+
 }

@@ -14,17 +14,12 @@ public class ProductService(AppDbContext context)
     #region public methods
     public async Task<List<ProductDto>> GetAllAsync(int page, int pageSize)
     {
-        return await context.Products
+        var products = await context.Products
+            .Where(p => p.IsActive)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .Select(p => new ProductDto
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Price = p.Price,
-                Description = p.Description
-            })
             .ToListAsync();
+        return products.Select(MapToDto).ToList();
     }
 
     public async Task<ProductDto> GetProductByIdAsync(Guid id)
@@ -34,8 +29,6 @@ public class ProductService(AppDbContext context)
             throw new KeyNotFoundException("Product not found.");
         return MapToDto(product);
     }
-
-
 
     #endregion
 
@@ -84,6 +77,16 @@ public class ProductService(AppDbContext context)
         await context.SaveChangesAsync();
         return MapToAdminDto(product);
     }
+    
+    public async Task DeactivateProductAsync(Guid id)
+    {
+        var product = await context.Products.FirstOrDefaultAsync(p => p.Id == id);
+        if (product == null)
+            throw new NotFoundException("Product Not Found!");
+        product.Deactivate();
+        await context.SaveChangesAsync();
+    }
+
     #endregion
 
     #region private methods
