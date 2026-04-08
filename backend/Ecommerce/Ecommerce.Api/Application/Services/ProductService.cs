@@ -30,6 +30,16 @@ public class ProductService(AppDbContext context)
         return MapToDto(product);
     }
 
+    public async Task<List<ProductDto>> SearchProductsAsync(string query, int page, int pageSize)
+    {
+        var products = await context.Products
+            .Where(p => p.IsActive && (p.Name.Contains(query) || p.Description.Contains(query)))
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+        return products.Select(MapToDto).ToList();
+    }
+
     #endregion
 
     #region admin methods

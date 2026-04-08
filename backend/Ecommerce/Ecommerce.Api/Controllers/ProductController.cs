@@ -21,4 +21,11 @@ public class ProductController(ProductService productService) : ControllerBase
         var result = await productService.GetProductByIdAsync(id);
         return Ok(result);
     }
+
+    [HttpGet("search")]
+    public async Task<IActionResult> SearchProducts(string query, int page = 1, int pageSize = 2)
+    {
+        var result = await productService.SearchProductsAsync(query, page, pageSize);
+        return Ok(result);
+    }
 }
