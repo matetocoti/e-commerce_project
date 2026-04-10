@@ -1,0 +1,40 @@
+const API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:5056";
+
+interface ApiFetchOptions extends RequestInit {
+  token?: string | null;
+}
+
+export async function apiFetch<T>(
+  endpoint: string,
+  options: ApiFetchOptions = {}
+): Promise<T> {
+  const { token, headers, ...rest } = options;
+
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    ...rest,
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...headers,
+    },
+  });
+
+  if (!response.ok) {
+    let message = "Erro na requisição";
+
+    try {
+      const errorData = await response.json();
+      message = errorData.message ?? errorData.title ?? message;
+    } catch {
+      message = response.statusText || message;
+    }
+
+    throw new Error(message);
+  }
+
+  if (response.status === 204) {
+    return {} as T;
+  }
+
+  return response.json() as Promise<T>;
+}
