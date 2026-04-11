@@ -3,8 +3,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { DefaultLayout } from "../layouts/DefaultLayout";
 import { Home } from "../pages/Home";
 
-const NotFound = () => <h2>404 - Not Found</h2>;
-const Loading = () => <h2>Loading...</h2>;
+const NotFound = () => <h2 className="text-2xl font-bold">404 - Not Found</h2>;
+const Loading = () => <h2 className="text-2xl font-bold">Loading...</h2>;
 
 const AppRoutes = () => {
   return (

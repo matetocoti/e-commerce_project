@@ -1,21 +1,32 @@
 import { useEffect, useState } from "react";
-import { getProducts } from "../../api/productApi";
-import type { ProductDto } from "../../types/product";
-import { ProductList } from "../../components/ProductList";
-import { Input } from "../../components/ui/input";
-import { useProductSearch } from "../../hooks/useProductSearch";
+import { getProducts } from "../api/productApi";
+import type { ProductDto } from "../types/product";
+import { ProductList } from "../components/ui/ProductList";
+import { Input } from "../components/ui/Input";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationButton,
+  PaginationPrevious,
+  PaginationNext,
+} from "../components/ui/Pagination";
+import { useProductSearch } from "../hooks/useProductSearch";
+
+const PAGE_SIZE = 9;
 
 export function Home() {
   const [products, setProducts] = useState<ProductDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(1);
 
   const {
     products: searchedProducts,
     loading: searchLoading,
     error: searchError,
-  } = useProductSearch(searchQuery);
+  } = useProductSearch(searchQuery, page, PAGE_SIZE);
 
   useEffect(() => {
     async function loadProducts() {
@@ -23,7 +34,7 @@ export function Home() {
         setLoading(true);
         setError(null);
 
-        const response = await getProducts({ page: 1, pageSize: 9 });
+        const response = await getProducts({ page, pageSize: PAGE_SIZE });
         setProducts(response);
       } catch (err) {
         setError(
@@ -34,13 +45,23 @@ export function Home() {
       }
     }
 
-    loadProducts();
-  }, []);
+    if (searchQuery.trim() === "") {
+      loadProducts();
+    }
+  }, [page, searchQuery]);
+
+  function handleSearchChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setSearchQuery(event.target.value);
+    setPage(1);
+  }
 
   const isSearching = searchQuery.trim() !== "";
   const displayedProducts = isSearching ? searchedProducts : products;
   const displayedLoading = isSearching ? searchLoading : loading;
   const displayedError = isSearching ? searchError : error;
+
+  const hasPreviousPage = page > 1;
+  const hasNextPage = displayedProducts.length === PAGE_SIZE && !isSearching;
 
   return (
     <div className="mx-auto max-w-7xl space-y-6 p-4 sm:p-6 lg:p-8">
@@ -53,7 +74,7 @@ export function Home() {
       <Input
         placeholder="Buscar produtos..."
         value={searchQuery}
-        onChange={(event) => setSearchQuery(event.target.value)}
+        onChange={handleSearchChange}
       />
 
       {displayedLoading && (
@@ -69,7 +90,31 @@ export function Home() {
       )}
 
       {!displayedLoading && !displayedError && displayedProducts.length > 0 && (
-        <ProductList products={displayedProducts} />
+        <>
+          <ProductList products={displayedProducts} />
+
+          <Pagination className="mt-8">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={!hasPreviousPage}
+                />
+              </PaginationItem>
+
+              <PaginationItem>
+                <PaginationButton isActive>{page}</PaginationButton>
+              </PaginationItem>
+
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() => setPage((prev) => prev + 1)}
+                  disabled={!hasNextPage}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </>
       )}
     </div>
   );

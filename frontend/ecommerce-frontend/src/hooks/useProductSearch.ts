@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { searchProducts } from "../api/productApi";
 import type { ProductDto } from "../types/product";
 
-export function useProductSearch(query: string) {
+export function useProductSearch(query: string, page: number, pageSize: number,) {
   const [products, setProducts] = useState<ProductDto[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -10,21 +10,23 @@ export function useProductSearch(query: string) {
   useEffect(() => {
     const trimmedQuery = query.trim();
 
-    if (!trimmedQuery) {
+    if (trimmedQuery === "") {
       setProducts([]);
+      setError(null);
+      setLoading(false);
       return;
     }
 
-    async function load() {
+    async function loadSearchResults() {
       try {
         setLoading(true);
         setError(null);
 
-        const data = await searchProducts(trimmedQuery);
+        const data = await searchProducts(trimmedQuery, page, pageSize);
         setProducts(data);
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : "Erro ao buscar produtos"
+          err instanceof Error ? err.message : "Erro ao buscar produtos",
         );
         setProducts([]);
       } finally {
@@ -32,8 +34,8 @@ export function useProductSearch(query: string) {
       }
     }
 
-    load();
-  }, [query]);
+    loadSearchResults();
+  }, [query, page, pageSize]);
 
   return { products, loading, error };
 }

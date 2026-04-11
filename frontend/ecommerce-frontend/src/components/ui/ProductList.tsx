@@ -1,4 +1,4 @@
-import type { ProductDto } from "../types/product";
+import type { ProductDto } from "../../types/product";
 import { ProductCard } from "./ProductCard";
 
 interface ProductListProps {

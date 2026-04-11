@@ -1,5 +1,5 @@
-import type { ProductDto } from "../types/product";
-import { Button } from "./ui/Button";
+import type { ProductDto } from "../../types/product";
+import { Button } from "./Button";
 
 interface ProductCardProps {
   readonly product: ProductDto;
