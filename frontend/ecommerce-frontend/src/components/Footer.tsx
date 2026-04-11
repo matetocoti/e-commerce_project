@@ -1,6 +1,8 @@
 
 
 export function Footer() {
+    const currentYear = new Date().getFullYear();
+
     return (
         <footer className="mt-12 border-t bg-white py-8">
           <div className="mx-auto max-w-7xl px-4">
@@ -44,7 +46,7 @@ export function Footer() {
             </div>
 
             <div className="mt-8 border-t pt-8 text-center text-sm text-gray-600">
-              © 2026 TechStore. Todos os direitos reservados.
+              © {currentYear} TechStore. Todos os direitos reservados.
             </div>
           </div>
         </footer>

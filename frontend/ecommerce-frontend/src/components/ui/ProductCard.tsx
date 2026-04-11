@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import type { ProductDto } from "../../types/product";
 import { Button } from "./Button";
 
@@ -9,34 +10,36 @@ export function ProductCard({ product }: Readonly<ProductCardProps>) {
   const imageSrc = product.imageUrl || "/placeholder-tech.png";
 
   return (
-    <li className="overflow-hidden rounded border bg-white transition hover:shadow-md">
-      {/* Imagem */}
-      <div className="aspect-[4/3] w-full bg-gray-100">
-        <img
-          src={imageSrc}
-          alt={product.name}
-          className="h-full w-full object-cover"
-        />
-      </div>
-
-      {/* Conteúdo */}
-      <div className="p-5">
-        <strong className="text-base text-gray-900">
-          {product.name}
-        </strong>
-
-        <p className="mt-2 text-sm text-gray-600 line-clamp-3">
-          {product.description}
-        </p>
-
-        <div className="mt-4 text-lg font-bold text-blue-600">
-          {product.price.toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-          })}
+    <li className="overflow-hidden rounded border bg-white transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
+      <Link to={`/product/${product.id}`} className="block">
+        <div className="aspect-[4/3] w-full bg-gray-100">
+          <img
+            src={imageSrc}
+            alt={product.name}
+            className="h-full w-full object-cover"
+          />
         </div>
 
-        <Button className="mt-4 w-full">Adicionar ao Carrinho</Button>
+        <div className="p-5">
+          <strong className="text-base text-gray-900">{product.name}</strong>
+
+          <p className="mt-2 line-clamp-3 text-sm text-gray-600">
+            {product.description}
+          </p>
+
+          <div className="mt-4 text-lg font-bold text-blue-600">
+            {product.price.toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            })}
+          </div>
+        </div>
+      </Link>
+
+      <div className="px-5 pb-5">
+        <Link to={`/product/${product.id}`} className="block">
+          <Button className="w-full">Ver detalhes</Button>
+        </Link>
       </div>
     </li>
   );
