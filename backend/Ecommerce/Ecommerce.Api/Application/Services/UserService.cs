@@ -43,6 +43,7 @@ public class UserService(AppDbContext context)
         return new UserDto
         {
             Id = user.Id,
+            PhoneNumber = user.PhoneNumber,
             Username = user.Username,
             Email = user.Email,
             Role = user.Role,

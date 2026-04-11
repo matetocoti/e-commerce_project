@@ -1,6 +1,4 @@
-﻿namespace Ecommerce.Api.Infrastructure.Persistence.Configurations;
-
-using Ecommerce.Api.Domain.Entities;
+﻿using Ecommerce.Api.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -23,6 +21,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.PasswordHash)
             .IsRequired()
             .HasMaxLength(500);
+
+        builder.Property(u => u.PhoneNumber) 
+            .HasMaxLength(20)
+            .IsRequired(false);
 
         builder.Property(u => u.CreatedAt)
             .IsRequired()

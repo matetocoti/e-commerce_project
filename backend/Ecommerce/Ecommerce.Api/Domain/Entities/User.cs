@@ -9,6 +9,7 @@ public class User
     public Guid Id { get; set; }
     public string Username { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
+    public string? PhoneNumber { get; private set; }
     public string PasswordHash { get; set; } = string.Empty;
     public UserRole Role { get; set; }
 
@@ -24,7 +25,7 @@ public class User
     #region Constructors
     public User() { } 
 
-    public User(string username, string email, string passwordHash, UserRole role = UserRole.Customer)
+    public User(string username, string email, string passwordHash, UserRole role = UserRole.Customer, string? phoneNumber = null)
     {
         Id = Guid.NewGuid();
         Username = username;
@@ -33,10 +34,18 @@ public class User
         Role = role;
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
+        PhoneNumber = string.IsNullOrWhiteSpace(phoneNumber) ? null : phoneNumber;
     }
     #endregion
 
     #region Methods
+
+    public void UpdatePhoneNumber(string? phoneNumber)
+    {
+        PhoneNumber = string.IsNullOrWhiteSpace(phoneNumber) ? null : phoneNumber;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
     public override bool Equals(object? obj)
     {
         return obj is User user && Id == user.Id;
