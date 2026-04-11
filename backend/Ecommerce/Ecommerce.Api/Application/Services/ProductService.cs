@@ -45,7 +45,7 @@ public class ProductService(AppDbContext context)
     #region admin methods
     public async Task<AdminProductDto> CreateProductAsync(CreateProductDto dto)
     {
-        var product = new Product(dto.Name, dto.Description, dto.Price, dto.Stock);
+        var product = new Product(dto.ImageUrl, dto.Name , dto.Description, dto.Price, dto.Stock);
         context.Products.Add(product);
         await context.SaveChangesAsync();
         return MapToAdminDto(product);
@@ -61,21 +61,11 @@ public class ProductService(AppDbContext context)
 
     public async Task<List<AdminProductDto>> GetAllProductsAdminAsync(int page, int pageSize)
     {
-        return await context.Products
+        var products = await context.Products
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .Select(p => new AdminProductDto
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Price = p.Price,
-                Description = p.Description,
-                Stock = p.Stock,
-                IsActive = p.IsActive,
-                CreatedAt = p.CreatedAt,
-                UpdatedAt = p.UpdatedAt
-            })
-            .ToListAsync();
+             .ToListAsync();
+        return products.Select(MapToAdminDto).ToList();
     }
 
     public async Task<AdminProductDto> UpdateProductAsync(Guid id, UpdateProductDto dto)
@@ -83,7 +73,7 @@ public class ProductService(AppDbContext context)
         var product = await context.Products.FirstOrDefaultAsync(p => p.Id == id);
         if (product == null)
             throw new NotFoundException("Product Not Found!");
-        product.Update(dto.Name, dto.Description, dto.Price, dto.Stock);
+        product.Update(dto.ImageUrl, dto.Name, dto.Description, dto.Price, dto.Stock);
         await context.SaveChangesAsync();
         return MapToAdminDto(product);
     }
@@ -105,6 +95,7 @@ public class ProductService(AppDbContext context)
         return new ProductDto
         {
             Id = product.Id,
+            ImageUrl = product.ImageUrl,
             Name = product.Name,
             Description = product.Description,
             Price = product.Price,
@@ -115,6 +106,7 @@ public class ProductService(AppDbContext context)
         return new AdminProductDto
         {
             Id = product.Id,
+            ImageUrl = product.ImageUrl,
             Name = product.Name,
             Description = product.Description,
             Price = product.Price,

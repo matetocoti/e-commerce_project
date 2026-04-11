@@ -5,6 +5,7 @@ public class Product
 {
     #region Properties
     public Guid Id { get; set; }
+    public string? ImageUrl { get; private set; }
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public decimal Price { get; set; }
@@ -22,9 +23,10 @@ public class Product
     #region Constructors
     public Product() { }
 
-    public Product(string name, string description, decimal price, int stock)
+    public Product(string imageUrl, string name, string description, decimal price, int stock)
     {
         Id = Guid.NewGuid();
+        ImageUrl = imageUrl;
         Name = name;
         Description = description;
         Price = price;
@@ -36,7 +38,7 @@ public class Product
     #endregion
 
     #region Methods
-    public void Update(string name, string description, decimal price, int stock)
+    public void Update(string imageUrl, string name, string description, decimal price, int stock)
     {
         if (price < 0)
             throw new DomainException("Price cannot be negative");
@@ -44,6 +46,7 @@ public class Product
         if (stock < 0)
             throw new DomainException("Stock cannot be negative");
 
+        ImageUrl = imageUrl;
         Name = name;
         Description = description;
         Price = price;
