@@ -29,11 +29,7 @@ export async function getProductById(id: string): Promise<ProductDto> {
   return apiFetch<ProductDto>(`/api/product/${id}`);
 }
 
-export async function searchProducts(
-  query: string,
-  page = 1,
-  pageSize = 10
-): Promise<ProductDto[]> {
+export async function searchProducts(query: string, page = 1, pageSize = 9,): Promise<ProductDto[]> {
   const searchParams = new URLSearchParams({
     query,
     page: String(page),
@@ -41,6 +37,6 @@ export async function searchProducts(
   });
 
   return apiFetch<ProductDto[]>(
-    `/api/product/search?${searchParams.toString()}`
+    `/api/product/search?${searchParams.toString()}`,
   );
 }

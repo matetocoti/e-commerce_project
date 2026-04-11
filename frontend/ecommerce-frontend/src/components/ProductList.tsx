@@ -7,10 +7,10 @@ interface ProductListProps {
 
 export function ProductList({ products }: Readonly<ProductListProps>) {
   return (
-    <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
-      ))}
-    </ul>
+    <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {products.map((product) => (
+          <ProductCard key={product.id} product={product} />
+        ))}
+      </ul>
   );
 }

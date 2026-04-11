@@ -1,4 +1,5 @@
 import type { ProductDto } from "../types/product";
+import { Button } from "./ui/Button";
 
 interface ProductCardProps {
   readonly product: ProductDto;
@@ -34,6 +35,8 @@ export function ProductCard({ product }: Readonly<ProductCardProps>) {
             currency: "BRL",
           })}
         </div>
+
+        <Button className="mt-4 w-full">Adicionar ao Carrinho</Button>
       </div>
     </li>
   );
