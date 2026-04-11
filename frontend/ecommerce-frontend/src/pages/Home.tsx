@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
-import { getProducts } from "../api/productApi";
-import type { ProductDto } from "../types/product";
+import React, { useState } from "react";
 import { ProductList } from "../components/ui/ProductList";
 import { Input } from "../components/ui/Input";
 import {
@@ -12,43 +10,24 @@ import {
   PaginationNext,
 } from "../components/ui/Pagination";
 import { useProductSearch } from "../hooks/useProductSearch";
+import { useProducts } from "../hooks/useProducts";
 
 const PAGE_SIZE = 9;
 
 export function Home() {
-  const [products, setProducts] = useState<ProductDto[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
+
+  const { products, loading, error } = useProducts({ page, pageSize: PAGE_SIZE });
 
   const {
     products: searchedProducts,
     loading: searchLoading,
-    error: searchError,
-  } = useProductSearch(searchQuery, page, PAGE_SIZE);
+    error: searchError
+    ,} = useProductSearch(searchQuery, page, PAGE_SIZE);
 
-  useEffect(() => {
-    async function loadProducts() {
-      try {
-        setLoading(true);
-        setError(null);
 
-        const response = await getProducts({ page, pageSize: PAGE_SIZE });
-        setProducts(response);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Erro ao carregar produtos",
-        );
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    if (searchQuery.trim() === "") {
-      loadProducts();
-    }
-  }, [page, searchQuery]);
 
   function handleSearchChange(event: React.ChangeEvent<HTMLInputElement>) {
     setSearchQuery(event.target.value);
