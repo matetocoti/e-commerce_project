@@ -1,0 +1,40 @@
+import type { ProductDto } from "../types/product";
+
+interface ProductCardProps {
+  readonly product: ProductDto;
+}
+
+export function ProductCard({ product }: Readonly<ProductCardProps>) {
+  const imageSrc = product.imageUrl || "/placeholder-tech.png";
+
+  return (
+    <li className="overflow-hidden rounded border bg-white transition hover:shadow-md">
+      {/* Imagem */}
+      <div className="aspect-[4/3] w-full bg-gray-100">
+        <img
+          src={imageSrc}
+          alt={product.name}
+          className="h-full w-full object-cover"
+        />
+      </div>
+
+      {/* Conteúdo */}
+      <div className="p-5">
+        <strong className="text-base text-gray-900">
+          {product.name}
+        </strong>
+
+        <p className="mt-2 text-sm text-gray-600 line-clamp-3">
+          {product.description}
+        </p>
+
+        <div className="mt-4 text-lg font-bold text-blue-600">
+          {product.price.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          })}
+        </div>
+      </div>
+    </li>
+  );
+}

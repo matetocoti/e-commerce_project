@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getProducts } from "../../api/productApi";
+import { ProductCard } from "../../components/ProductCard";
 import type { ProductDto } from "../../types/product";
 
 export function Home() {
@@ -15,6 +16,7 @@ export function Home() {
 
         const response = await getProducts({ page: 1, pageSize: 8 });
         console.log("products response", response);
+
         setProducts(response);
       } catch (err) {
         setError(
@@ -29,32 +31,24 @@ export function Home() {
   }, []);
 
   if (loading) {
-    return <h2>Carregando produtos...</h2>;
+    return <h2 className="p-4">Carregando produtos...</h2>;
   }
 
   if (error) {
-    return <h2>Erro: {error}</h2>;
+    return <h2 className="p-4 text-red-600">Erro: {error}</h2>;
   }
 
   if (products.length === 0) {
-    return <h2>Nenhum produto encontrado.</h2>;
+    return <h2 className="p-4">Nenhum produto encontrado.</h2>;
   }
 
   return (
     <div className="mx-auto max-w-7xl p-4">
-      <h1 className="text-2xl font-bold mb-6">Produtos</h1>
+      <h1 className="mb-6 text-2xl font-bold">Produtos</h1>
 
-      <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {products.map((product) => (
-          <li key={product.id} className="border rounded p-4">
-            <strong>{product.name}</strong>
-
-            <p className="text-sm text-gray-600 mt-2">{product.description}</p>
-
-            <div className="mt-4 font-semibold">
-              R$ {product.price.toFixed(2)}
-            </div>
-          </li>
+          <ProductCard key={product.id} product={product} />
         ))}
       </ul>
     </div>
