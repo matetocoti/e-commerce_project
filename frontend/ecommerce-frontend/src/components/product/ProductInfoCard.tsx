@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Card, CardContent } from "./Card";
+import { Card, CardContent } from "../ui/Card";
 
 interface ProductInfoCardProps {
   readonly title: string;

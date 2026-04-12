@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ProductList } from "../components/ui/ProductList";
+import { ProductList } from "../components/product/ProductList";
 import { Input } from "../components/ui/Input";
 import {
   Pagination,

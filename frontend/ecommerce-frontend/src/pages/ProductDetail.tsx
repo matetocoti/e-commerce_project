@@ -3,9 +3,9 @@ import { ArrowLeft, Package } from "lucide-react";
 
 import { useProduct } from "../hooks/useProduct";
 import { Button } from "../components/ui/Button";
-import { ProductImage } from "../components/ui/ProductImage";
-import { ProductPrice } from "../components/ui/ProductPrice";
-import { ProductInfoCard } from "../components/ui/ProductInfoCard";
+import { ProductImage } from "../components/product/ProductImage";
+import { ProductPrice } from "../components/product/ProductPrice";
+import { ProductInfoCard } from "../components/product/ProductInfoCard";
 
 export function ProductDetail() {
   const { id } = useParams<{ id: string }>();

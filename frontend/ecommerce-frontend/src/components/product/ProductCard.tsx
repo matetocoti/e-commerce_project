@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import type { ProductDto } from "../../types/product";
-import { Button } from "./Button";
+import { Button } from "../ui/Button";
 
 interface ProductCardProps {
   readonly product: ProductDto;
