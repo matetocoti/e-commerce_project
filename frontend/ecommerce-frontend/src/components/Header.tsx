@@ -1,11 +1,26 @@
-import { useState } from "react";
-import { ShoppingCart, Package, User, Menu, X } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import {
+  ShoppingCart,
+  Package,
+  User,
+  Menu,
+  X,
+  LogIn,
+  LogOut,
+} from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+
 import { Button } from "./ui/Button";
 import { Badge } from "./ui/Badge";
+import type { UserDto } from "../types/user";
 
 interface HeaderProps {
   readonly cartItemsCount?: number;
+}
+
+interface AuthStorage {
+  token: string;
+  user: UserDto;
 }
 
 type NavLinkItem = {
@@ -28,9 +43,51 @@ function isActivePath(currentPath: string, linkPath: string) {
   return currentPath === linkPath || currentPath.startsWith(`${linkPath}/`);
 }
 
-export function Header({ cartItemsCount = 0 }: Readonly<HeaderProps>) {
+export function Header({cartItemsCount = 0}: Readonly<HeaderProps>) {
   const location = useLocation();
+  const navigate = useNavigate();
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<UserDto | null>(null);
+
+  useEffect(() => {
+    function loadAuth() {
+      const storedAuth = localStorage.getItem("auth");
+
+      if (!storedAuth) {
+        setIsAuthenticated(false);
+        setUser(null);
+        return;
+      }
+
+      try {
+        const parsed: AuthStorage = JSON.parse(storedAuth);
+
+        setIsAuthenticated(!!parsed.token);
+        setUser(parsed.user ?? null);
+      } catch {
+        setIsAuthenticated(false);
+        setUser(null);
+      }
+    }
+
+    loadAuth();
+
+    globalThis.addEventListener("storage", loadAuth);
+    return () => globalThis.removeEventListener("storage", loadAuth);
+  }, [location.pathname]);
+
+  function handleLogout() {
+    localStorage.removeItem("auth");
+    localStorage.removeItem("token");
+
+    setIsAuthenticated(false);
+    setUser(null);
+    setMobileMenuOpen(false);
+
+    navigate("/");
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white">
@@ -74,6 +131,33 @@ export function Header({ cartItemsCount = 0 }: Readonly<HeaderProps>) {
               </Button>
             </Link>
 
+            <div className="hidden items-center gap-2 md:flex">
+              {isAuthenticated ? (
+                <>
+                  <span className="text-sm text-gray-600">
+                    Olá, {user?.username}
+                  </span>
+
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleLogout}
+                    className="gap-2"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Sair
+                  </Button>
+                </>
+              ) : (
+                <Link to="/login">
+                  <Button variant="default" size="sm" className="gap-2">
+                    <LogIn className="h-4 w-4" />
+                    Entrar
+                  </Button>
+                </Link>
+              )}
+            </div>
+
             <Button
               variant="ghost"
               size="icon"
@@ -113,6 +197,34 @@ export function Header({ cartItemsCount = 0 }: Readonly<HeaderProps>) {
                 </Link>
               );
             })}
+
+            <div className="mt-2 border-t border-gray-200 pt-2">
+              {isAuthenticated ? (
+                <>
+                  <div className="px-4 py-2 text-sm text-gray-600">
+                    Olá, {user?.username}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="flex w-full items-center gap-2 rounded-lg px-4 py-2 text-gray-600 transition-colors hover:bg-gray-50"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Sair
+                  </button>
+                </>
+              ) : (
+                <Link
+                  to="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+                >
+                  <LogIn className="h-4 w-4" />
+                  Entrar
+                </Link>
+              )}
+            </div>
           </nav>
         )}
       </div>

@@ -1,14 +1,15 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:5056";
 
-interface ApiFetchOptions extends RequestInit {
+interface ApiFetchOptions extends Omit<RequestInit, "body"> {
   token?: string | null;
+  body?: unknown;
 }
 
 export async function apiFetch<T>(
   endpoint: string,
   options: ApiFetchOptions = {}
 ): Promise<T> {
-  const { token, headers, ...rest } = options;
+  const { token, headers, body, ...rest } = options;
 
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...rest,
@@ -17,6 +18,7 @@ export async function apiFetch<T>(
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...headers,
     },
+    body: body === undefined ? undefined : JSON.stringify(body),
   });
 
   if (!response.ok) {
