@@ -12,7 +12,7 @@ export function useLogin() {
 
       const data = await login({ login: loginInput, password });
 
-      // futuramente salvar token
+      
       localStorage.setItem("auth", JSON.stringify(data));
 
       return true;

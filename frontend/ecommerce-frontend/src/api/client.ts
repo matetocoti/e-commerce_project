@@ -1,10 +1,12 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:5056";
 
+// types para as opções de fetch, incluindo token de autenticação e corpo da requisição
 interface ApiFetchOptions extends Omit<RequestInit, "body"> {
   token?: string | null;
   body?: unknown;
 }
 
+// Função genérica para fazer requisições à API, lidando com autenticação e erros
 export async function apiFetch<T>(
   endpoint: string,
   options: ApiFetchOptions = {}

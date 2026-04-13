@@ -4,6 +4,7 @@ import { DefaultLayout } from "../layouts/DefaultLayout";
 import { Home } from "../pages/Home";
 import { ProductDetail } from "../pages/ProductDetail";
 import { Login } from "../pages/Login";
+import { Register } from "../pages/Register";
 
 const NotFound = () => <h2 className="text-2xl font-bold">404 - Not Found</h2>;
 const Loading = () => <h2 className="text-2xl font-bold">Loading...</h2>;
@@ -17,6 +18,7 @@ const AppRoutes = () => {
             <Route path="/" element={<Home />} />
             <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
           </Route>
 
           <Route path="*" element={<NotFound />} />
