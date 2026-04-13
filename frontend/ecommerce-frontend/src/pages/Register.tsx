@@ -1,66 +1,27 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import {
-  UserPlus,
-  Mail,
-  Lock,
-  User,
-  Eye,
-  EyeOff,
-  CheckCircle,
-} from "lucide-react";
+import { Link } from "react-router-dom";
+import { UserPlus, Mail, User, CheckCircle } from "lucide-react";
 
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
-import { useRegister } from "../hooks/useRegister";
+import { PasswordField } from "../components/auth/PasswordField";
+import { useRegisterForm } from "../hooks/useRegisterForm";
 
 export function Register() {
-  const navigate = useNavigate();
-  const { handleRegister, loading, error } = useRegister();
-
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
-  const passwordsMatch =
-    confirmPassword.length > 0 && password === confirmPassword;
-
-  function getPasswordStrength() {
-    if (password.length === 0) {
-      return { strength: 0, label: "", color: "" };
-    }
-
-    if (password.length < 6) {
-      return { strength: 1, label: "Fraca", color: "bg-red-500" };
-    }
-
-    if (password.length < 10) {
-      return { strength: 2, label: "Média", color: "bg-yellow-500" };
-    }
-
-    return { strength: 3, label: "Forte", color: "bg-green-500" };
-  }
-
-  const passwordStrength = getPasswordStrength();
-
-  async function onSubmit(event: React.SyntheticEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    const success = await handleRegister(
-      username,
-      email,
-      password,
-      confirmPassword
-    );
-
-    if (success) {
-      navigate("/login");
-    }
-  }
+  const {
+    loading,
+    error,
+    username,
+    email,
+    password,
+    confirmPassword,
+    passwordsMatch,
+    passwordStrength,
+    setUsername,
+    setEmail,
+    setPassword,
+    setConfirmPassword,
+    onSubmit,
+  } = useRegisterForm();
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-50 via-white to-blue-50 px-4 py-12">
@@ -112,95 +73,53 @@ export function Register() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-gray-700">Senha</p>
+            <PasswordField
+              label="Senha"
+              value={password}
+              onChange={setPassword}
+              placeholder="Crie uma senha forte"
+              required
+              hint={
+                password.length > 0 && (
+                  <div className="space-y-1">
+                    <div className="flex gap-1">
+                      {[1, 2, 3].map((level) => (
+                        <div
+                          key={level}
+                          className={`h-1 flex-1 rounded-full transition-colors ${
+                            level <= passwordStrength.strength
+                              ? passwordStrength.color
+                              : "bg-gray-200"
+                          }`}
+                        />
+                      ))}
+                    </div>
 
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
-
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Crie uma senha forte"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 pr-10"
-                  required
-                />
-
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
-                </button>
-              </div>
-
-              {password.length > 0 && (
-                <div className="space-y-1">
-                  <div className="flex gap-1">
-                    {[1, 2, 3].map((level) => (
-                      <div
-                        key={level}
-                        className={`h-1 flex-1 rounded-full transition-colors ${
-                          level <= passwordStrength.strength
-                            ? passwordStrength.color
-                            : "bg-gray-200"
-                        }`}
-                      />
-                    ))}
+                    {passwordStrength.label && (
+                      <p className="text-xs text-gray-600">
+                        Força da senha: {passwordStrength.label}
+                      </p>
+                    )}
                   </div>
+                )
+              }
+            />
 
-                  {passwordStrength.label && (
-                    <p className="text-xs text-gray-600">
-                      Força da senha: {passwordStrength.label}
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-gray-700">
-                Confirmar senha
-              </p>
-
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
-
-                <Input
-                  type={showConfirmPassword ? "text" : "password"}
-                  placeholder="Digite a senha novamente"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="pl-10 pr-10"
-                  required
-                />
-
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword((prev) => !prev)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
-                </button>
-              </div>
-
-              {passwordsMatch && (
-                <div className="flex items-center gap-2 text-sm text-green-600">
-                  <CheckCircle className="h-4 w-4" />
-                  As senhas coincidem
-                </div>
-              )}
-            </div>
+            <PasswordField
+              label="Confirmar senha"
+              value={confirmPassword}
+              onChange={setConfirmPassword}
+              placeholder="Digite a senha novamente"
+              required
+              hint={
+                passwordsMatch ? (
+                  <div className="flex items-center gap-2 text-sm text-green-600">
+                    <CheckCircle className="h-4 w-4" />
+                    As senhas coincidem
+                  </div>
+                ) : undefined
+              }
+            />
 
             {error && (
               <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
