@@ -10,9 +10,11 @@ import {
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
+import { toast } from "sonner";
 import { Button } from "./ui/Button";
 import { Badge } from "./ui/Badge";
 import type { UserDto } from "../types/user";
+
 
 interface HeaderProps {
   readonly cartItemsCount?: number;
@@ -85,6 +87,8 @@ export function Header({cartItemsCount = 0}: Readonly<HeaderProps>) {
     setIsAuthenticated(false);
     setUser(null);
     setMobileMenuOpen(false);
+
+    toast.success("Logout realizado com sucesso!");
 
     navigate("/");
   }
