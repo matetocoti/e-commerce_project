@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { login } from "../api/authApi";
+import { dispatchAuthChanged } from "./useAuth";
 
 export function useLogin() {
   const [loading, setLoading] = useState(false);
@@ -14,8 +15,9 @@ export function useLogin() {
       const data = await login({ login: loginInput, password });
 
       localStorage.setItem("auth", JSON.stringify(data));
-      toast.success("Login realizado com sucesso!");
+      dispatchAuthChanged();
 
+      toast.success("Login realizado com sucesso!");
       return true;
     } catch (err) {
       const message =
@@ -23,7 +25,6 @@ export function useLogin() {
 
       setError(message);
       toast.error(message);
-
       return false;
     } finally {
       setLoading(false);

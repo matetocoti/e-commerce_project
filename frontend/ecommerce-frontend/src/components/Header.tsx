@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   ShoppingCart,
   Package,
@@ -10,19 +10,12 @@ import {
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
-import { toast } from "sonner";
 import { Button } from "./ui/Button";
 import { Badge } from "./ui/Badge";
-import type { UserDto } from "../types/user";
-
+import { useAuth } from "../hooks/useAuth";
 
 interface HeaderProps {
   readonly cartItemsCount?: number;
-}
-
-interface AuthStorage {
-  token: string;
-  user: UserDto;
 }
 
 type NavLinkItem = {
@@ -45,51 +38,17 @@ function isActivePath(currentPath: string, linkPath: string) {
   return currentPath === linkPath || currentPath.startsWith(`${linkPath}/`);
 }
 
-export function Header({cartItemsCount = 0}: Readonly<HeaderProps>) {
+export function Header({ cartItemsCount = 0 }: Readonly<HeaderProps>) {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const { user, isAuthenticated, logout } = useAuth();
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<UserDto | null>(null);
-
-  useEffect(() => {
-    function loadAuth() {
-      const storedAuth = localStorage.getItem("auth");
-
-      if (!storedAuth) {
-        setIsAuthenticated(false);
-        setUser(null);
-        return;
-      }
-
-      try {
-        const parsed: AuthStorage = JSON.parse(storedAuth);
-
-        setIsAuthenticated(!!parsed.token);
-        setUser(parsed.user ?? null);
-      } catch {
-        setIsAuthenticated(false);
-        setUser(null);
-      }
-    }
-
-    loadAuth();
-
-    globalThis.addEventListener("storage", loadAuth);
-    return () => globalThis.removeEventListener("storage", loadAuth);
-  }, [location.pathname]);
 
   function handleLogout() {
-    localStorage.removeItem("auth");
-    localStorage.removeItem("token");
-
-    setIsAuthenticated(false);
-    setUser(null);
+    logout();
     setMobileMenuOpen(false);
-
-    toast.success("Logout realizado com sucesso!");
-
     navigate("/");
   }
 
