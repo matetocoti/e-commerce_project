@@ -1,6 +1,6 @@
-export interface AddCartItemDto {
-  productId: string;
-  quantity: number;
+export interface CartDto {
+  id?: string;
+  items: CartItemDto[];
 }
 
 export interface CartItemDto {
@@ -11,7 +11,7 @@ export interface CartItemDto {
   subtotal: number;
 }
 
-export interface CartDto {
-  id: string;
-  items: CartItemDto[];
+export interface AddCartItemDto {
+  productId: string;
+  quantity: number;
 }
