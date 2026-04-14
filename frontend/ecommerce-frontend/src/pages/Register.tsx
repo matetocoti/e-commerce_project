@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { UserPlus, Mail, User, CheckCircle } from "lucide-react";
 
@@ -22,6 +23,8 @@ export function Register() {
     setConfirmPassword,
     onSubmit,
   } = useRegisterForm();
+
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-50 via-white to-blue-50 px-4 py-12">
@@ -79,6 +82,8 @@ export function Register() {
               onChange={setPassword}
               placeholder="Crie uma senha forte"
               required
+              showPassword={showPassword}
+              onToggleVisibility={() => setShowPassword((prev) => !prev)}
               hint={
                 password.length > 0 && (
                   <div className="space-y-1">
@@ -111,6 +116,8 @@ export function Register() {
               onChange={setConfirmPassword}
               placeholder="Digite a senha novamente"
               required
+              showPassword={showPassword}
+              onToggleVisibility={() => setShowPassword((prev) => !prev)}
               hint={
                 passwordsMatch ? (
                   <div className="flex items-center gap-2 text-sm text-green-600">

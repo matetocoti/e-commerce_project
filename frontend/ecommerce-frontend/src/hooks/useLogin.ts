@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import { login } from "../api/authApi";
 
 export function useLogin() {
@@ -12,14 +13,17 @@ export function useLogin() {
 
       const data = await login({ login: loginInput, password });
 
-      
       localStorage.setItem("auth", JSON.stringify(data));
+      toast.success("Login realizado com sucesso!");
 
       return true;
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Erro ao fazer login"
-      );
+      const message =
+        err instanceof Error ? err.message : "Erro ao fazer login";
+
+      setError(message);
+      toast.error(message);
+
       return false;
     } finally {
       setLoading(false);
