@@ -6,10 +6,10 @@ interface CartSummaryProps {
   readonly total: number;
   readonly submitting?: boolean;
   readonly onClear: () => void;
-  readonly onCheckout?: () => void;
+  readonly onCheckout: () => void;
 }
 
-export function CartSummary({total, submitting = false, onClear, onCheckout}: Readonly<CartSummaryProps>) {
+export function CartSummary({total, submitting = false, onClear, onCheckout,}: Readonly<CartSummaryProps>) {
   return (
     <Card className="p-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -30,7 +30,7 @@ export function CartSummary({total, submitting = false, onClear, onCheckout}: Re
             Limpar carrinho
           </Button>
 
-          <Button type="button" onClick={onCheckout} disabled>
+          <Button type="button" onClick={onCheckout} disabled={submitting}>
             Finalizar compra
           </Button>
         </div>
