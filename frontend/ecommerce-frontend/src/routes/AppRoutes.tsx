@@ -12,6 +12,7 @@ import { Register } from "../pages/Register";
 // Private routes
 import { Cart } from "../pages/Cart";
 import { Orders } from "../pages/Orders";
+import { OrderDetail } from "../pages/OrderDetail";
 
 const NotFound = () => <h2 className="text-2xl font-bold">404 - Not Found</h2>;
 const Loading = () => <h2 className="text-2xl font-bold">Loading...</h2>;
@@ -30,6 +31,7 @@ const AppRoutes = () => {
             <Route element={<RequireAuth />}>
               <Route path="/cart" element={<Cart />} />
               <Route path="/orders" element={<Orders />} />
+              <Route path="/orders/:id" element={<OrderDetail />} />
             </Route>
           </Route>
 
