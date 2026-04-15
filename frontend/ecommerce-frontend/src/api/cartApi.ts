@@ -9,10 +9,7 @@ export async function addCartItem(data: AddCartItemDto): Promise<void> {
   await apiFetch<void>("/api/Cart/add", { method: "POST", body: data });
 }
 
-export async function removeCartItem(
-  productId: string,
-  quantityToRemove?: number
-): Promise<void> {
+export async function removeCartItem(productId: string, quantityToRemove?: number): Promise<void> {
   const query =
     quantityToRemove && quantityToRemove > 0
       ? `?quantityToRemove=${quantityToRemove}`

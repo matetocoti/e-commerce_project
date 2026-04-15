@@ -1,16 +1,18 @@
-import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
+import { CartItemRow } from "../components/cart/CartItemRow";
+import { CartSummary } from "../components/cart/CartSummary";
 import { useCart } from "../hooks/useCart";
 
-function formatPrice(value: number) {
-  return new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  }).format(value);
-}
-
 export function Cart() {
-  const { cart, loading, submitting, error, removeItem, clear } = useCart();
+  const {
+    cart,
+    loading,
+    submitting,
+    error,
+    addItem,
+    removeItem,
+    clear,
+  } = useCart();
 
   const items = cart?.items ?? [];
   const total = items.reduce((sum, item) => sum + item.subtotal, 0);
@@ -47,69 +49,22 @@ export function Cart() {
           <Card className="p-6">
             <div className="space-y-4">
               {items.map((item) => (
-                <div
+                <CartItemRow
                   key={item.productId}
-                  className="flex flex-col gap-4 border-b border-gray-100 pb-4 last:border-b-0 last:pb-0 md:flex-row md:items-center md:justify-between"
-                >
-                  <div>
-                    <h2 className="font-medium text-gray-900">
-                      {item.productName}
-                    </h2>
-                    <p className="text-sm text-gray-600">
-                      Quantidade: {item.quantity}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      Unitário: {formatPrice(item.unitPrice)}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center justify-between gap-4 md:justify-end">
-                    <p className="font-semibold text-gray-900">
-                      {formatPrice(item.subtotal)}
-                    </p>
-
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      onClick={() => void removeItem(item.productId)}
-                      disabled={submitting}
-                      aria-label={`Remover uma unidade de ${item.productName}`}
-                      title="Remover uma unidade"
-                    >
-                      -
-                    </Button>
-                  </div>
-                </div>
+                  item={item}
+                  disabled={submitting}
+                  onDecrease={(productId) => void removeItem(productId, 1)}
+                  onIncrease={(productId) => void addItem(productId, 1)}
+                />
               ))}
             </div>
           </Card>
 
-          <Card className="p-6">
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total do carrinho</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {formatPrice(total)}
-                </p>
-              </div>
-
-              <div className="flex gap-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => void clear()}
-                  disabled={submitting}
-                >
-                  Limpar carrinho
-                </Button>
-
-                <Button type="button" disabled>
-                  Finalizar compra
-                </Button>
-              </div>
-            </div>
-          </Card>
+          <CartSummary
+            total={total}
+            submitting={submitting}
+            onClear={() => void clear()}
+          />
         </div>
       )}
     </div>

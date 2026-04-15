@@ -1,8 +1,12 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useState } from "react";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Package } from "lucide-react";
 
 import { useProduct } from "../hooks/useProduct";
+import { useAuth } from "../hooks/useAuth";
+import { useCart } from "../hooks/useCart";
 import { Button } from "../components/ui/Button";
+import { Input } from "../components/ui/Input";
 import { ProductImage } from "../components/product/ProductImage";
 import { ProductPrice } from "../components/product/ProductPrice";
 import { ProductInfoCard } from "../components/product/ProductInfoCard";
@@ -10,8 +14,48 @@ import { ProductInfoCard } from "../components/product/ProductInfoCard";
 export function ProductDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const { isAuthenticated } = useAuth();
+  const { addItem, submitting } = useCart();
 
   const { product, loading, error } = useProduct({ id: id ?? "" });
+
+  const [quantity, setQuantity] = useState(1);
+
+  function handleDecreaseQuantity() {
+    setQuantity((prev) => Math.max(1, prev - 1));
+  }
+
+  function handleIncreaseQuantity() {
+    setQuantity((prev) => prev + 1);
+  }
+
+  function handleQuantityChange(value: string) {
+    const parsed = Number(value);
+
+    if (!Number.isFinite(parsed) || parsed < 1) {
+      setQuantity(1);
+      return;
+    }
+
+    setQuantity(Math.floor(parsed));
+  }
+
+  async function handleAddToCart() {
+    if (!product) {
+      return;
+    }
+
+    if (!isAuthenticated) {
+      navigate("/login", {
+        state: { from: location },
+      });
+      return;
+    }
+
+    await addItem(product.id, quantity);
+  }
 
   if (loading) {
     return <div className="p-8">Carregando produto...</div>;
@@ -65,9 +109,50 @@ export function ProductDetail() {
             </div>
           </ProductInfoCard>
 
+          <ProductInfoCard title="Quantidade">
+            <div className="flex items-center gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={handleDecreaseQuantity}
+                disabled={submitting || quantity <= 1}
+                aria-label="Diminuir quantidade"
+              >
+                -
+              </Button>
+
+              <Input
+                type="number"
+                min={1}
+                value={quantity}
+                onChange={(e) => handleQuantityChange(e.target.value)}
+                className="w-24 text-center"
+                disabled={submitting}
+              />
+
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={handleIncreaseQuantity}
+                disabled={submitting}
+                aria-label="Aumentar quantidade"
+              >
+                +
+              </Button>
+            </div>
+          </ProductInfoCard>
+
           <div className="flex gap-4">
-            <Button size="lg" className="flex-1">
-              Adicionar ao Carrinho
+            <Button
+              type="button"
+              size="lg"
+              className="flex-1"
+              onClick={() => void handleAddToCart()}
+              disabled={submitting}
+            >
+              {submitting ? "Adicionando..." : "Adicionar ao Carrinho"}
             </Button>
           </div>
         </div>

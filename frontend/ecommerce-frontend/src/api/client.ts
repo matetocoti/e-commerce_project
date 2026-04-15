@@ -55,5 +55,11 @@ export async function apiFetch<T>(
     return {} as T;
   }
 
-  return response.json() as Promise<T>;
+  const text = await response.text();
+
+  if (!text) {
+    return {} as T;
+  }
+
+  return JSON.parse(text) as T;
 }
