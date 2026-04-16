@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import type { UserDto } from "../types/user";
+import type { UserDto } from "../../types/user";
 
 interface AuthStorage {
   token: string;

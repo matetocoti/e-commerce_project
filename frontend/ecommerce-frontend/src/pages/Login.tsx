@@ -3,7 +3,7 @@ import { LogIn, Mail } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { PasswordField } from "../components/auth/PasswordField";
-import { useLoginForm } from "../hooks/useLoginForm";
+import { useLoginForm } from "../hooks/auth/useLoginForm";
 
 export function Login() {
   const { loading, error, loginInput, password, setLoginInput, setPassword, onSubmit } =

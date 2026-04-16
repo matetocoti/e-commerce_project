@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { register } from "../api/authApi";
+import { register } from "../../api/authApi";
 
 export function useRegister() {
   const [loading, setLoading] = useState(false);

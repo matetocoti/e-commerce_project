@@ -12,7 +12,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { Button } from "./ui/Button";
 import { Badge } from "./ui/Badge";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../hooks/auth/useAuth";
 
 interface HeaderProps {
   readonly cartItemsCount?: number;
@@ -22,12 +22,13 @@ type NavLinkItem = {
   path: string;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
+  disabled?: boolean; // opcional para indicar se o link está desabilitado (ex: conta)
 };
 
 const navLinks: NavLinkItem[] = [
   { path: "/", label: "Produtos", icon: Package },
   { path: "/orders", label: "Pedidos", icon: Package },
-  { path: "/account", label: "Conta", icon: User },
+  { path: "/account", label: "Conta", icon: User, disabled: true }, // link desabilitado por enquanto
 ];
 
 function isActivePath(currentPath: string, linkPath: string) {
@@ -70,9 +71,15 @@ export function Header({ cartItemsCount = 0 }: Readonly<HeaderProps>) {
                 <Link
                   key={link.path}
                   to={link.path}
+                  onClick={(e) => {
+                    if (link.disabled) {
+                      e.preventDefault(); // TODO: enable when account page is implemented
+                    }
+                  }}
                   className={[
                     "flex items-center gap-2 text-sm transition-colors hover:text-blue-600",
                     active ? "font-medium text-blue-600" : "text-gray-600",
+                    link.disabled ? "opacity-50 cursor-not-allowed" : "",
                   ].join(" ")}
                 >
                   <Icon className="h-4 w-4" />
@@ -147,12 +154,20 @@ export function Header({ cartItemsCount = 0 }: Readonly<HeaderProps>) {
                 <Link
                   key={link.path}
                   to={link.path}
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={(e) => {
+                    if (link.disabled) {
+                      e.preventDefault(); // TODO: enable when account page is implemented
+                      return;
+                    }
+
+                    setMobileMenuOpen(false);
+                  }}
                   className={[
                     "flex items-center gap-2 rounded-lg px-4 py-2 transition-colors",
                     active
                       ? "bg-blue-50 text-blue-600"
                       : "text-gray-600 hover:bg-gray-50",
+                    link.disabled ? "opacity-50 cursor-not-allowed" : "",
                   ].join(" ")}
                 >
                   <Icon className="h-4 w-4" />

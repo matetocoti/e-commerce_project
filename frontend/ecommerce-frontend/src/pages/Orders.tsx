@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Package, ShoppingBag } from "lucide-react";
 
-import { useOrders } from "../hooks/useOrders";
+import { useOrders } from "../hooks/order/useOrders";
 import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 

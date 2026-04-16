@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { login } from "../api/authApi";
+import { login } from "../../api/authApi";
 import { dispatchAuthChanged } from "./useAuth";
 
 export function useLogin() {

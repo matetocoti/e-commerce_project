@@ -6,8 +6,8 @@ import {
   clearCart,
   getCart,
   removeCartItem,
-} from "../api/cartApi";
-import type { CartDto } from "../types/cart";
+} from "../../api/cartApi";
+import type { CartDto } from "../../types/cart";
 
 export function useCart() {
   const [cart, setCart] = useState<CartDto | null>(null);

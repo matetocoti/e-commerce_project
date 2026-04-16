@@ -2,9 +2,9 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Package } from "lucide-react";
 
-import { useProduct } from "../hooks/useProduct";
-import { useAuth } from "../hooks/useAuth";
-import { useCart } from "../hooks/useCart";
+import { useProduct } from "../hooks/product/useProduct";
+import { useAuth } from "../hooks/auth/useAuth";
+import { useCart } from "../hooks/cart/useCart";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { ProductImage } from "../components/product/ProductImage";

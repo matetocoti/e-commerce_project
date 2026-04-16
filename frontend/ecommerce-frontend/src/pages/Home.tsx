@@ -9,8 +9,8 @@ import {
   PaginationPrevious,
   PaginationNext,
 } from "../components/ui/Pagination";
-import { useProductSearch } from "../hooks/useProductSearch";
-import { useProducts } from "../hooks/useProducts";
+import { useProductSearch } from "../hooks/product/useProductSearch";
+import { useProducts } from "../hooks/product/useProducts";
 
 const PAGE_SIZE = 9;
 

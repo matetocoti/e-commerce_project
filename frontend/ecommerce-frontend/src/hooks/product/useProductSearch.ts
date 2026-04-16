@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { searchProducts } from "../api/productApi";
-import type { ProductDto } from "../types/product";
+import { searchProducts } from "../../api/productApi";
+import type { ProductDto } from "../../types/product";
 
 export function useProductSearch(query: string, page: number, pageSize: number,) {
   const [products, setProducts] = useState<ProductDto[]>([]);

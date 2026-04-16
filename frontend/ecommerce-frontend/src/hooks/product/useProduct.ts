@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { getProductById } from "../api/productApi";
-import type { ProductDto } from "../types/product";
+import { getProductById } from "../../api/productApi";
+import type { ProductDto } from "../../types/product";
 
 interface UseProductParams {
   id: string;

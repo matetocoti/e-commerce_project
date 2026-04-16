@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, MapPin, Package } from "lucide-react";
 
-import { useOrder } from "../hooks/useOrder";
+import { useOrder } from "../hooks/order/useOrder";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 import { formatPrice } from "../utils/currency/formatPrice";

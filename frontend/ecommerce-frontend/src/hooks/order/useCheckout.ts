@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { checkout } from "../api/orderApi";
-import type { CreateOrderDto, OrderDto } from "../types/order";
+import { checkout } from "../../api/orderApi";
+import type { CreateOrderDto, OrderDto } from "../../types/order";
 
 export function useCheckout() {
   const [submitting, setSubmitting] = useState(false);

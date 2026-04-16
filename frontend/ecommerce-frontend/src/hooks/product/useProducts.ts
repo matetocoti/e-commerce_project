@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { getProducts } from "../api/productApi";
-import type { ProductDto } from "../types/product";
+import { getProducts } from "../../api/productApi";
+import type { ProductDto } from "../../types/product";
 
 interface UseProductsParams {
   page: number;

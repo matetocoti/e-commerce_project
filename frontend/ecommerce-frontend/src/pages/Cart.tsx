@@ -5,8 +5,8 @@ import { Card } from "../components/ui/Card";
 import { Input } from "../components/ui/Input";
 import { CartItemRow } from "../components/cart/CartItemRow";
 import { CartSummary } from "../components/cart/CartSummary";
-import { useCart } from "../hooks/useCart";
-import { useCheckout } from "../hooks/useCheckout";
+import { useCart } from "../hooks/cart/useCart";
+import { useCheckout } from "../hooks/order/useCheckout";
 import { toast } from "sonner";
 
 export function Cart() {

@@ -5,7 +5,7 @@ import { UserPlus, Mail, User, CheckCircle } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { PasswordField } from "../components/auth/PasswordField";
-import { useRegisterForm } from "../hooks/useRegisterForm";
+import { useRegisterForm } from "../hooks/auth/useRegisterForm";
 
 export function Register() {
   const {

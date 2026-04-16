@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { getOrderById } from "../api/orderApi";
-import type { OrderDto } from "../types/order";
+import { getOrderById } from "../../api/orderApi";
+import type { OrderDto } from "../../types/order";
 
 interface UseOrderParams {
   id: string;
