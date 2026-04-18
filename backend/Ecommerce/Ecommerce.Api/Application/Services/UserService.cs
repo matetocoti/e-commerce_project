@@ -1,9 +1,10 @@
 ﻿namespace Ecommerce.Api.Application.Services;
+using Ecommerce.Api.Application.Common.Security;
 using Ecommerce.Api.Application.DTOS.User;
+using Ecommerce.Api.Application.Exceptions;
 using Ecommerce.Api.Domain.Entities;
 using Ecommerce.Api.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Ecommerce.Api.Application.Exceptions;
 
 public class UserService(AppDbContext context)
 {
@@ -37,6 +38,30 @@ public class UserService(AppDbContext context)
         await _context.SaveChangesAsync();
 
         return user;
+    }
+    public async Task UpdatePhoneNumberAsync(Guid userId, string? phoneNumber)
+    {
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null)
+            throw new NotFoundException("User not found");
+        var (isValid, error) = PhoneValidator.Validate(phoneNumber);
+        if (!isValid)
+            throw new BadRequestException(error);
+        user.UpdatePhoneNumber(phoneNumber);
+        _context.Users.Update(user);
+        await _context.SaveChangesAsync();
+    }
+    public async Task UpdateUsernameAsync(Guid userId, string username)
+    {
+        var userExists = await _context.Users.AnyAsync(u => u.Username == username && u.Id != userId);
+        var user = await _context.Users.FindAsync(userId);
+        if (userExists)
+            throw new BadRequestException("Username already taken");
+        if (user == null)
+            throw new NotFoundException("User not found");
+        user.UpdateUsername(username);
+        _context.Users.Update(user);
+        await _context.SaveChangesAsync();
     }
     private UserDto MapToDto(User user)
     {

@@ -1,5 +1,6 @@
 ﻿namespace Ecommerce.Api.Domain.Entities;
 using Ecommerce.Api.Domain.Enums;
+using Ecommerce.Api.Domain.Entities.Exceptions;
 
 
 
@@ -40,8 +41,18 @@ public class User
 
     #region Methods
 
+    public void UpdateUsername(string username)
+    {
+        if (string.IsNullOrWhiteSpace(username))
+            throw new DomainException("Username cannot be empty");
+        Username = username;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
     public void UpdatePhoneNumber(string? phoneNumber)
     {
+        if (phoneNumber != null && string.IsNullOrWhiteSpace(phoneNumber))
+            throw new DomainException("Phone number cannot be empty");
         PhoneNumber = string.IsNullOrWhiteSpace(phoneNumber) ? null : phoneNumber;
         UpdatedAt = DateTime.UtcNow;
     }
