@@ -1,9 +1,10 @@
 ﻿namespace Ecommerce.Api.Application.Services;
 using Ecommerce.Api.Application.DTOS.Product;
+using Ecommerce.Api.Application.Exceptions;
 using Ecommerce.Api.Domain.Entities;
 using Ecommerce.Api.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Ecommerce.Api.Application.Exceptions;
+using Ecommerce.Api.Domain.Enums;
 
 
 public class ProductService(AppDbContext context)
@@ -45,7 +46,7 @@ public class ProductService(AppDbContext context)
     #region admin methods
     public async Task<AdminProductDto> CreateProductAsync(CreateProductDto dto)
     {
-        var product = new Product(dto.ImageUrl, dto.Name , dto.Description, dto.Price, dto.Stock);
+        var product = new Product(dto.ImageUrl, dto.Name, dto.Description, dto.Info, (ProductType)dto.Type, dto.Price, dto.Stock);
         context.Products.Add(product);
         await context.SaveChangesAsync();
         return MapToAdminDto(product);
@@ -73,7 +74,7 @@ public class ProductService(AppDbContext context)
         var product = await context.Products.FirstOrDefaultAsync(p => p.Id == id);
         if (product == null)
             throw new NotFoundException("Product Not Found!");
-        product.Update(dto.ImageUrl, dto.Name, dto.Description, dto.Price, dto.Stock);
+        product.Update(dto.ImageUrl, dto.Name, dto.Description, dto.Info, (ProductType)dto.Type, dto.Price, dto.Stock);
         await context.SaveChangesAsync();
         return MapToAdminDto(product);
     }
@@ -99,6 +100,8 @@ public class ProductService(AppDbContext context)
             Name = product.Name,
             Description = product.Description,
             Price = product.Price,
+            Info = product.Info,
+            Type = product.Type.ToString()
         };
     }
     private AdminProductDto MapToAdminDto(Product product)
@@ -113,7 +116,9 @@ public class ProductService(AppDbContext context)
             Stock = product.Stock,
             IsActive = product.IsActive,
             CreatedAt = product.CreatedAt,
-            UpdatedAt = product.UpdatedAt
+            UpdatedAt = product.UpdatedAt,
+            Info = product.Info,
+            Type = product.Type.ToString()
         };
     }
     #endregion

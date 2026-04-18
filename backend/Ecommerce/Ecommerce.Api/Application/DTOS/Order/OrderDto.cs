@@ -10,6 +10,7 @@ public class OrderDto
     public decimal TotalAmount { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime ExpiresAt { get; set; }
-    public Address Address { get; set; } = new();
+    public Address? Address { get; set; }
+    public DigitalContactInfo? DigitalContact { get; set; }
     public List<OrderItemDto> Items { get; set; } = new();
 }

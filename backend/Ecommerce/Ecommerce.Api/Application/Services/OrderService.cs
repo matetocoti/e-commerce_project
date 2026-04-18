@@ -6,6 +6,7 @@ using Ecommerce.Api.Application.DTOS.OrderItem;
 using Ecommerce.Api.Application.Exceptions;
 using Ecommerce.Api.Domain.Entities;
 using Ecommerce.Api.Domain.Entities.ValueObject;
+using Ecommerce.Api.Domain.Enums;
 using Ecommerce.Api.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -36,29 +37,49 @@ public class OrderService(AppDbContext context)
         if (cart == null || !cart.CartItems.Any())
             throw new BadRequestException("Cart is empty.");
 
-        AddressValidator.Validate(createOrderDto);
-
         var orderItems = cart.CartItems.Select(ci => new OrderItem
         {
             Id = Guid.NewGuid(),
             ProductId = ci.ProductId,
             ProductName = ci.Product.Name,
+            ProductType = ci.Product.Type,
             UnitPrice = ci.Product.Price,
             Quantity = ci.Quantity,
         }).ToList();
 
-        var order = new Order(userId, orderItems);
+        var productType = orderItems.First().ProductType;
 
-        order.Address = new Address
+        Address? address = null;
+        DigitalContactInfo? digitalContact = null;
+
+        if (productType == ProductType.Physical)
         {
-            Street = createOrderDto.Street,
-            City = createOrderDto.City,
-            ZipCode = createOrderDto.ZipCode,
-            State = createOrderDto.State,
-            Notes = createOrderDto.Notes
-        };
+            AddressValidator.Validate(createOrderDto);
 
-   
+            address = new Address
+            {
+                Street = createOrderDto.Street,
+                City = createOrderDto.City,
+                ZipCode = createOrderDto.ZipCode,
+                State = createOrderDto.State,
+                Notes = createOrderDto.Notes
+            };
+        }
+        else
+        {
+            // mínimo possível: só garantir email
+            if (string.IsNullOrWhiteSpace(createOrderDto.Email))
+                throw new BadRequestException("Email is required for digital products");
+
+            digitalContact = new DigitalContactInfo
+            {
+                Email = createOrderDto.Email,
+                PhoneNumber = createOrderDto.PhoneNumber
+            };
+        }
+
+        var order = new Order(userId, orderItems, address, digitalContact);
+
         _context.Orders.Add(order);
 
         cart.CartItems.Clear();
@@ -97,9 +118,11 @@ public class OrderService(AppDbContext context)
             CreatedAt = order.CreatedAt,
             ExpiresAt = order.ExpiresAt,
             Address = order.Address,
+            DigitalContact = order.DigitalContact,
             Items = order.OrderItems.Select(item => new OrderItemDto
             {
                 ProductName = item.ProductName,
+                ProductType = item.ProductType.ToString(),
                 UnitPrice = item.UnitPrice,
                 Quantity = item.Quantity,
                 Subtotal = item.Subtotal

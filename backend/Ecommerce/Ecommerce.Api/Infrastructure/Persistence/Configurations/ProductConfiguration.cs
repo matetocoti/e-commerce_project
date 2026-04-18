@@ -12,7 +12,7 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
 
         builder.HasKey(p => p.Id);
 
-        builder.Property(p => p.ImageUrl) 
+        builder.Property(p => p.ImageUrl)
             .HasMaxLength(500)
             .IsRequired(false);
 
@@ -23,6 +23,13 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.Property(p => p.Description)
             .HasMaxLength(1000);
 
+        builder.Property(p => p.Info)
+            .HasMaxLength(1000)
+            .IsRequired(false);
+
+        builder.Property(p => p.Type)
+            .IsRequired();
+
         builder.Property(p => p.Price)
             .HasPrecision(18, 2);
 
@@ -30,6 +37,12 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .IsRequired();
 
         builder.Property(p => p.IsActive)
+            .IsRequired();
+
+        builder.Property(p => p.CreatedAt)
+            .IsRequired();
+
+        builder.Property(p => p.UpdatedAt)
             .IsRequired();
     }
 }
