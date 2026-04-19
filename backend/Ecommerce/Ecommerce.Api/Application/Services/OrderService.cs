@@ -67,7 +67,7 @@ public class OrderService(AppDbContext context)
         }
         else
         {
-            // mínimo possível: só garantir email
+            
             if (string.IsNullOrWhiteSpace(createOrderDto.Email))
                 throw new BadRequestException("Email is required for digital products");
 
@@ -95,6 +95,7 @@ public class OrderService(AppDbContext context)
         var orders = await _context.Orders
             .Where(o => o.UserId == userId)
             .Include(o => o.OrderItems)
+            .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();
         return orders.Select(MapToDto).ToList();
     }
@@ -107,7 +108,6 @@ public class OrderService(AppDbContext context)
             throw new Exception("Order not found");
         return MapToDto(order);
     }
-
     private OrderDto MapToDto(Order order)
     {
         return new OrderDto
