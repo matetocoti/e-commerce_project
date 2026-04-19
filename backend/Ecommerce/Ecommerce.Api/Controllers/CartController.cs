@@ -3,20 +3,20 @@
 using Microsoft.AspNetCore.Mvc;
 using Ecommerce.Api.Application.Services;
 using Ecommerce.Api.Application.DTOS.CartItem;
-using Ecommerce.Api.Application.Exceptions;
+
 using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
+using Ecommerce.Api.Application.Common.Interfaces;
 
 [Authorize]
 [ApiController]
 [Route("api/[controller]")]
-public class CartController(CartService cartService) : ControllerBase
+public class CartController(CartService cartService ,ICurrentUserService currentUser) : ControllerBase
 {
-    #region Endpoints
+    
     [HttpGet]
     public async Task<IActionResult> GetCart()
     {
-        var userId = GetUserIdFromToken();
+        var userId = currentUser.GetUserId();
         var cart = await cartService.GetCartByUserIdAsync(userId);
         return Ok(cart);
     }
@@ -24,7 +24,7 @@ public class CartController(CartService cartService) : ControllerBase
     [HttpPost("add")]
     public async Task<IActionResult> AddItem(AddCartItemDto dto)
     {
-        var userId = GetUserIdFromToken();
+        var userId = currentUser.GetUserId();
         await cartService.AddItemToCartAsync(userId, dto);
         return Ok();
     }
@@ -32,7 +32,7 @@ public class CartController(CartService cartService) : ControllerBase
     [HttpDelete("items/{productId}")]
     public async Task<IActionResult> RemoveItem(Guid productId, [FromQuery] int? quantityToRemove = null)
     {
-        var userId = GetUserIdFromToken();
+        var userId = currentUser.GetUserId();
         await cartService.RemoveItemFromCartAsync(userId, productId, quantityToRemove ?? 0);
         return NoContent();
     }
@@ -40,23 +40,9 @@ public class CartController(CartService cartService) : ControllerBase
     [HttpDelete("clear")]
     public async Task<IActionResult> ClearCart()
     {
-        var userId = GetUserIdFromToken();
+        var userId = currentUser.GetUserId();
         await cartService.ClearCartAsync(userId);
         return NoContent();
     }
 
-    #endregion
-
-    #region Helper Methods
-
-    private Guid GetUserIdFromToken()
-    {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-        
-        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
-            throw new UnauthorizedException("Token inválido ou usuário não autenticado.");
-        
-        return userId;
-    }
-    #endregion
 }

@@ -1,11 +1,13 @@
-﻿using Ecommerce.Api.Application.Services;
+﻿using DotNetEnv;
+using Ecommerce.Api.Api.Middleware;
+using Ecommerce.Api.Application.Common.Interfaces;
+using Ecommerce.Api.Application.Common.Security;
+using Ecommerce.Api.Application.Services;
 using Ecommerce.Api.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using DotNetEnv;
-using Ecommerce.Api.Api.Middleware;
 
 
 DotNetEnv.Env.Load();
@@ -36,6 +38,8 @@ builder.Services.AddScoped<CartService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 var jwtKey = builder.Configuration["Jwt:Key"];
 if (string.IsNullOrEmpty(jwtKey))
