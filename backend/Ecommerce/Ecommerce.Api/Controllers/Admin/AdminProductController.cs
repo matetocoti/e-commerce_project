@@ -1,4 +1,5 @@
-﻿
+﻿namespace Ecommerce.Api.Controllers.Admin;
+
 
 using Ecommerce.Api.Application.DTOS.Product;
 using Ecommerce.Api.Application.Services;

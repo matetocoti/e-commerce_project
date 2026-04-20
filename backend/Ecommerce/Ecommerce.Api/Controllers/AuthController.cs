@@ -1,4 +1,5 @@
-﻿
+﻿namespace Ecommerce.Api.Controllers;
+
 using Microsoft.AspNetCore.Mvc;
 using Ecommerce.Api.Application.Services;
 using Ecommerce.Api.Application.DTOS.Auth;

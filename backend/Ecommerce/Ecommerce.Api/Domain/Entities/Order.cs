@@ -109,6 +109,9 @@ public class Order
 
         Payments.Add(payment);
         UpdatedAt = DateTime.UtcNow;
+
+        if (payment.Status == PaymentStatus.Confirmed)
+            MarkAsPaid();
     }
 
     private static void ValidateSingleProductType(List<OrderItem> orderItems)
