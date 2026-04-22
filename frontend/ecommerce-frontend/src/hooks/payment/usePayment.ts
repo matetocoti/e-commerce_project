@@ -14,15 +14,17 @@ export function usePayment(options?: UsePaymentOptions) {
   
 
 
-  const payOrder = async (orderId: string, method: PaymentMethod) => {
+  const payOrder = async (orderId: string, method: PaymentMethod) =>{
     try {
       setLoading(true);
 
-      const payload: PayOrderRequestDto = {
-        method,
-      };
+      const payload: PayOrderRequestDto = { method };
 
       await payOrderApi(orderId, payload);
+
+      // Simula processamento real (2-3 segundos) -- only for demonstration purposes, remove in production
+      await new Promise(resolve => setTimeout(resolve, 2500));
+
       return true;
     } catch (err) {
       const message =
