@@ -1,5 +1,9 @@
 ﻿namespace Ecommerce.Api.Application.DTOS.Product;
 
+using Ecommerce.Api.Domain.Enums;
+
+
+
 public class AdminProductDto
 {
     public Guid Id { get; set; }
@@ -7,7 +11,7 @@ public class AdminProductDto
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public string? Info { get; set; }
-    public string Type { get; set; } = string.Empty;
+    public ProductType Type { get; set; }
     public decimal Price { get; set; }
     public int Stock { get; set; }
     public bool IsActive { get; set; }

@@ -46,7 +46,7 @@ public class ProductService(AppDbContext context)
     #region admin methods
     public async Task<AdminProductDto> CreateProductAsync(CreateProductDto dto)
     {
-        var product = new Product(dto.ImageUrl, dto.Name, dto.Description, dto.Info, (ProductType)dto.Type, dto.Price, dto.Stock);
+        var product = new Product(dto.ImageUrl, dto.Name, dto.Description, dto.Info, dto.Type, dto.Price, dto.Stock);
         context.Products.Add(product);
         await context.SaveChangesAsync();
         return MapToAdminDto(product);
@@ -74,7 +74,7 @@ public class ProductService(AppDbContext context)
         var product = await context.Products.FirstOrDefaultAsync(p => p.Id == id);
         if (product == null)
             throw new NotFoundException("Product Not Found!");
-        product.Update(dto.ImageUrl, dto.Name, dto.Description, dto.Info, (ProductType)dto.Type, dto.Price, dto.Stock);
+        product.Update(dto.ImageUrl, dto.Name, dto.Description, dto.Info, dto.Type, dto.Price, dto.Stock);
         await context.SaveChangesAsync();
         return MapToAdminDto(product);
     }
@@ -101,7 +101,7 @@ public class ProductService(AppDbContext context)
             Description = product.Description,
             Price = product.Price,
             Info = product.Info,
-            Type = product.Type.ToString()
+            Type = product.Type
         };
     }
     private AdminProductDto MapToAdminDto(Product product)
@@ -118,7 +118,7 @@ public class ProductService(AppDbContext context)
             CreatedAt = product.CreatedAt,
             UpdatedAt = product.UpdatedAt,
             Info = product.Info,
-            Type = product.Type.ToString()
+            Type = product.Type
         };
     }
     #endregion
