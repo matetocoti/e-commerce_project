@@ -7,7 +7,7 @@ interface UseOrderParams {
   id: string;
 }
 
-export function useOrder({ id }: Readonly<UseOrderParams>) {
+export function useOrder({ id }: Readonly<UseOrderParams> ) {
   const [order, setOrder] = useState<OrderDto | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -18,7 +18,6 @@ export function useOrder({ id }: Readonly<UseOrderParams>) {
       setError("Pedido inválido.");
       return;
     }
-
     try {
       setLoading(true);
       setError(null);
@@ -35,14 +34,21 @@ export function useOrder({ id }: Readonly<UseOrderParams>) {
     }
   }, [id]);
 
+  const isOrderPaid = () => {
+    return order?.status === "Paid";
+  };
+
+  
   useEffect(() => {
     void loadOrder();
   }, [loadOrder]);
 
+  
   return {
     order,
     loading,
     error,
     reloadOrder: loadOrder,
+    isPaid: isOrderPaid,
   };
 }

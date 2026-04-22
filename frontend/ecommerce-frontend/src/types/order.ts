@@ -12,9 +12,11 @@ export interface OrderItemDto {
   subtotal: number;
 }
 
+type OrderStatus = "AwaitingPayment" | "Paid" | "Cancelled" | "Expired";
+
 export interface OrderDto {
   id: string;
-  status: string;
+  status: OrderStatus;
   totalAmount: number;
   createdAt: string;
   expiresAt: string;

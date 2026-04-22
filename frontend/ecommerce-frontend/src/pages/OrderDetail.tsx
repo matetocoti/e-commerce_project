@@ -1,6 +1,9 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, MapPin, Package } from "lucide-react";
 
+import { usePayment } from "../hooks/payment/usePayment";
+
+
 import { useOrder } from "../hooks/order/useOrder";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
@@ -8,12 +11,17 @@ import { formatPrice } from "../utils/currency/formatPrice";
 import { formatDate } from "../utils/date/formatDate";
 import { getOrderStatusInfo } from "../utils/order/getOrderStatusInfo";
 
+
+
 export function OrderDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const { order, loading, error } = useOrder({ id: id ?? "" });
+  const { order, loading, error , isPaid, reloadOrder} = useOrder({ id: id ?? "" });
+  const { handlePayment } = usePayment({ onSuccess: reloadOrder });
 
+
+  
   if (loading) {
     return (
       <div className="mx-auto max-w-5xl px-4 py-10">
@@ -140,10 +148,14 @@ export function OrderDetail() {
                 {formatPrice(order.totalAmount)}
               </p>
             </div>
-
-            <Link to="/orders">
-              <Button variant="outline">Voltar para pedidos</Button>
-            </Link>
+            <div className="space-x-2">
+              <Button onClick={() => handlePayment(order.id)} disabled={isPaid()}>
+                Pagar
+              </Button>
+              <Link to="/orders">
+                <Button variant="outline">Voltar para pedidos</Button>
+              </Link>
+            </div>
           </div>
         </Card>
       </div>

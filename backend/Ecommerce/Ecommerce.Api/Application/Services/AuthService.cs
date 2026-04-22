@@ -72,6 +72,7 @@ public class AuthService(UserService userService, IConfiguration config)
                 Username = user.Username,
                 Email = user.Email,
                 Role = user.Role,
+                PhoneNumber = user.PhoneNumber,
                 CreatedAt = user.CreatedAt,
                 UpdatedAt = user.UpdatedAt
             }

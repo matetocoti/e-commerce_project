@@ -8,9 +8,7 @@ export function useCheckout() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleCheckout(
-    orderData: CreateOrderDto
-  ): Promise<OrderDto | null> {
+  async function handleCheckout(orderData: CreateOrderDto): Promise<OrderDto | null> {
     try {
       setSubmitting(true);
       setError(null);
