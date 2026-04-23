@@ -11,13 +11,12 @@ export interface OrderItemDto {
   quantity: number;
   subtotal: number;
 }
-
-export const OrderStatus = {
-  Pending: 1,
-  AwaitingPayment: 2,
-  Paid: 3,
-  Cancelled: 4,
-  Expired: 5
+const OrderStatus = {
+  Pending: "Pending",
+  AwaitingPayment: "AwaitingPayment",
+  Paid: "Paid",
+  Cancelled: "Cancelled",
+  Expired: "Expired",
 } as const;
 
 export type OrderStatus =

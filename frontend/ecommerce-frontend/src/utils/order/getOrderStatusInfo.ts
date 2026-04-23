@@ -4,7 +4,6 @@ import {
   XCircle,
   type LucideIcon,
 } from "lucide-react";
-import { OrderStatus } from "../../types/order";
 
 interface OrderStatusInfo {
   label: string;
@@ -12,37 +11,37 @@ interface OrderStatusInfo {
   className: string;
 }
 
-export function getOrderStatusInfo(status: OrderStatus): OrderStatusInfo {
+export function getOrderStatusInfo(status: string): OrderStatusInfo {
   switch (status) {
-    case OrderStatus.Pending:
+    case "Pending":
       return {
         label: "Pendente",
         icon: Clock,
         className: "bg-yellow-100 text-yellow-800",
       };
 
-    case OrderStatus.AwaitingPayment:
+    case "AwaitingPayment":
       return {
         label: "Aguardando pagamento",
         icon: Clock,
         className: "bg-blue-100 text-blue-800",
       };
 
-    case OrderStatus.Paid:
+    case "Paid":
       return {
         label: "Pago",
         icon: CheckCircle,
         className: "bg-green-100 text-green-800",
       };
 
-    case OrderStatus.Cancelled:
+    case "Cancelled":
       return {
         label: "Cancelado",
         icon: XCircle,
         className: "bg-red-100 text-red-800",
       };
 
-    case OrderStatus.Expired:
+    case "Expired":
       return {
         label: "Expirado",
         icon: XCircle,
@@ -51,7 +50,7 @@ export function getOrderStatusInfo(status: OrderStatus): OrderStatusInfo {
 
     default:
       return {
-        label: "Desconhecido",
+        label: status,
         icon: Clock,
         className: "bg-gray-100 text-gray-800",
       };
