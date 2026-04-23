@@ -6,9 +6,7 @@ interface GetProductsParams {
   pageSize?: number;
 }
 
-export async function getProducts(
-  params: GetProductsParams = {}
-): Promise<ProductDto[]> {
+export async function getProducts(params: GetProductsParams = {}): Promise<ProductDto[]> {
   const searchParams = new URLSearchParams();
 
   if (params.page) {
