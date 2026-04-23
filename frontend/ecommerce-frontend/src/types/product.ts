@@ -16,6 +16,7 @@ export interface ProductDto {
   type: ProductType;
 }
 
+// Admin-specific product data transfer objects (DTOs)
 export interface AdminProductDto {
   id: string;
   imageUrl: string | null; 
