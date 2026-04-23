@@ -1,16 +1,16 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, MapPin, Package, Loader } from "lucide-react";
 
-import { usePayment } from "../hooks/payment/usePayment";
-import { PaymentProgress } from "../components/payment/PaymentProgress";
-import { PaymentLoadingModal } from "../components/payment/PaymentLoadingModal";
+import { usePayment } from "../../hooks/payment/usePayment";
+import { PaymentProgress } from "../../components/payment/PaymentProgress";
+import { PaymentLoadingModal } from "../../components/payment/PaymentLoadingModal";
 
-import { useOrder } from "../hooks/order/useOrder";
-import { Button } from "../components/ui/Button";
-import { Card } from "../components/ui/Card";
-import { formatPrice } from "../utils/currency/formatPrice";
-import { formatDate } from "../utils/date/formatDate";
-import { getOrderStatusInfo } from "../utils/order/getOrderStatusInfo";
+import { useOrder } from "../../hooks/order/useOrder";
+import { Button } from "../../components/ui/Button";
+import { Card } from "../../components/ui/Card";
+import { formatPrice } from "../../utils/currency/formatPrice";
+import { formatDate } from "../../utils/date/formatDate";
+import { getOrderStatusInfo } from "../../utils/order/getOrderStatusInfo";
 
 
 export function OrderDetail() {

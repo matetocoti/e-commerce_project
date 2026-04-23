@@ -2,10 +2,10 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { UserPlus, Mail, User, CheckCircle } from "lucide-react";
 
-import { Button } from "../components/ui/Button";
-import { Input } from "../components/ui/Input";
-import { PasswordField } from "../components/auth/PasswordField";
-import { useRegisterForm } from "../hooks/auth/useRegisterForm";
+import { Button } from "../../components/ui/Button";
+import { Input } from "../../components/ui/Input";
+import { PasswordField } from "../../components/auth/PasswordField";
+import { useRegisterForm } from "../../hooks/auth/useRegisterForm";
 
 export function Register() {
   const {

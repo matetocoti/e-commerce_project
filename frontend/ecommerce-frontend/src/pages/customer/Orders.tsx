@@ -1,13 +1,13 @@
 import { Link } from "react-router-dom";
 import { Package, ShoppingBag } from "lucide-react";
 
-import { useOrders } from "../hooks/order/useOrders";
-import { Card } from "../components/ui/Card";
-import { Button } from "../components/ui/Button";
+import { useOrders } from "../../hooks/order/useOrders";
+import { Card } from "../../components/ui/Card";
+import { Button } from "../../components/ui/Button";
 
-import { formatPrice } from "../utils/currency/formatPrice";
-import { formatDate } from "../utils/date/formatDate";
-import { getOrderStatusInfo } from "../utils/order/getOrderStatusInfo";
+import { formatPrice } from "../../utils/currency/formatPrice";
+import { formatDate } from "../../utils/date/formatDate";
+import { getOrderStatusInfo } from "../../utils/order/getOrderStatusInfo";
 
 export function Orders() {
   const { orders, loading, error } = useOrders();
