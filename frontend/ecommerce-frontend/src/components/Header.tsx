@@ -7,12 +7,14 @@ import {
   X,
   LogIn,
   LogOut,
+  BarChart3,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { Button } from "./ui/Button";
 import { Badge } from "./ui/Badge";
 import { useAuth } from "../hooks/auth/useAuth";
+import { UserRole } from "../types/user";
 
 interface HeaderProps {
   readonly cartItemsCount?: number;
@@ -22,7 +24,7 @@ type NavLinkItem = {
   path: string;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
-  disabled?: boolean; // opcional para indicar se o link está desabilitado (ex: conta)
+  disabled?: boolean; 
 };
 
 const navLinks: NavLinkItem[] = [
@@ -108,6 +110,15 @@ export function Header({ cartItemsCount = 0 }: Readonly<HeaderProps>) {
                     Olá, {user?.username}
                   </span>
 
+                  {user?.role === UserRole.Admin && (
+                    <Link to="/admin/products">
+                      <Button variant="outline" size="sm" className="gap-2">
+                        <BarChart3 className="h-4 w-4" />
+                        Admin
+                      </Button>
+                    </Link>
+                  )}
+
                   <Button
                     variant="ghost"
                     size="sm"
@@ -174,7 +185,18 @@ export function Header({ cartItemsCount = 0 }: Readonly<HeaderProps>) {
                   {link.label}
                 </Link>
               );
-            })}
+            })}{user?.role === UserRole.Admin && (
+                    <Link
+                      to="/admin/products"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center gap-2 rounded-lg px-4 py-2 text-gray-600 transition-colors hover:bg-gray-50"
+                    >
+                      <BarChart3 className="h-4 w-4" />
+                      Painel Admin
+                    </Link>
+                  )}
+
+                  
 
             <div className="mt-2 border-t border-gray-200 pt-2">
               {isAuthenticated ? (

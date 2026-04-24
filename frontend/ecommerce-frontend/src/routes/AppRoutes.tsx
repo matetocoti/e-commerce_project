@@ -5,6 +5,8 @@ import { RequireAuth } from "./guards/RequireAuth";
 import { RequireAdmin } from "./guards/RequireAdmin";
 
 import { DefaultLayout } from "../layouts/DefaultLayout";
+import { AdminLayout } from "../layouts/AdminLayout";
+
 import { Home } from "../pages/Home";
 import { ProductDetail } from "../pages/ProductDetail";
 import { Login } from "../pages/auth/Login";
@@ -35,8 +37,10 @@ const AppRoutes = () => {
               <Route path="/orders" element={<Orders />} />
               <Route path="/orders/:id" element={<OrderDetail />} />
             </Route>
+          </Route>
 
-            <Route element={<RequireAdmin />}>
+          <Route element={<RequireAdmin />}>
+            <Route element={<AdminLayout />}>
               <Route path="/admin/products" element={<AdminProducts />} />
             </Route>
           </Route>
