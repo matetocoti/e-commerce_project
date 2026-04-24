@@ -56,7 +56,7 @@ export function Header({ cartItemsCount = 0 }: Readonly<HeaderProps>) {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white">
+    <header className="sticky top-0 z-50 w-full border-b bg-white shadow-sm">
       <div className="mx-auto max-w-7xl px-4">
         <div className="flex h-16 items-center justify-between gap-4">
           <Link to="/" className="flex items-center gap-2">
@@ -185,7 +185,16 @@ export function Header({ cartItemsCount = 0 }: Readonly<HeaderProps>) {
                   {link.label}
                 </Link>
               );
-            })}{user?.role === UserRole.Admin && (
+            })}
+
+            <div className="mt-2 border-t border-gray-200 pt-2">
+              {isAuthenticated ? (
+                <>
+                  <div className="px-4 py-2 text-sm text-gray-600">
+                    Olá, {user?.username}
+                  </div>
+
+                  {user?.role === UserRole.Admin && (
                     <Link
                       to="/admin/products"
                       onClick={() => setMobileMenuOpen(false)}
@@ -195,15 +204,6 @@ export function Header({ cartItemsCount = 0 }: Readonly<HeaderProps>) {
                       Painel Admin
                     </Link>
                   )}
-
-                  
-
-            <div className="mt-2 border-t border-gray-200 pt-2">
-              {isAuthenticated ? (
-                <>
-                  <div className="px-4 py-2 text-sm text-gray-600">
-                    Olá, {user?.username}
-                  </div>
 
                   <button
                     type="button"
