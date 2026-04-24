@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ProductList } from "../../components/product/ProductList";
+import { ProductList } from "../../components/product/admin/ProductList";
 import {
   Pagination,
   PaginationContent,
