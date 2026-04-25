@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import type { ProductDto } from "../../types/product";
 import { Button } from "../ui/Button";
+import { formatPrice } from "../../utils/currency/formatPrice";
 
 interface ProductCardProps {
   readonly product: ProductDto;
@@ -28,10 +29,7 @@ export function ProductCard({ product }: Readonly<ProductCardProps>) {
           </p>
 
           <div className="mt-4 text-lg font-bold text-blue-600">
-            {product.price.toLocaleString("pt-BR", {
-              style: "currency",
-              currency: "BRL",
-            })}
+            {formatPrice(product.price)}
           </div>
         </div>
       </Link>
