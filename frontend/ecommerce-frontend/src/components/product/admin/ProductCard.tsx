@@ -5,6 +5,8 @@ import { Badge } from "../../ui/Badge";
 import { formatPrice } from "../../../utils/currency/formatPrice";
 import { formatDate } from "../../../utils/date/formatDate";
 
+
+
 interface AdminProductCardProps {
   readonly product: AdminProductDto;
   readonly onEdit?: (id: string) => void;
@@ -24,6 +26,12 @@ export function ProductCard({product, onEdit, onDelete}: Readonly<AdminProductCa
     return "bg-emerald-600 text-white";
   };
   
+  const getProductStatus = (): boolean => {
+    return product.isActive ;
+  }
+  
+ 
+
   const stockColor = getStockColor();
 
   
@@ -140,6 +148,7 @@ export function ProductCard({product, onEdit, onDelete}: Readonly<AdminProductCa
             size="sm"
             className="flex-1 gap-2 text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200"
             onClick={() => onDelete?.(product.id)}
+            disabled={!getProductStatus()}
           >
             <Trash2 className="h-4 w-4" />
             Deletar

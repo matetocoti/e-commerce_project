@@ -9,16 +9,56 @@ import {
   PaginationNext,
 } from "../../components/ui/Pagination";
 import { useProducts } from "../../hooks/admin/useProducts";
+import { useProductActions } from "../../hooks/admin/useProductActions";
 
 const PAGE_SIZE = 9;
 
 export function AdminProducts() {
   const [page, setPage] = useState(1);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [deleteSuccess, setDeleteSuccess] = useState<string | null>(null);
 
-  const { products, loading, error } = useProducts({
+  const { products, loading, error, refetch } = useProducts({
     page,
     pageSize: PAGE_SIZE,
   });
+  const { deleteProduct } = useProductActions();
+
+  const handleDeleteProduct = async (id: string) => {
+    // Reset previous messages
+    setDeleteError(null);
+    setDeleteSuccess(null);
+
+    // Confirmation dialog
+    const productName = products.find((p) => p.id === id)?.name;
+    const confirmMessage = `Deseja deletar o produto "${productName}"? Esta ação não pode ser desfeita.`;
+
+    if (!confirm(confirmMessage)) {
+      return;
+    }
+
+    try {
+      await deleteProduct(id);
+      setDeleteSuccess(`Produto "${productName}" deletado com sucesso!`);
+
+      // Clear success message after 3 seconds
+      setTimeout(() => setDeleteSuccess(null), 3000);
+
+      // Refresh products list immediately
+      refetch();
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Erro ao deletar produto";
+      setDeleteError(
+        `Falha ao deletar "${productName}": ${errorMessage}`
+      );
+
+      // Clear error message after 5 seconds
+      setTimeout(() => setDeleteError(null), 5000);
+    }
+  };
+
+  
 
   const hasPreviousPage = page > 1;
   const hasNextPage = products.length === PAGE_SIZE;
@@ -33,6 +73,18 @@ export function AdminProducts() {
         </p>
       </div>
 
+      {deleteSuccess && (
+        <div className="rounded-md bg-green-50 border border-green-200 p-4">
+          <p className="text-sm text-green-800">✓ {deleteSuccess}</p>
+        </div>
+      )}
+
+      {deleteError && (
+        <div className="rounded-md bg-red-50 border border-red-200 p-4">
+          <p className="text-sm text-red-800">✗ {deleteError}</p>
+        </div>
+      )}
+
       {loading && (
         <p className="text-sm text-gray-500">Carregando produtos...</p>
       )}
@@ -45,7 +97,7 @@ export function AdminProducts() {
 
       {!loading && !error && products.length > 0 && (
         <>
-          <ProductList products={products} />
+          <ProductList products={products} onDelete={handleDeleteProduct}/>
 
           <Pagination className="mt-8">
             <PaginationContent>

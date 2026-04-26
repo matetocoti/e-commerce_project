@@ -5,9 +5,10 @@ interface AdminProductListProps {
   readonly products: AdminProductDto[];
   readonly onEdit?: (id: string) => void;
   readonly onDelete?: (id: string) => void;
+  readonly isActive?: boolean;
 }
 
-export function ProductList({products, onEdit, onDelete,}: Readonly<AdminProductListProps>) {
+export function ProductList({products, onEdit, onDelete}: Readonly<AdminProductListProps>) {
   if (products.length === 0) {
     return (
       <div className="rounded border border-gray-200 bg-gray-50 px-6 py-12 text-center">
