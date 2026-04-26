@@ -10,6 +10,8 @@ import {
 } from "../../components/ui/Pagination";
 import { useProducts } from "../../hooks/admin/useProducts";
 import { useProductActions } from "../../hooks/admin/useProductActions";
+import { ConfirmModal } from "../../components/ui/ConfirmModal";
+import { useConfirm } from "../../hooks/ui/useConfirm";
 
 const PAGE_SIZE = 9;
 
@@ -17,6 +19,7 @@ export function AdminProducts() {
   const [page, setPage] = useState(1);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [deleteSuccess, setDeleteSuccess] = useState<string | null>(null);
+  const confirm = useConfirm();
 
   const { products, loading, error, refetch } = useProducts({
     page,
@@ -25,37 +28,46 @@ export function AdminProducts() {
   const { deleteProduct } = useProductActions();
 
   const handleDeleteProduct = async (id: string) => {
-    // Reset previous messages
+    
     setDeleteError(null);
     setDeleteSuccess(null);
 
-    // Confirmation dialog
     const productName = products.find((p) => p.id === id)?.name;
-    const confirmMessage = `Deseja deletar o produto "${productName}"? Esta ação não pode ser desfeita.`;
 
-    if (!confirm(confirmMessage)) {
-      return;
-    }
+    confirm.open({
+      title: "Deletar produto",
+      description: `Deseja deletar o produto "${productName}"?`,
+      variant: "danger",
+      confirmText: "Deletar",
+      cancelText: "Cancelar",
+      confirmButtonVariant: "destructive",
+      onConfirm: async () => {
+        confirm.setLoading(true);
+        try {
+          await deleteProduct(id);
+          setDeleteSuccess(`Produto "${productName}" deletado com sucesso!`);
 
-    try {
-      await deleteProduct(id);
-      setDeleteSuccess(`Produto "${productName}" deletado com sucesso!`);
+          // Clear success message after 3 seconds
+          setTimeout(() => setDeleteSuccess(null), 3000);
 
-      // Clear success message after 3 seconds
-      setTimeout(() => setDeleteSuccess(null), 3000);
+          // Refresh products list immediately
+          refetch();
+          confirm.close();
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error ? error.message : "Erro ao deletar produto";
+          setDeleteError(
+            `Falha ao deletar "${productName}": ${errorMessage}`
+          );
 
-      // Refresh products list immediately
-      refetch();
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Erro ao deletar produto";
-      setDeleteError(
-        `Falha ao deletar "${productName}": ${errorMessage}`
-      );
-
-      // Clear error message after 5 seconds
-      setTimeout(() => setDeleteError(null), 5000);
-    }
+          // Clear error message after 5 seconds
+          setTimeout(() => setDeleteError(null), 5000);
+          confirm.close();
+        } finally {
+          confirm.setLoading(false);
+        }
+      },
+    });
   };
 
   
@@ -122,6 +134,19 @@ export function AdminProducts() {
           </Pagination>
         </>
       )}
+
+      <ConfirmModal
+        isOpen={confirm.isOpen}
+        title={confirm.title}
+        description={confirm.description}
+        variant={confirm.variant}
+        confirmText={confirm.confirmText}
+        cancelText={confirm.cancelText}
+        confirmButtonVariant={confirm.confirmButtonVariant}
+        isLoading={confirm.isLoading}
+        onConfirm={confirm.onConfirm}
+        onCancel={confirm.onCancel}
+      />
     </div>
   );
 }

@@ -6,7 +6,6 @@ import { formatPrice } from "../../../utils/currency/formatPrice";
 import { formatDate } from "../../../utils/date/formatDate";
 
 
-
 interface AdminProductCardProps {
   readonly product: AdminProductDto;
   readonly onEdit?: (id: string) => void;
