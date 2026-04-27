@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useRef, useEffect, type ReactNode } from "react";
 import { AlertCircle, AlertTriangle, CheckCircle2, X } from "lucide-react";
 import { cn } from "./utils";
 import { Button } from "./Button";
@@ -60,7 +60,34 @@ export function ConfirmModal({
   onConfirm,
   onCancel,
 }: Readonly<ConfirmModalProps>) {
-  if (!isOpen) return null;
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (isOpen && !dialog.open) {
+      dialog.showModal();
+    } else if (!isOpen && dialog.open) {
+      dialog.close();
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    const handleCancel = (e: Event) => {
+      e.preventDefault();
+
+      if (!isLoading) {
+        onCancel();
+      }
+    };
+
+    dialog.addEventListener("cancel", handleCancel);
+    return () => dialog.removeEventListener("cancel", handleCancel);
+  }, [isLoading, onCancel]);
 
   const config = variantConfig[variant];
   const Icon = config.icon;
@@ -73,75 +100,71 @@ export function ConfirmModal({
     }
   };
 
-  const defaultConfirmVariant = confirmButtonVariant || 
-    (variant === "danger" ? "destructive" : "default");
+  const defaultConfirmVariant =
+    confirmButtonVariant || (variant === "danger" ? "destructive" : "default");
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-      onClick={onCancel}
-      role="dialog"
-      aria-modal="true"
+    <dialog
+      ref={dialogRef}
+      className="w-full max-w-sm rounded-lg border border-gray-200 bg-white p-0 shadow-lg backdrop:bg-black/50"
       aria-labelledby="confirm-title"
     >
       <div
-        className="w-full max-w-sm animate-in fade-in zoom-in-95 rounded-lg border border-gray-200 bg-white p-6 shadow-lg"
-        onClick={(e) => e.stopPropagation()}
+        className={cn(
+          "flex items-start justify-between gap-4 rounded-t-lg p-4",
+          config.bgColor
+        )}
       >
-        {/* Header com ícone e botão de fechar */}
-        <div className="flex items-start justify-between">
-          <div className={cn("flex items-center gap-4", config.bgColor, "w-full rounded-lg p-4")}>
-            <Icon className={cn("h-6 w-6 shrink-0", config.iconColor)} />
-            <div className="flex-1">
-              <h2
-                id="confirm-title"
-                className="text-lg font-semibold text-gray-900"
-              >
-                {title}
-              </h2>
-            </div>
-            <button
-              onClick={onCancel}
-              className="rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300"
-              aria-label="Fechar"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
+        <div className="flex flex-1 items-start gap-3">
+          <Icon className={cn("mt-0.5 h-6 w-6 shrink-0", config.iconColor)} />
+          <h2 id="confirm-title" className="text-lg font-semibold text-gray-900">
+            {title}
+          </h2>
         </div>
 
-        {/* Descrição */}
+        <button
+          type="button"
+          onClick={onCancel}
+          disabled={isLoading}
+          className="shrink-0 rounded text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          aria-label="Fechar"
+        >
+          <X className="h-5 w-5" />
+        </button>
+      </div>
+
+      <div className="p-4 pt-0">
         {description && (
-          <p className="mt-4 text-sm text-gray-600 leading-relaxed">
+          <p className="mb-6 text-sm leading-relaxed text-gray-600 sm:text-base">
             {description}
           </p>
         )}
 
-        {/* Botões de ação */}
-        <div className="mt-6 flex gap-3 justify-end">
-          <Button
-            variant="outline"
-            onClick={onCancel}
-            disabled={isLoading}
-          >
+        <div className="flex justify-end gap-3">
+          <Button variant="outline" onClick={onCancel} disabled={isLoading}>
             {cancelText}
           </Button>
+
           <Button
             variant={defaultConfirmVariant}
             onClick={handleConfirm}
             disabled={isLoading}
+            aria-busy={isLoading}
           >
             {isLoading ? (
-              <>
-                <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                Processando...
-              </>
+              <span>
+                  <span
+                    aria-hidden="true"
+                    className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+                   />
+                <span>Processando...</span>
+              </span>
             ) : (
               confirmText
             )}
           </Button>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 }
