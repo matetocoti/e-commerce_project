@@ -17,6 +17,7 @@ import { Orders } from "../pages/customer/Orders";
 import { OrderDetail } from "../pages/customer/OrderDetail";
 
 import { AdminProducts } from "../pages/admin/AdminProducts";
+import { AdminEditProduct } from "../pages/admin/AdminEditProduct";
 
 const NotFound = () => <h2 className="text-2xl font-bold">404 - Not Found</h2>;
 const Loading = () => <h2 className="text-2xl font-bold">Loading...</h2>;
@@ -42,6 +43,7 @@ const AppRoutes = () => {
           <Route element={<RequireAdmin />}>
             <Route element={<AdminLayout />}>
               <Route path="/admin/products" element={<AdminProducts />} />
+              <Route path="/admin/products/:id" element={<AdminEditProduct />} />
             </Route>
           </Route>
 

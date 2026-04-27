@@ -46,11 +46,7 @@ export function AdminProducts() {
         try {
           await deleteProduct(id);
           setDeleteSuccess(`Produto "${productName}" deletado com sucesso!`);
-
-          // Clear success message after 3 seconds
           setTimeout(() => setDeleteSuccess(null), 3000);
-
-          // Refresh products list immediately
           refetch();
           confirm.close();
         } catch (error) {
@@ -60,7 +56,6 @@ export function AdminProducts() {
             `Falha ao deletar "${productName}": ${errorMessage}`
           );
 
-          // Clear error message after 5 seconds
           setTimeout(() => setDeleteError(null), 5000);
           confirm.close();
         } finally {

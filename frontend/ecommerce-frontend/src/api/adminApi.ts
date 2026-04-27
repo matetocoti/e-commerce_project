@@ -29,8 +29,9 @@ export async function getAdminProducts(params: GetProductsParams = {}): Promise<
   return apiFetch<AdminProductDto[]>(endpoint);
 }
 
-export async function getAdminProductById(productId: string): Promise<AdminProductDto> {
-  return apiFetch<AdminProductDto>(`/api/Admin/product/${productId}`);
+export async function getAdminProductById(id: string): Promise<AdminProductDto> {
+  const endpoint = `/api/admin/product/${id}`;
+  return apiFetch<AdminProductDto>(endpoint);
 }
 
 export async function createAdminProduct(productData: CreateProductDto): Promise<AdminProductDto> {
@@ -40,15 +41,15 @@ export async function createAdminProduct(productData: CreateProductDto): Promise
   });
 }
 
-export async function updateAdminProduct(productId: string,productData: UpdateProductDto): Promise<AdminProductDto> {
-  return apiFetch<AdminProductDto>(`/api/Admin/product/${productId}`, {
+export async function updateAdminProduct(id: string, productData: UpdateProductDto): Promise<AdminProductDto> {
+  return apiFetch<AdminProductDto>(`/api/Admin/product/${id}`, {
     method: "PUT",
     body: productData,
   });
 }
 
-export async function deleteAdminProduct(productId: string): Promise<void> {
-  await apiFetch<void>(`/api/Admin/product/${productId}`, {
+export async function deleteAdminProduct(id: string): Promise<void> {
+  await apiFetch<void>(`/api/Admin/product/${id}`, {
     method: "DELETE",
   });
 }

@@ -4,15 +4,15 @@ import { Button } from "../../ui/Button";
 import { Badge } from "../../ui/Badge";
 import { formatPrice } from "../../../utils/currency/formatPrice";
 import { formatDate } from "../../../utils/date/formatDate";
+import { Link } from "react-router-dom";
 
 
 interface AdminProductCardProps {
   readonly product: AdminProductDto;
-  readonly onEdit?: (id: string) => void;
   readonly onDelete?: (id: string) => void;
 }
 
-export function ProductCard({product, onEdit, onDelete}: Readonly<AdminProductCardProps>) {
+export function ProductCard({product, onDelete}: Readonly<AdminProductCardProps>) {
   const imageSrc = product.imageUrl || "/placeholder-tech.png";
   
   const isOutOfStock = product.stock === 0;
@@ -132,15 +132,16 @@ export function ProductCard({product, onEdit, onDelete}: Readonly<AdminProductCa
 
       <div className="border-t border-gray-200 bg-gray-50 px-4 py-3">
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex-1 gap-2"
-            onClick={() => onEdit?.(product.id)}
-          >
-            <Edit2 className="h-4 w-4" />
-            Editar
-          </Button>
+          <Link to={`/admin/products/${product.id}`} className="flex-1">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full gap-2"
+            >
+              <Edit2 className="h-4 w-4" />
+              Editar
+            </Button>
+          </Link>
 
           <Button
             variant="outline"
