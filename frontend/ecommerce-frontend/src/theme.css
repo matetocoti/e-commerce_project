@@ -52,4 +52,12 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+  a {
+    @apply text-primary no-underline transition-colors hover:text-primary-foreground;
+  }
+
+    ::placeholder {
+      @apply text-muted-foreground;
+    }
 }

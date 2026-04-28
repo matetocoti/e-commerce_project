@@ -6,13 +6,13 @@ import { useProductActions } from "../../hooks/admin/useProductActions";
 import { ProductForm } from "../../components/product/admin/ProductForm";
 import { Button } from "../../components/ui/Button";
 import { Card } from "../../components/ui/Card";
-import { ProductType, type UpdateProductDto } from "../../types/product";
+import { ProductType, type CreateProductDto } from "../../types/product";
 
 export function AdminCreateProduct() {
   const navigate = useNavigate();
   const { createProduct, isLoading: creating, error: updateError } = useProductActions();
 
-  const [formData, setFormData] = useState<UpdateProductDto>({
+  const [formData, setFormData] = useState<CreateProductDto>({
     name: "",
     description: "",
     info: "",
@@ -50,7 +50,7 @@ export function AdminCreateProduct() {
     setLocalError(null);
     setSuccessMessage(null);
 
-    // Validation
+    
     if (!formData.name.trim()) {
       setLocalError("Nome do produto é obrigatório");
       return;
@@ -86,7 +86,7 @@ export function AdminCreateProduct() {
       }
     } catch (err) {
       console.error("Error creating product:", err);
-      // Error is already set by the hook
+      setLocalError("Erro ao criar produto");
     }
   };
 
@@ -104,21 +104,18 @@ export function AdminCreateProduct() {
         </div>
       </div>
 
-      {/* Success Message */}
       {successMessage && (
         <div className="rounded-md bg-green-50 border border-green-200 p-4">
           <p className="text-sm text-green-800">✓ {successMessage}</p>
         </div>
       )}
 
-      {/* Error Message */}
       {(localError || updateError) && (
         <div className="rounded-md bg-red-50 border border-red-200 p-4 flex items-start gap-3">
           <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
           <p className="text-sm text-red-800">{localError || updateError}</p>
         </div>
       )}
-
       <Card className="p-6">
         <ProductForm
           formData={formData}
@@ -127,7 +124,6 @@ export function AdminCreateProduct() {
           isLoading={creating}
           submitButtonText="Criar Produto"
         />
-
         <div className="flex gap-3 mt-6 pt-6 border-t">
           <Link to="/admin/products" className="flex-1">
             <Button variant="outline" className="w-full">

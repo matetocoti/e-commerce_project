@@ -13,6 +13,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { Button } from "./ui/Button";
 import { Badge } from "./ui/Badge";
+import { NavigationMenu, type NavLinkItem } from "./ui/NavigationMenu";
 import { useAuth } from "../hooks/auth/useAuth";
 import { UserRole } from "../types/user";
 
@@ -20,26 +21,11 @@ interface HeaderProps {
   readonly cartItemsCount?: number;
 }
 
-type NavLinkItem = {
-  path: string;
-  label: string;
-  icon: React.ComponentType<{ className?: string }>;
-  disabled?: boolean; 
-};
-
 const navLinks: NavLinkItem[] = [
   { path: "/", label: "Produtos", icon: Package },
   { path: "/orders", label: "Pedidos", icon: Package },
-  { path: "/account", label: "Conta", icon: User, disabled: true }, // link desabilitado por enquanto
+  { path: "/account", label: "Conta", icon: User, disabled: true },
 ];
-
-function isActivePath(currentPath: string, linkPath: string) {
-  if (linkPath === "/") {
-    return currentPath === "/";
-  }
-
-  return currentPath === linkPath || currentPath.startsWith(`${linkPath}/`);
-}
 
 export function Header({ cartItemsCount = 0 }: Readonly<HeaderProps>) {
   const location = useLocation();
@@ -64,31 +50,13 @@ export function Header({ cartItemsCount = 0 }: Readonly<HeaderProps>) {
             <span className="text-xl font-bold text-gray-900">TechStore</span>
           </Link>
 
-          <nav className="hidden items-center gap-6 md:flex">
-            {navLinks.map((link) => {
-              const Icon = link.icon;
-              const active = isActivePath(location.pathname, link.path);
-
-              return (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  onClick={(e) => {
-                    if (link.disabled) {
-                      e.preventDefault(); // TODO: enable when account page is implemented
-                    }
-                  }}
-                  className={[
-                    "flex items-center gap-2 text-sm transition-colors hover:text-blue-600",
-                    active ? "font-medium text-blue-600" : "text-gray-600",
-                    link.disabled ? "opacity-50 cursor-not-allowed" : "",
-                  ].join(" ")}
-                >
-                  <Icon className="h-4 w-4" />
-                  {link.label}
-                </Link>
-              );
-            })}
+          <nav className="hidden items-center gap-6 md:flex  border-gray-200 ">
+            <NavigationMenu
+              navLinks={navLinks}
+              currentPath={location.pathname}
+              isDesktop
+              theme="light"
+            />
           </nav>
 
           <div className="flex items-center gap-2">
@@ -156,38 +124,16 @@ export function Header({ cartItemsCount = 0 }: Readonly<HeaderProps>) {
         </div>
 
         {mobileMenuOpen && (
-          <nav className="space-y-2 py-4 md:hidden">
-            {navLinks.map((link) => {
-              const Icon = link.icon;
-              const active = isActivePath(location.pathname, link.path);
+          <nav className="space-y-2 border-t border-gray-200 py-4 md:hidden">
+            <NavigationMenu
+              navLinks={navLinks}
+              currentPath={location.pathname}
+              onLinkClick={() => setMobileMenuOpen(false)}
+              isDesktop={false}
+              theme="light"
+            />
 
-              return (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  onClick={(e) => {
-                    if (link.disabled) {
-                      e.preventDefault(); // TODO: enable when account page is implemented
-                      return;
-                    }
-
-                    setMobileMenuOpen(false);
-                  }}
-                  className={[
-                    "flex items-center gap-2 rounded-lg px-4 py-2 transition-colors",
-                    active
-                      ? "bg-blue-50 text-blue-600"
-                      : "text-gray-600 hover:bg-gray-50",
-                    link.disabled ? "opacity-50 cursor-not-allowed" : "",
-                  ].join(" ")}
-                >
-                  <Icon className="h-4 w-4" />
-                  {link.label}
-                </Link>
-              );
-            })}
-
-            <div className="mt-2 border-t border-gray-200 pt-2">
+            <div className="border-t border-gray-200 pt-2">
               {isAuthenticated ? (
                 <>
                   <div className="px-4 py-2 text-sm text-gray-600">

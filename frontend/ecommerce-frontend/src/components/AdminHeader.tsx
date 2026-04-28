@@ -1,11 +1,18 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { LogOut, Store, Menu, X } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import { LogOut, Store, Menu, X, Package } from "lucide-react";
 import { useAuth } from "../hooks/auth/useAuth";
 import { Button } from "./ui/Button";
+import { NavigationMenu, type NavLinkItem } from "./ui/NavigationMenu";
+
+const navLinks: NavLinkItem[] = [
+  { path: "/admin/products", label: "Produtos", icon: Package },
+];
+
 
 export function AdminHeader() {
   const { user, logout } = useAuth();
+  const { pathname } = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   function handleLogout() {
@@ -25,13 +32,13 @@ export function AdminHeader() {
             </div>
           </Link>
 
-          <nav className="hidden items-center gap-6 md:flex">
-            <Link
-              to="/admin/products"
-              className="text-sm font-medium text-gray-300 transition-colors hover:text-blue-400"
-            >
-              Produtos
-            </Link>
+          <nav className="hidden items-center gap-6 md:flex  border-gray-700 ">
+            <NavigationMenu
+              navLinks={navLinks}
+              currentPath={pathname}
+              isDesktop
+              theme="dark"
+            />
           </nav>
 
           <div className="flex items-center gap-2">
@@ -76,13 +83,13 @@ export function AdminHeader() {
 
         {mobileMenuOpen && (
           <nav className="space-y-2 border-t border-gray-700 py-4 md:hidden">
-            <Link
-              to="/admin/products"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-2 rounded-lg px-4 py-2 text-gray-300 transition-colors hover:bg-gray-800"
-            >
-              Produtos
-            </Link>
+            <NavigationMenu
+              navLinks={navLinks}
+              currentPath={pathname}
+              onLinkClick={() => setMobileMenuOpen(false)}
+              isDesktop={false}
+              theme="dark"
+            />
 
             <div className="border-t border-gray-700 pt-2">
               <div className="px-4 py-2 text-sm text-gray-400">{user?.username}</div>
