@@ -103,8 +103,8 @@ export function ProductDetail() {
           <ProductInfoCard title="Informações">
             <div className="flex items-start gap-3">
               <Package className="mt-1 h-5 w-5 text-blue-600" />
-              <p className="text-sm text-gray-600">
-                Confira os detalhes do produto antes de adicionar ao carrinho.
+              <p className="text-sm text-gray-600  ">
+                {product.info || "Nenhuma informação adicional disponível."}
               </p>
             </div>
           </ProductInfoCard>
