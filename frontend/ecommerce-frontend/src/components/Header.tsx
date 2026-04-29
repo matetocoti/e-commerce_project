@@ -24,7 +24,7 @@ interface HeaderProps {
 const navLinks: NavLinkItem[] = [
   { path: "/", label: "Produtos", icon: Package },
   { path: "/orders", label: "Pedidos", icon: Package },
-  { path: "/account", label: "Conta", icon: User, disabled: true },
+  { path: "/account", label: "Conta", icon: User},
 ];
 
 export function Header({ cartItemsCount = 0 }: Readonly<HeaderProps>) {
