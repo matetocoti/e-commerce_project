@@ -10,6 +10,8 @@ import { Input } from "../components/ui/Input";
 import { ProductImage } from "../components/product/ProductImage";
 import { ProductPrice } from "../components/product/ProductPrice";
 import { ProductInfoCard } from "../components/product/ProductInfoCard";
+import { AccordionItem } from "../components/ui/AccordionItem";
+
 
 export function ProductDetail() {
   const { id } = useParams<{ id: string }>();
@@ -96,18 +98,21 @@ export function ProductDetail() {
 
           <ProductPrice price={product.price} />
 
-          <ProductInfoCard title="Descrição do Produto">
-            <p className="text-gray-600">{product.description}</p>
-          </ProductInfoCard>
+          <div className="space-y-4">
+            <ProductInfoCard title="Descrição">
+              <p className="text-gray-600">{product.description}</p>
+            </ProductInfoCard>
+            
 
-          <ProductInfoCard title="Informações">
-            <div className="flex items-start gap-3">
-              <Package className="mt-1 h-5 w-5 text-blue-600" />
-              <p className="text-sm text-gray-600  ">
-                {product.info || "Nenhuma informação adicional disponível."}
-              </p>
-            </div>
-          </ProductInfoCard>
+            <AccordionItem title="Informações Adicionais">
+              <div className="flex items-start gap-2">
+                <Package className="mt-0.5 h-5 w-5 text-blue-600 flex-shrink-0"/>
+                <p className="text-sm text-gray-600">
+                  {product.info || "Nenhuma informação adicional disponível."}
+                </p>
+              </div>
+            </AccordionItem>
+          </div>
 
           <ProductInfoCard title="Quantidade">
             <div className="flex items-center gap-3">
