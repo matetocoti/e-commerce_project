@@ -16,6 +16,7 @@ import { Cart } from "../pages/customer/Cart";
 import { Orders } from "../pages/customer/Orders";
 import { OrderDetail } from "../pages/customer/OrderDetail";
 import { Account } from "../pages/customer/Account";
+import { AccountEdit } from "../pages/customer/AccountEdit";
 
 import { AdminProducts } from "../pages/admin/AdminProducts";
 import { AdminEditProduct } from "../pages/admin/AdminEditProduct";
@@ -40,6 +41,7 @@ const AppRoutes = () => {
               <Route path="/orders" element={<Orders />} />
               <Route path="/orders/:id" element={<OrderDetail />} />
               <Route path="/account" element={<Account />} />
+              <Route path="/account/edit" element={<AccountEdit />} />
             </Route>
           </Route>
 

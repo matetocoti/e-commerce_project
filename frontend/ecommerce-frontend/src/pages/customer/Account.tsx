@@ -1,4 +1,5 @@
-import { Loader2, RefreshCw, AlertCircle } from "lucide-react";
+import { Loader2, RefreshCw, AlertCircle, Edit2 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import { UserCard } from "../../components/account/UserCard";
 import { useAccount } from "../../hooks/account/useAccount";
@@ -43,13 +44,22 @@ export function Account() {
           <h1 className="text-2xl font-bold text-gray-900">Visão Geral da Conta</h1>
           <p className="text-sm text-gray-500 mt-1">Gerencie suas informações e preferências.</p>
         </div>
-        <button
-          onClick={reload}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
-        >
-          <RefreshCw className="w-4 h-4 text-gray-500" />
-          Sincronizar Dados
-        </button>
+        <div className="flex items-center gap-3">
+          <Link
+            to="/account/edit"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 border border-transparent rounded-lg text-sm font-medium text-white hover:bg-blue-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+          >
+            <Edit2 className="w-4 h-4" />
+            Editar Perfil
+          </Link>
+          <button
+            onClick={reload}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+          >
+            <RefreshCw className="w-4 h-4 text-gray-500" />
+            Sincronizar
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-col gap-8">
