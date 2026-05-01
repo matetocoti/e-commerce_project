@@ -99,6 +99,15 @@ public class ProductService(AppDbContext context)
         await context.SaveChangesAsync();
     }
 
+    public async Task ActivateProductAsync(Guid id)
+    {
+        var product = await context.Products.FirstOrDefaultAsync(p => p.Id == id);
+        if (product == null)
+            throw new NotFoundException("Product Not Found!");
+        product.Activate();
+        await context.SaveChangesAsync();
+    }
+
     #endregion
 
     #region private methods

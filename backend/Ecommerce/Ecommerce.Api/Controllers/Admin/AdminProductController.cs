@@ -48,4 +48,10 @@ public class AdminProductController(ProductService productService) : ControllerB
         return NoContent();
     }
 
+    [HttpPost("{id}/activate")]
+    public async Task<IActionResult> ActivateProduct(Guid id)
+    {
+        await productService.ActivateProductAsync(id);
+        return NoContent();
+    }
 }
