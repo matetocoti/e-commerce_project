@@ -30,20 +30,41 @@ public class CartService(AppDbContext context)
         if (product == null)
             throw new NotFoundException("Product not found.");
 
+        if (!product.IsActive)
+            throw new BadRequestException("Product is not active.");
+
         if (product.Stock < dto.Quantity)
             throw new BadRequestException("Insufficient product stock.");
 
         var cart = await _context.Carts
             .Include(c => c.CartItems)
+                .ThenInclude(ci => ci.Product)
             .FirstOrDefaultAsync(c => c.UserId == userId);
-        
+
         if (cart == null)
         {
-            cart = new Cart { UserId = userId, CartItems = new List<CartItem>() };
+            cart = new Cart
+            {
+                UserId = userId,
+                CartItems = new List<CartItem>()
+            };
+
             _context.Carts.Add(cart);
         }
-        
+
+        var existingProductType = cart.CartItems
+            .Select(item => item.Product.Type)
+            .FirstOrDefault();
+
+        if (cart.CartItems.Any() && existingProductType != product.Type)
+        {
+            throw new BadRequestException(
+                "Cannot mix physical and digital products in the same cart."
+            );
+        }
+
         cart.AddItem(dto.ProductId, dto.Quantity);
+
         await _context.SaveChangesAsync();
     }
 
