@@ -33,8 +33,19 @@ public class ProductService(AppDbContext context)
 
     public async Task<List<ProductDto>> SearchProductsAsync(string query, int page, int pageSize)
     {
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return [];
+        }
+        var normalizedQuery = query.Trim().ToLower();
         var products = await context.Products
-            .Where(p => p.IsActive && (p.Name.Contains(query) || p.Description.Contains(query)))
+            .Where(p =>
+                p.IsActive &&
+                (
+                    p.Name.ToLower().Contains(normalizedQuery) ||
+                    p.Description.ToLower().Contains(normalizedQuery)
+                )
+            )
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
