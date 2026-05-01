@@ -34,8 +34,14 @@ public class OrderController(OrderService orderService ,ICurrentUserService curr
     {
         var userId = currentUser.GetUserId();
         var order = await orderService.GetOrderByIdAsync(id);
-        if (order == null)
-            throw new NotFoundException("Order not found.");
         return Ok(order);
+    }
+
+    [HttpPost("{id}/cancel")]
+    public async Task<IActionResult> CancelOrder(Guid id)
+    {
+        var userId = currentUser.GetUserId();
+        await orderService.CancelOrderAsync(userId, id);
+        return NoContent();
     }
 }

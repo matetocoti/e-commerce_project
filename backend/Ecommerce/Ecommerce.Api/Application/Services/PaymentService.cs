@@ -15,9 +15,8 @@ public class PaymentService(AppDbContext context)
     public async Task PayOrderAsync(Guid userId, Guid orderId, PaymentMethod method)
     {
         var order = await GetOrderAsync(userId, orderId);
-
+       
         var payment = CreatePayment(order, method);
-
         order.AddPayment(payment);
 
         context.Payments.Add(payment);
@@ -63,6 +62,8 @@ public class PaymentService(AppDbContext context)
         throw new BadRequestException("Invalid payment method.");
     }
 
+    // If necessary ,disable fake mode and implement real payment processing logic (e.g., integrating with a payment gateway).
+    // If it is on fake mode, it will create a confirmed payment without actually processing it.
     private bool IsFakeMode()
     {
         return true; // depois trocar por config

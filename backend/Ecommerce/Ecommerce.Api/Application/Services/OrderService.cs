@@ -90,6 +90,20 @@ public class OrderService(AppDbContext context)
 
         return MapToDto(order);
     }
+    
+    public async Task CancelOrderAsync(Guid userId, Guid orderId)
+    {
+        var order = await _context.Orders
+            .FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == userId);
+        if (order == null)
+            throw new NotFoundException("Order not found.");
+        if (order.Status != OrderStatus.AwaitingPayment)
+            throw new BadRequestException("Only orders awaiting payment can be cancelled.");
+        order.Status = OrderStatus.Cancelled;
+        order.UpdatedAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
+    }
+
     public async Task<List<OrderDto>> GetOrdersByUserIdAsync(Guid userId)
     {
         var orders = await _context.Orders
