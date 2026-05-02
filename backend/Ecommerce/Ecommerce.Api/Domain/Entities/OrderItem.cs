@@ -45,6 +45,7 @@ public class OrderItem
     #endregion
 
     #region Methods
+
     public override bool Equals(object? obj)
     {
         return obj is OrderItem item && Id == item.Id;

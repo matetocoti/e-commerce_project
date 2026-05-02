@@ -98,7 +98,7 @@ public class Product
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public void RestoreStock(int quantity)
+    public void IncreaseStock(int quantity)
     {
         if (quantity <= 0)
             throw new DomainException("Quantity must be greater than zero");

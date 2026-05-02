@@ -11,7 +11,6 @@ using Ecommerce.Api.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 
-
 public class OrderService(AppDbContext context)
 {
     private readonly AppDbContext _context = context;
@@ -36,6 +35,13 @@ public class OrderService(AppDbContext context)
 
         if (cart == null || !cart.CartItems.Any())
             throw new BadRequestException("Cart is empty.");
+
+        foreach (var cartItem in cart.CartItems) { 
+            if (!cartItem.Product.IsActive) 
+                throw new BadRequestException($"Product '{cartItem.Product.Name}' is not available.");
+            cartItem.Product.ReduceStock(cartItem.Quantity);
+        }
+
 
         var orderItems = cart.CartItems.Select(ci => new OrderItem
         {
@@ -80,6 +86,8 @@ public class OrderService(AppDbContext context)
 
         var order = new Order(userId, orderItems, address, digitalContact);
 
+
+
         _context.Orders.Add(order);
 
         cart.CartItems.Clear();
@@ -90,20 +98,29 @@ public class OrderService(AppDbContext context)
 
         return MapToDto(order);
     }
-    
     public async Task CancelOrderAsync(Guid userId, Guid orderId)
     {
         var order = await _context.Orders
+            .Include(o => o.OrderItems)
+                .ThenInclude(i => i.Product)
             .FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == userId);
+
         if (order == null)
             throw new NotFoundException("Order not found.");
+
         if (order.Status != OrderStatus.AwaitingPayment)
             throw new BadRequestException("Only orders awaiting payment can be cancelled.");
+
+        foreach (var item in order.OrderItems)
+        {
+            item.Product.IncreaseStock(item.Quantity);
+        }
+
         order.Status = OrderStatus.Cancelled;
         order.UpdatedAt = DateTime.UtcNow;
+
         await _context.SaveChangesAsync();
     }
-
     public async Task<List<OrderDto>> GetOrdersByUserIdAsync(Guid userId)
     {
         var orders = await _context.Orders
