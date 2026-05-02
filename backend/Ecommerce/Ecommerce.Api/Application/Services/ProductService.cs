@@ -13,15 +13,32 @@ public class ProductService(AppDbContext context)
     #region Methods
 
     #region public methods
-    public async Task<List<ProductDto>> GetAllAsync(int page, int pageSize)
+    public async Task<List<ProductDto>> GetAllAsync(int page, int pageSize , ProductType? type = null, decimal? minPrice = null, decimal? maxPrice = null)
     {
-        var products = await context.Products
+        var productsQuery = context.Products.AsQueryable();
+
+        if (type.HasValue)
+        {
+            productsQuery = productsQuery.Where(p => p.Type == type.Value);
+        }
+
+        if (minPrice.HasValue)
+        {
+            productsQuery = productsQuery.Where(p => p.Price >= minPrice.Value);
+        }
+
+        if (maxPrice.HasValue)
+        {
+            productsQuery = productsQuery.Where(p => p.Price <= maxPrice.Value);
+        }
+
+        var products = await productsQuery
             .Where(p => p.IsActive)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
         return products.Select(MapToDto).ToList();
-    }
+    } 
 
     public async Task<ProductDto> GetProductByIdAsync(Guid id)
     {
@@ -51,6 +68,7 @@ public class ProductService(AppDbContext context)
             .ToListAsync();
         return products.Select(MapToDto).ToList();
     }
+
 
     #endregion
 
