@@ -22,10 +22,15 @@ public class OrderController(OrderService orderService ,ICurrentUserService curr
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetOrders()
-    {
+    public async Task<IActionResult> GetUserOrders(int page = 1,int pageSize = 5){
         var userId = currentUser.GetUserId();
-        var orders = await orderService.GetOrdersByUserIdAsync(userId);
+
+        var orders = await orderService.GetOrdersByUserIdAsync(
+            userId,
+            page,
+            pageSize
+         );
+
         return Ok(orders);
     }
 

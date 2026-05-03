@@ -121,13 +121,14 @@ public class OrderService(AppDbContext context)
 
         await _context.SaveChangesAsync();
     }
-    public async Task<List<OrderDto>> GetOrdersByUserIdAsync(Guid userId)
-    {
+    public async Task<List<OrderDto>> GetOrdersByUserIdAsync(Guid userId, int page = 1,int pageSize = 5){
         var orders = await _context.Orders
             .Where(o => o.UserId == userId)
-            .Include(o => o.OrderItems)
             .OrderByDescending(o => o.CreatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
+
         return orders.Select(MapToDto).ToList();
     }
     public async Task<OrderDto> GetOrderByIdAsync(Guid orderId)
