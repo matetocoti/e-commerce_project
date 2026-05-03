@@ -2,8 +2,7 @@
 
 using Ecommerce.Api.Application.Services;
 using Microsoft.AspNetCore.Mvc;
-using Ecommerce.Api.Application.DTOS.Product;
-
+using Ecommerce.Api.Application.DTOS.Product.queries;
 
 [ApiController]
 [Route("api/[controller]")]

@@ -5,7 +5,7 @@ using Ecommerce.Api.Domain.Entities;
 using Ecommerce.Api.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Ecommerce.Api.Domain.Enums;
-
+using Ecommerce.Api.Application.DTOS.Product.queries;
 
 public class ProductService(AppDbContext context)
 {
@@ -15,18 +15,19 @@ public class ProductService(AppDbContext context)
     #region public methods
     public async Task<List<ProductDto>> GetAllAsync(PublicProductQueryParams query)
     {
-        var productsQuery = context.Products
-            .Where(p => p.IsActive) 
-            .AsQueryable();
 
-        if (query.Type.HasValue)
-            productsQuery = productsQuery.Where(p => p.Type == query.Type.Value);
+       var filters = new AdminProductQueryParams
+        {
+            Page = query.Page,
+            PageSize = query.PageSize,
+            Search = query.Search,
+            Type = query.Type,
+            MinPrice = query.MinPrice,
+            MaxPrice = query.MaxPrice,
+            IsActive = true // Only active products for public queries
+        };
 
-        if (query.MinPrice.HasValue)
-            productsQuery = productsQuery.Where(p => p.Price >= query.MinPrice.Value);
-
-        if (query.MaxPrice.HasValue)
-            productsQuery = productsQuery.Where(p => p.Price <= query.MaxPrice.Value);
+        var productsQuery = ApplyFilters(context.Products.AsQueryable(), filters);
 
         var products = await productsQuery
             .Skip((query.Page - 1) * query.PageSize)
@@ -86,20 +87,11 @@ public class ProductService(AppDbContext context)
 
     public async Task<List<AdminProductDto>> GetAllProductsAdminAsync(AdminProductQueryParams query)
     {
-        var productsQuery = context.Products.AsQueryable();
+        
 
-        if (query.Type.HasValue)
-            productsQuery = productsQuery.Where(p => p.Type == query.Type.Value);
+        var productsQuery = ApplyFilters(context.Products.AsQueryable(), query);
 
-        if (query.MinPrice.HasValue)
-            productsQuery = productsQuery.Where(p => p.Price >= query.MinPrice.Value);
-
-        if (query.MaxPrice.HasValue)
-            productsQuery = productsQuery.Where(p => p.Price <= query.MaxPrice.Value);
-
-        if (query.IsActive.HasValue)
-            productsQuery = productsQuery.Where(p => p.IsActive == query.IsActive.Value);
-
+        
         var products = await productsQuery
             .Skip((query.Page - 1) * query.PageSize)
             .Take(query.PageSize)
@@ -168,6 +160,33 @@ public class ProductService(AppDbContext context)
             Info = product.Info,
             Type = product.Type
         };
+    }
+
+    // Using as a helper for geral product queries to avoid code duplication, especially for admin queries where we might want to include inactive products
+    private static IQueryable<Product> ApplyFilters(IQueryable<Product> query,AdminProductQueryParams filters) {
+        if (!string.IsNullOrWhiteSpace(filters.Search))
+        {
+            var normalizedSearch = filters.Search.Trim().ToLower();
+
+            query = query.Where(p =>
+                p.Name.ToLower().Contains(normalizedSearch) ||
+                p.Description.ToLower().Contains(normalizedSearch)
+            );
+        }
+
+        if (filters.Type.HasValue)
+            query = query.Where(p => p.Type == filters.Type.Value);
+
+        if (filters.MinPrice.HasValue)
+            query = query.Where(p => p.Price >= filters.MinPrice.Value);
+
+        if (filters.MaxPrice.HasValue)
+            query = query.Where(p => p.Price <= filters.MaxPrice.Value);
+
+        if (filters.IsActive.HasValue)
+            query = query.Where(p => p.IsActive == filters.IsActive.Value);
+
+        return query;
     }
     #endregion
 

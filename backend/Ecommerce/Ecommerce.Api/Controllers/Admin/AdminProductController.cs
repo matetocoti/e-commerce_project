@@ -2,6 +2,7 @@
 
 
 using Ecommerce.Api.Application.DTOS.Product;
+using Ecommerce.Api.Application.DTOS.Product.queries;
 using Ecommerce.Api.Application.Services;
 using Ecommerce.Api.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
