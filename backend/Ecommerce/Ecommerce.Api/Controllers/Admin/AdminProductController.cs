@@ -21,9 +21,9 @@ public class AdminProductController(ProductService productService) : ControllerB
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllProducts(int page = 1, int pageSize = 2)
+    public async Task<IActionResult> GetAllProducts([FromQuery] AdminProductQueryParams query)
     {
-        var products = await productService.GetAllProductsAdminAsync(page, pageSize);
+        var products = await productService.GetAllProductsAdminAsync(query);
         return Ok(products);
     }
 

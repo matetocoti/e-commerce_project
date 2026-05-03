@@ -3,7 +3,7 @@
 namespace Ecommerce.Api.Application.DTOS.Product;
 
 
-public class ProductQueryParams
+public class PublicProductQueryParams
 {
     public int Page { get; set; } = 1;
     public int PageSize { get; set; } = 5;
@@ -11,4 +11,5 @@ public class ProductQueryParams
     public ProductType? Type { get; set; }
     public decimal? MinPrice { get; set; }
     public decimal? MaxPrice { get; set; }
+
 }

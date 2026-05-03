@@ -13,33 +13,28 @@ public class ProductService(AppDbContext context)
     #region Methods
 
     #region public methods
-    public async Task<List<ProductDto>> GetAllAsync(int page, int pageSize , ProductType? type = null, decimal? minPrice = null, decimal? maxPrice = null)
+    public async Task<List<ProductDto>> GetAllAsync(PublicProductQueryParams query)
     {
-        var productsQuery = context.Products.AsQueryable();
+        var productsQuery = context.Products
+            .Where(p => p.IsActive) 
+            .AsQueryable();
 
-        if (type.HasValue)
-        {
-            productsQuery = productsQuery.Where(p => p.Type == type.Value);
-        }
+        if (query.Type.HasValue)
+            productsQuery = productsQuery.Where(p => p.Type == query.Type.Value);
 
-        if (minPrice.HasValue)
-        {
-            productsQuery = productsQuery.Where(p => p.Price >= minPrice.Value);
-        }
+        if (query.MinPrice.HasValue)
+            productsQuery = productsQuery.Where(p => p.Price >= query.MinPrice.Value);
 
-        if (maxPrice.HasValue)
-        {
-            productsQuery = productsQuery.Where(p => p.Price <= maxPrice.Value);
-        }
+        if (query.MaxPrice.HasValue)
+            productsQuery = productsQuery.Where(p => p.Price <= query.MaxPrice.Value);
 
         var products = await productsQuery
-            .Where(p => p.IsActive)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
+            .Skip((query.Page - 1) * query.PageSize)
+            .Take(query.PageSize)
             .ToListAsync();
-        return products.Select(MapToDto).ToList();
-    } 
 
+        return products.Select(MapToDto).ToList();
+    }
     public async Task<ProductDto> GetProductByIdAsync(Guid id)
     {
         var product = await context.Products.FirstOrDefaultAsync(p => p.Id == id && p.IsActive);
@@ -89,12 +84,27 @@ public class ProductService(AppDbContext context)
         return MapToAdminDto(product);
     }
 
-    public async Task<List<AdminProductDto>> GetAllProductsAdminAsync(int page, int pageSize)
+    public async Task<List<AdminProductDto>> GetAllProductsAdminAsync(AdminProductQueryParams query)
     {
-        var products = await context.Products
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-             .ToListAsync();
+        var productsQuery = context.Products.AsQueryable();
+
+        if (query.Type.HasValue)
+            productsQuery = productsQuery.Where(p => p.Type == query.Type.Value);
+
+        if (query.MinPrice.HasValue)
+            productsQuery = productsQuery.Where(p => p.Price >= query.MinPrice.Value);
+
+        if (query.MaxPrice.HasValue)
+            productsQuery = productsQuery.Where(p => p.Price <= query.MaxPrice.Value);
+
+        if (query.IsActive.HasValue)
+            productsQuery = productsQuery.Where(p => p.IsActive == query.IsActive.Value);
+
+        var products = await productsQuery
+            .Skip((query.Page - 1) * query.PageSize)
+            .Take(query.PageSize)
+            .ToListAsync();
+
         return products.Select(MapToAdminDto).ToList();
     }
 
