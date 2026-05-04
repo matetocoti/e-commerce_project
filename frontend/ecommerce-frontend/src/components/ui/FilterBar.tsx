@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, ChevronUp, RotateCcw } from "lucide-react";
+import { ChevronDown, Filter, RotateCcw } from "lucide-react";
 import { Input } from "./Input";
 import { Button } from "./Button";
 import { ProductType } from "../../types/product";
@@ -45,33 +45,34 @@ export function FilterBar({ onFiltersChange, isLoading = false }: Readonly<Filte
   const hasActiveFilters = type !== "" || minPrice || maxPrice;
 
   return (
-    <div className="w-full space-y-3 rounded-lg border border-gray-200 bg-white p-4">
+    <div className="w-full rounded-xl border border-gray-200 bg-white shadow-sm transition-all duration-200 hover:shadow-md">
       
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="flex w-full items-center justify-between rounded-md p-2 hover:bg-gray-50"
+        className={`flex w-full items-center justify-between p-4 transition-colors hover:bg-gray-50 focus:outline-none ${isExpanded ? "border-b border-gray-100" : ""}`}
         disabled={isLoading}
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+            <Filter className="h-4 w-4" />
+          </div>
           <span className="font-semibold text-gray-700">
             Filtros
             {hasActiveFilters && (
-              <span className="ml-2 inline-block rounded-full bg-blue-500 px-2 py-1 text-xs text-white">
+              <span className="ml-3 inline-flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-[11px] font-bold text-white shadow-sm">
                 {Number(type !== "") + Number(!!minPrice) + Number(!!maxPrice)}
               </span>
             )}
           </span>
         </div>
-        {isExpanded ? (
-          <ChevronUp className="h-5 w-5 text-gray-600" />
-        ) : (
-          <ChevronDown className="h-5 w-5 text-gray-600" />
-        )}
+        <div className={`rounded-full p-1.5 transition-colors ${isExpanded ? "bg-gray-100 text-gray-700" : "text-gray-400 hover:bg-gray-100 hover:text-gray-600"}`}>
+          <ChevronDown className={`h-5 w-5 transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`} />
+        </div>
       </button>
 
       
       {isExpanded && (
-        <div className="space-y-4 border-t border-gray-200 pt-4">
+        <div className="animate-in slide-in-from-top-2 fade-in duration-200 space-y-5 p-5">
           {/* Type */}
           <div>
             <label htmlFor="type-select" className="mb-2 block text-sm font-medium text-gray-700">
@@ -128,11 +129,11 @@ export function FilterBar({ onFiltersChange, isLoading = false }: Readonly<Filte
           </div>
 
           
-          <div className="flex gap-2 pt-2">
+          <div className="flex gap-3 pt-3">
             <Button
               onClick={handleApplyFilters}
               disabled={isLoading}
-              className="flex-1"
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-colors"
             >
               Aplicar Filtros
             </Button>
@@ -141,10 +142,10 @@ export function FilterBar({ onFiltersChange, isLoading = false }: Readonly<Filte
                 onClick={handleClearFilters}
                 disabled={isLoading}
                 variant="outline"
-                className="flex-1"
+                className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
               >
                 <RotateCcw className="mr-2 h-4 w-4" />
-                Limpar
+                Limpar Filtros
               </Button>
             )}
           </div>
