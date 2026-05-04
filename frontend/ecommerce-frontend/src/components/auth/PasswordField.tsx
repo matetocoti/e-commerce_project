@@ -52,7 +52,7 @@ export function PasswordField({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="pl-10 pr-10"
+          className="pl-10 pr-10 sm:px-10"
           required={required}
           disabled={disabled}
         />

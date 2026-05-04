@@ -53,7 +53,7 @@ export function Register() {
                   placeholder="Escolha um nome de usuário"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 sm:pl-10"
                   required
                 />
               </div>
@@ -70,7 +70,7 @@ export function Register() {
                   placeholder="seu@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 sm:pl-10"
                   required
                 />
               </div>

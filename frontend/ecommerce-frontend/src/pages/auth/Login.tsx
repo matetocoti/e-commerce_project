@@ -40,7 +40,7 @@ export function Login() {
                   value={loginInput}
                   onChange={(e) => setLoginInput(e.target.value)}
                   placeholder="Digite seu email ou usuário"
-                  className="pl-10"
+                  className="pl-10 sm:pl-10"
                   required
                 />
               </div>
