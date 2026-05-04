@@ -12,7 +12,6 @@ import {
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { Button } from "./ui/Button";
-import { Badge } from "./ui/Badge";
 import { NavigationMenu, type NavLinkItem } from "./ui/NavigationMenu";
 import { useAuth } from "../hooks/auth/useAuth";
 import { UserRole } from "../types/user";
@@ -64,9 +63,9 @@ export function Header({ cartItemsCount = 0 }: Readonly<HeaderProps>) {
               <Button variant="outline" size="icon" className="relative">
                 <ShoppingCart className="h-5 w-5" />
                 {cartItemsCount > 0 && (
-                  <Badge className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full border-0 bg-red-600 px-1 text-[10px] font-bold text-white">
+                  <span className="absolute -right-1.5 -top-1.5 inline-flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full bg-red-600 text-[10px] sm:text-[11px] font-bold text-white shadow-sm">
                     {cartItemsCount > 99 ? "99+" : cartItemsCount}
-                  </Badge>
+                  </span>
                 )}
               </Button>
             </Link>
