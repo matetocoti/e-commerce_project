@@ -162,7 +162,9 @@ public class ProductService(AppDbContext context)
         };
     }
 
-    // Using as a helper for geral product queries to avoid code duplication, especially for admin queries where we might want to include inactive products
+    // Centralized filtering logic for product queries.
+    // Used by both public and admin endpoints to ensure consistency and
+    // provide a single point of maintenance for all filtering rules.
     private static IQueryable<Product> ApplyFilters(IQueryable<Product> query,AdminProductQueryParams filters) {
         if (!string.IsNullOrWhiteSpace(filters.Search))
         {

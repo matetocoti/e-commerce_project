@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { getProducts } from "../../api/productApi";
+import { getProducts, type PublicProductQueryParams } from "../../api/productApi";
 import type { ProductDto } from "../../types/product";
 
-interface UseProductsParams {
+interface UseProductsParams extends PublicProductQueryParams {
   page: number;
   pageSize: number;
 }
 
-export function useProducts({ page, pageSize }: UseProductsParams) {
+export function useProducts({ page, pageSize, search, type, minPrice, maxPrice }: UseProductsParams) {
   const [products, setProducts] = useState<ProductDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -18,7 +18,7 @@ export function useProducts({ page, pageSize }: UseProductsParams) {
         setLoading(true);
         setError(null);
 
-        const data = await getProducts({ page, pageSize });
+        const data = await getProducts({ page, pageSize, search, type, minPrice, maxPrice });
         setProducts(data);
       } catch (err) {
         setError(
@@ -30,7 +30,7 @@ export function useProducts({ page, pageSize }: UseProductsParams) {
     }
 
     loadProducts();
-  }, [page, pageSize]);
+  }, [page, pageSize, search, type, minPrice, maxPrice]);
 
   return { products, loading, error };
 }

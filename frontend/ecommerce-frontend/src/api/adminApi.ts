@@ -30,7 +30,7 @@ export async function getAdminProducts(params: GetProductsParams = {}): Promise<
 }
 
 export async function getAdminProductById(id: string): Promise<AdminProductDto> {
-  const endpoint = `/api/admin/product/${id}`;
+  const endpoint = `/api/Admin/product/${id}`;
   return apiFetch<AdminProductDto>(endpoint);
 }
 
