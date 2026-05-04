@@ -30,6 +30,8 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.Property(o => o.ExpiresAt)
             .IsRequired();
 
+        
+
         // Address (VO)
         builder.OwnsOne(o => o.Address, address =>
         {

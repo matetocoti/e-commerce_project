@@ -123,6 +123,7 @@ public class OrderService(AppDbContext context)
     }
     public async Task<List<OrderDto>> GetOrdersByUserIdAsync(Guid userId, int page = 1,int pageSize = 5){
         var orders = await _context.Orders
+            .Include(o => o.OrderItems)
             .Where(o => o.UserId == userId)
             .OrderByDescending(o => o.CreatedAt)
             .Skip((page - 1) * pageSize)

@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Package, ShoppingBag } from "lucide-react";
 
 import { useOrders } from "../../hooks/order/useOrders";
+
 import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 
@@ -11,7 +12,11 @@ import { getOrderStatusInfo } from "../../utils/order/getOrderStatusInfo";
 
 export function Orders() {
   const { orders, loading, error } = useOrders();
+  
 
+
+ 
+ 
   if (loading) {
     return (
       <div className="mx-auto max-w-5xl px-4 py-10">
@@ -69,10 +74,7 @@ export function Orders() {
           const statusInfo = getOrderStatusInfo(order.status);
           const StatusIcon = statusInfo.icon;
 
-          const totalItems = order.items.reduce(
-            (sum, item) => sum + item.quantity,
-            0
-          );
+          const totalItems = order.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
 
           return (
             <Card
@@ -110,8 +112,7 @@ export function Orders() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600">
-                      {totalItems}{" "}
-                      {totalItems === 1 ? "item" : "itens"}
+                      {totalItems}{totalItems === 1 ? " item" : " itens"}
                     </p>
 
                     <p className="text-lg font-bold text-blue-600">
