@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import type { ProductDto } from "../../types/product";
-import { Button } from "../ui/Button";
+
 import { formatPrice } from "../../utils/currency/formatPrice";
 
 interface ProductCardProps {
@@ -35,14 +35,6 @@ export function ProductCard({ product }: Readonly<ProductCardProps>) {
           </div>
         </div>
       </Link>
-
-      <div className="px-5 pb-5">
-        <Link to={`/product/${product.id}`} className="block">
-          <Button className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium transition-colors duration-200">
-            Ver detalhes
-          </Button>
-        </Link>
-      </div>
     </li>
   );
 }
