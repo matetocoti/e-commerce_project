@@ -45,34 +45,34 @@ export function FilterBar({ onFiltersChange, isLoading = false }: Readonly<Filte
   const hasActiveFilters = type !== "" || minPrice || maxPrice;
 
   return (
-    <div className="w-full rounded-xl border border-gray-200 bg-white shadow-sm transition-all duration-200 hover:shadow-md">
+    <div className="w-full rounded-xl border border-gray-200 bg-white shadow-sm transition-all duration-200 hover:shadow-md overflow-hidden">
       
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className={`flex w-full items-center justify-between p-4 transition-colors hover:bg-gray-50 focus:outline-none ${isExpanded ? "border-b border-gray-100" : ""}`}
+        className={`flex w-full items-center justify-between p-3 sm:p-4 transition-colors hover:bg-gray-50 focus:outline-none ${isExpanded ? "border-b border-gray-100" : ""}`}
         disabled={isLoading}
       >
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
-            <Filter className="h-4 w-4" />
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+            <Filter className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </div>
-          <span className="font-semibold text-gray-700">
+          <span className="font-semibold text-gray-700 text-sm sm:text-base">
             Filtros
             {hasActiveFilters && (
-              <span className="ml-3 inline-flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-[11px] font-bold text-white shadow-sm">
+              <span className="ml-2 sm:ml-3 inline-flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full bg-blue-600 text-[10px] sm:text-[11px] font-bold text-white shadow-sm">
                 {Number(type !== "") + Number(!!minPrice) + Number(!!maxPrice)}
               </span>
             )}
           </span>
         </div>
         <div className={`rounded-full p-1.5 transition-colors ${isExpanded ? "bg-gray-100 text-gray-700" : "text-gray-400 hover:bg-gray-100 hover:text-gray-600"}`}>
-          <ChevronDown className={`h-5 w-5 transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`} />
+          <ChevronDown className={`h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`} />
         </div>
       </button>
 
       
       {isExpanded && (
-        <div className="animate-in slide-in-from-top-2 fade-in duration-200 space-y-5 p-5">
+        <div className="animate-in slide-in-from-top-2 fade-in duration-200 space-y-4 sm:space-y-5 p-4 sm:p-5">
           {/* Type */}
           <div>
             <label htmlFor="type-select" className="mb-2 block text-sm font-medium text-gray-700">
@@ -95,7 +95,7 @@ export function FilterBar({ onFiltersChange, isLoading = false }: Readonly<Filte
           </div>
 
           
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label htmlFor="min-price" className="mb-2 block text-sm font-medium text-gray-700">
                 Preço mínimo
@@ -129,7 +129,7 @@ export function FilterBar({ onFiltersChange, isLoading = false }: Readonly<Filte
           </div>
 
           
-          <div className="flex gap-3 pt-3">
+          <div className="flex flex-col gap-3 pt-3 sm:flex-row">
             <Button
               onClick={handleApplyFilters}
               disabled={isLoading}
@@ -142,7 +142,7 @@ export function FilterBar({ onFiltersChange, isLoading = false }: Readonly<Filte
                 onClick={handleClearFilters}
                 disabled={isLoading}
                 variant="outline"
-                className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
+                className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors justify-center"
               >
                 <RotateCcw className="mr-2 h-4 w-4" />
                 Limpar Filtros

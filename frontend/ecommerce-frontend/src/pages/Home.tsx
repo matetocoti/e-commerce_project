@@ -42,20 +42,23 @@ export function Home() {
   const hasNextPage = products.length === PAGE_SIZE;
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6 p-4 sm:p-6 lg:p-8">
-      <h1 className="text-2xl font-bold">Produtos</h1>
+    <div className="mx-auto max-w-5xl space-y-5 px-4 py-6 sm:px-6 sm:py-8">
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900">Produtos</h1>
+        <p className="text-gray-500 mt-2">
+          Descubra os melhores produtos do mercado.
+        </p>
+      </div>
 
-      <p className="text-muted-foreground">
-        Descubra os melhores produtos do mercado.
-      </p>
+      <div className="space-y-4">
+        <Input
+          placeholder="Buscar produtos..."
+          value={searchQuery}
+          onChange={handleSearchChange}
+        />
 
-      <Input
-        placeholder="Buscar produtos..."
-        value={searchQuery}
-        onChange={handleSearchChange}
-      />
-
-      <FilterBar onFiltersChange={handleFiltersChange} isLoading={loading} />
+        <FilterBar onFiltersChange={handleFiltersChange} isLoading={loading} />
+      </div>
 
       {loading && (
         <p className="text-sm text-gray-500">Carregando produtos...</p>
