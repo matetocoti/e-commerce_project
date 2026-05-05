@@ -3,6 +3,12 @@ export interface Address {
   city: string;
   zipCode: string;
   state: string;
+  notes?: string;
+}
+
+export interface DigitalContactInfo {
+  email: string;
+  phoneNumber: string;
 }
 
 export interface OrderItemDto {
@@ -28,11 +34,20 @@ export interface OrderDto {
   totalAmount: number;
   createdAt: string;
   expiresAt: string;
-  address: Address;
+  address?: Address;
+  digitalContact?: DigitalContactInfo;
   items: OrderItemDto[];
 }
 
-export interface CreateOrderDto {
+export type CreateOrderDto = CreatePhysicalOrderDto | CreateDigitalOrderDto;
+
+
+export interface CreateDigitalOrderDto {
+  email: string;
+  phoneNumber: string;
+}
+
+export interface CreatePhysicalOrderDto {
   street: string;
   city: string;
   zipCode: string;

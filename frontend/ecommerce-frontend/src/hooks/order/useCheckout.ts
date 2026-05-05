@@ -2,13 +2,19 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { checkout } from "../../api/orderApi";
-import type { CreateOrderDto, OrderDto } from "../../types/order";
+import type {
+  CreateDigitalOrderDto,
+  CreatePhysicalOrderDto,
+  OrderDto,
+} from "../../types/order";
+
+type CheckoutData = CreatePhysicalOrderDto | CreateDigitalOrderDto;
 
 export function useCheckout() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleCheckout(orderData: CreateOrderDto): Promise<OrderDto | null> {
+  async function handleCheckout(orderData: CheckoutData): Promise<OrderDto | null> {
     try {
       setSubmitting(true);
       setError(null);

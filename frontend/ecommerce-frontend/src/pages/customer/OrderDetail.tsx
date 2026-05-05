@@ -1,6 +1,6 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
-import { ArrowLeft, MapPin, Package, Loader, ChevronDown } from "lucide-react";
+import { ArrowLeft, MapPin, Package, Loader, ChevronDown, Mail, Phone } from "lucide-react";
 
 import { usePayment } from "../../hooks/payment/usePayment";
 import { PaymentProgress } from "../../components/payment/PaymentProgress";
@@ -52,6 +52,20 @@ export function OrderDetail() {
   const StatusIcon = statusInfo.icon;
 
   const totalItems = order.items.reduce((sum, item) => sum + item.quantity, 0);
+
+  const hasAddress =
+  !!order.address?.street ||
+  !!order.address?.city ||
+  !!order.address?.state ||
+  !!order.address?.zipCode ||
+  !!order.address?.notes;
+
+  const hasDigitalContact =
+    !!order.digitalContact?.email ||
+    !!order.digitalContact?.phoneNumber;
+
+  const isPhysical = hasAddress;
+  const isDigital = !hasAddress && hasDigitalContact;
 
   return (
     <>
@@ -143,11 +157,17 @@ export function OrderDetail() {
                 className="w-full px-6 sm:px-8 py-5 sm:py-6 flex items-center justify-between gap-4 hover:bg-gray-50 transition-colors focus:outline-none"
               >
                 <div className="flex items-center gap-3 sm:gap-4">
-                  <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
-                    <MapPin className="h-5 w-5 text-green-600" />
+                  <div className={`h-8 w-8 sm:h-10 sm:w-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                    isPhysical ? "bg-green-50" : "bg-blue-50"
+                  }`}>
+                    {isPhysical ? (
+                      <MapPin className="h-5 w-5 text-green-600" />
+                    ) : (
+                      <Mail className="h-5 w-5 text-blue-600" />
+                    )}
                   </div>
                   <h2 className="text-lg sm:text-xl font-bold text-gray-900">
-                    Endereço de entrega
+                    {isPhysical ? "Endereço de entrega" : "Dados de contato"}
                   </h2>
                 </div>
                 <ChevronDown
@@ -157,11 +177,24 @@ export function OrderDetail() {
                 />
               </button>
 
-              {isAddressExpanded && (
+              {isAddressExpanded && isPhysical && (
                 <div className="animate-in slide-in-from-top-2 fade-in duration-200 border-t border-gray-100 px-6 sm:px-8 py-4 sm:py-5 bg-gray-50 space-y-2 text-sm text-gray-700">
-                  <p className="font-medium text-gray-900">{order.address.street}</p>
-                  <p>{order.address.city} - {order.address.state}</p>
-                  <p className="text-gray-600">CEP: {order.address.zipCode}</p>
+                  <p className="font-medium text-gray-900">{order.address?.street}</p>
+                  <p>{order.address?.city} - {order.address?.state}</p>
+                  <p className="text-gray-600">CEP: {order.address?.zipCode}</p>
+                </div>
+              )}
+
+              {isAddressExpanded && isDigital && (
+                <div className="animate-in slide-in-from-top-2 fade-in duration-200 border-t border-gray-100 px-6 sm:px-8 py-4 sm:py-5 bg-gray-50 space-y-3 text-sm text-gray-700">
+                  <div className="flex items-center gap-3">
+                    <Mail className="h-4 w-4 text-blue-600 flex-shrink-0" />
+                    <p className="font-medium text-gray-900">{order.digitalContact?.email}</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Phone className="h-4 w-4 text-blue-600 flex-shrink-0" />
+                    <p className="font-medium text-gray-900">{order.digitalContact?.phoneNumber}</p>
+                  </div>
                 </div>
               )}
             </Card>
