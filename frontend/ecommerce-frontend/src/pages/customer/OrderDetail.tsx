@@ -182,6 +182,7 @@ export function OrderDetail() {
                   <p className="font-medium text-gray-900">{order.address?.street}</p>
                   <p>{order.address?.city} - {order.address?.state}</p>
                   <p className="text-gray-600">CEP: {order.address?.zipCode}</p>
+                  <p>{order.address?.notes}</p>
                 </div>
               )}
 
