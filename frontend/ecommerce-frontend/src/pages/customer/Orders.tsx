@@ -123,7 +123,7 @@ export function Orders() {
                   </div>
                 </div>
 
-                {/* Footer */}
+               
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600">
@@ -145,28 +145,27 @@ export function Orders() {
         })}
       </div>
 
-      {/* Load More Button */}
+     
       {hasMore && (
-        <div className="mt-8 flex justify-center">
+        <div className="mt-12 flex justify-center pb-6">
           <Button
             onClick={loadMoreOrders}
             disabled={loadingMore}
-            variant="outline"
             size="lg"
+           className="rounded-full bg-blue-600 px-10 py-6 text-base font-bold uppercase tracking-wider text-white shadow-md transition-all duration-200 hover:bg-blue-700 active:scale-95 disabled:pointer-events-none disabled:opacity-60"
           >
             {loadingMore ? "Carregando..." : "Carregar mais pedidos"}
           </Button>
         </div>
       )}
 
-      {/* Scroll to Top Button */}
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-8 right-8 rounded-full bg-blue-600 p-3 text-white shadow-lg transition-opacity hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="group fixed bottom-8 right-8 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white shadow-[0_8px_30px_rgba(37,99,235,0.4)] ring-4 ring-white/50 backdrop-blur-md transition-all duration-300 hover:-translate-y-2 hover:scale-110 hover:shadow-[0_15px_40px_rgba(37,99,235,0.6)] hover:ring-8 hover:ring-blue-400/30 focus:outline-none active:scale-95"
           aria-label="Voltar ao topo"
         >
-          <ArrowUp className="h-6 w-6" />
+          <ArrowUp className="h-8 w-8 transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-110" />
         </button>
       )}
     </div>
