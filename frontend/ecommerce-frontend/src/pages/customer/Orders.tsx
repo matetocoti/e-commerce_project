@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { Package, ShoppingBag } from "lucide-react";
+import { Package, ShoppingBag, ArrowUp } from "lucide-react";
+import { useState, useEffect } from "react";
 
 import { useOrders } from "../../hooks/order/useOrders";
 
@@ -11,7 +12,21 @@ import { formatDate } from "../../utils/date/formatDate";
 import { getOrderStatusInfo } from "../../utils/order/getOrderStatusInfo";
 
 export function Orders() {
-  const { orders, loading, error } = useOrders();
+  const { orders, loading, error, loadMoreOrders, loadingMore, hasMore } = useOrders();
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
   
 
 
@@ -69,7 +84,7 @@ export function Orders() {
         </p>
       </div>
 
-      <div className="space-y-4">
+      <div className="relative space-y-4">
         {orders.map((order) => {
           const statusInfo = getOrderStatusInfo(order.status);
           const StatusIcon = statusInfo.icon;
@@ -129,6 +144,31 @@ export function Orders() {
           );
         })}
       </div>
+
+      {/* Load More Button */}
+      {hasMore && (
+        <div className="mt-8 flex justify-center">
+          <Button
+            onClick={loadMoreOrders}
+            disabled={loadingMore}
+            variant="outline"
+            size="lg"
+          >
+            {loadingMore ? "Carregando..." : "Carregar mais pedidos"}
+          </Button>
+        </div>
+      )}
+
+      {/* Scroll to Top Button */}
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-8 right-8 rounded-full bg-blue-600 p-3 text-white shadow-lg transition-opacity hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          aria-label="Voltar ao topo"
+        >
+          <ArrowUp className="h-6 w-6" />
+        </button>
+      )}
     </div>
   );
 }
