@@ -4,8 +4,10 @@ import { ArrowLeft, MapPin, Package, Loader, ChevronDown, Mail, Phone, X } from 
 
 import { usePayment } from "../../hooks/payment/usePayment";
 import { useCancel } from "../../hooks/order/useCancel";
+import { useConfirm } from "../../hooks/ui/useConfirm";
 import { PaymentProgress } from "../../components/payment/PaymentProgress";
 import { PaymentLoadingModal } from "../../components/payment/PaymentLoadingModal";
+import { ConfirmModal } from "../../components/ui/ConfirmModal";
 
 import { useOrder } from "../../hooks/order/useOrder";
 import { Button } from "../../components/ui/Button";
@@ -24,15 +26,30 @@ export function OrderDetail() {
   const { order, loading, error , isPaid, reloadOrder} = useOrder({ id: id ?? "" });
   const { handlePayment, loading: paymentLoading } = usePayment({ onSuccess: reloadOrder });
   const { cancel: cancelOrder, loading: cancelLoading } = useCancel();
+  const confirm = useConfirm();
 
   const handleCancelOrder = async () => {
     if (!id) return;
-    try {
-      await cancelOrder(id);
-      await reloadOrder();
-    } catch (err) {
-      console.error("Erro ao cancelar pedido:", err);
-    }
+    
+    confirm.open({
+      title: "Cancelar pedido",
+      description: "Tem certeza que deseja cancelar este pedido? Esta ação não pode ser desfeita.",
+      variant: "danger",
+      confirmText: "Sim, cancelar",
+      cancelText: "Não, manter",
+      confirmButtonVariant: "destructive",
+      onConfirm: async () => {
+        confirm.setLoading(true);
+        try {
+          await cancelOrder(id);
+          await reloadOrder();
+          confirm.close();
+        } catch (err) {
+          console.error("Erro ao cancelar pedido:", err);
+          confirm.setLoading(false);
+        }
+      },
+    });
   };
 
   
@@ -83,6 +100,18 @@ export function OrderDetail() {
     <>
       <PaymentLoadingModal isOpen={paymentLoading} />
       <PaymentProgress isLoading={paymentLoading} />
+      <ConfirmModal 
+        isOpen={confirm.isOpen}
+        title={confirm.title}
+        description={confirm.description}
+        variant={confirm.variant}
+        confirmText={confirm.confirmText}
+        cancelText={confirm.cancelText}
+        confirmButtonVariant={confirm.confirmButtonVariant}
+        isLoading={confirm.isLoading}
+        onConfirm={confirm.onConfirm}
+        onCancel={confirm.onCancel}
+      />
       <div className="mx-auto max-w-7xl w-full px-4 py-8 sm:py-12 bg-transparent min-h-[calc(100vh-16rem)]">
         <div className="mb-6 sm:mb-8">
           <button
