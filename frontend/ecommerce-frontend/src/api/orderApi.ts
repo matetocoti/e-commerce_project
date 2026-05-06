@@ -29,3 +29,9 @@ export async function checkout(orderData: CreateOrderDto): Promise<OrderDto> {
     body: orderData,
   });
 }
+
+export async function cancelOrder(id: string): Promise<void> {
+  await apiFetch(`/api/Order/${id}/cancel`, {
+    method: "POST",
+  });
+}

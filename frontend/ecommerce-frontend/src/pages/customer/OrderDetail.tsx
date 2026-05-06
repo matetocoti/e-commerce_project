@@ -1,8 +1,9 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
-import { ArrowLeft, MapPin, Package, Loader, ChevronDown, Mail, Phone } from "lucide-react";
+import { ArrowLeft, MapPin, Package, Loader, ChevronDown, Mail, Phone, X } from "lucide-react";
 
 import { usePayment } from "../../hooks/payment/usePayment";
+import { useCancel } from "../../hooks/order/useCancel";
 import { PaymentProgress } from "../../components/payment/PaymentProgress";
 import { PaymentLoadingModal } from "../../components/payment/PaymentLoadingModal";
 
@@ -22,6 +23,17 @@ export function OrderDetail() {
 
   const { order, loading, error , isPaid, reloadOrder} = useOrder({ id: id ?? "" });
   const { handlePayment, loading: paymentLoading } = usePayment({ onSuccess: reloadOrder });
+  const { cancel: cancelOrder, loading: cancelLoading } = useCancel();
+
+  const handleCancelOrder = async () => {
+    if (!id) return;
+    try {
+      await cancelOrder(id);
+      await reloadOrder();
+    } catch (err) {
+      console.error("Erro ao cancelar pedido:", err);
+    }
+  };
 
   
   if (loading) {
@@ -220,7 +232,7 @@ export function OrderDetail() {
                   <div className="flex flex-col gap-3">
                     <Button 
                       onClick={() => handlePayment(order.id)} 
-                      disabled={isPaid() || paymentLoading}
+                      disabled={isPaid() || paymentLoading || order.status === "Cancelled"}
                       className="w-full"
                     >
                       {paymentLoading ? (
@@ -232,8 +244,26 @@ export function OrderDetail() {
                         "Pagar agora"
                       )}
                     </Button>
+                    <Button 
+                      onClick={handleCancelOrder}
+                      disabled={cancelLoading || isPaid() || order.status === "Cancelled" || order.status === "Expired"}
+                      variant="outline"
+                      className="w-full border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {cancelLoading ? (
+                        <>
+                          <Loader className="mr-2 h-4 w-4 animate-spin" />
+                          Cancelando...
+                        </>
+                      ) : (
+                        <>
+                          <X className="mr-2 h-4 w-4" />
+                          Cancelar pedido
+                        </>
+                      )}
+                    </Button>
                     <Link to="/orders" className="w-full">
-                      <Button variant="outline" disabled={paymentLoading} className="w-full">Voltar para pedidos</Button>
+                      <Button variant="outline" disabled={paymentLoading || cancelLoading} className="w-full">Voltar para pedidos</Button>
                     </Link>
                   </div>
                 </div>

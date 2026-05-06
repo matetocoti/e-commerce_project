@@ -37,6 +37,9 @@ export function useOrder({ id }: Readonly<UseOrderParams> ) {
   const isOrderPaid = () => {
     return order?.status === "Paid";
   };
+  const isOrderCancelled = () => {
+    return order?.status === "Cancelled";
+  }
 
   
   useEffect(() => {
@@ -50,5 +53,6 @@ export function useOrder({ id }: Readonly<UseOrderParams> ) {
     error,
     reloadOrder: loadOrder,
     isPaid: isOrderPaid,
+    isCancelled: isOrderCancelled,
   };
 }
