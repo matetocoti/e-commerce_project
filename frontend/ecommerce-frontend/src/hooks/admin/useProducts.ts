@@ -5,9 +5,14 @@ import type { AdminProductDto } from "../../types/product";
 interface UseProductsParams {
   page: number;
   pageSize: number;
+  isActive?: boolean;
+  type?: number;
+  minPrice?: number;
+  maxPrice?: number;
+  search?: string;
 }
 
-export function useProducts({ page, pageSize }: UseProductsParams) {
+export function useProducts({ page, pageSize, isActive, type, minPrice, maxPrice, search }: UseProductsParams) {
   const [products, setProducts] = useState<AdminProductDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -18,7 +23,7 @@ export function useProducts({ page, pageSize }: UseProductsParams) {
       setLoading(true);
       setError(null);
 
-      const data = await getAdminProducts({ page, pageSize });
+      const data = await getAdminProducts({ page, pageSize, isActive, type, minPrice, maxPrice, search });
       setProducts(data);
     } catch (err) {
       setError(
@@ -27,11 +32,11 @@ export function useProducts({ page, pageSize }: UseProductsParams) {
     } finally {
       setLoading(false);
     }
-  }, [page, pageSize]);
+  }, [page, pageSize, isActive, type, minPrice, maxPrice, search]);
 
   useEffect(() => {
     loadProducts();
-  }, [page, pageSize, loadProducts, refreshKey]);
+  }, [page, pageSize, isActive, type, minPrice, maxPrice, search, loadProducts, refreshKey]);
 
   const refetch = useCallback(() => {
     setRefreshKey((prev) => prev + 1);

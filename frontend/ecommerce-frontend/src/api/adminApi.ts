@@ -8,6 +8,11 @@ import type {
 interface GetProductsParams {
   page?: number;
   pageSize?: number;
+  isActive?: boolean;
+  type?: number;
+  minPrice?: number;
+  maxPrice?: number;
+  search?: string;
 }
 
 export async function getAdminProducts(params: GetProductsParams = {}): Promise<AdminProductDto[]> {
@@ -19,6 +24,26 @@ export async function getAdminProducts(params: GetProductsParams = {}): Promise<
 
   if (params.pageSize) {
     searchParams.append("pageSize", String(params.pageSize));
+  }
+
+  if (params.isActive !== undefined) {
+    searchParams.append("isActive", String(params.isActive));
+  }
+
+  if (params.type !== undefined) {
+    searchParams.append("type", String(params.type));
+  }
+
+  if (params.minPrice !== undefined) {
+    searchParams.append("minPrice", String(params.minPrice));
+  }
+
+  if (params.maxPrice !== undefined) {
+    searchParams.append("maxPrice", String(params.maxPrice));
+  }
+
+  if (params.search) {
+    searchParams.append("search", params.search);
   }
 
   const query = searchParams.toString();

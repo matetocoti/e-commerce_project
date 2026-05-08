@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 
 import { ProductList } from "../../components/product/admin/ProductList";
+import { FilterBar, type FilterState } from "../../components/ui/FilterBar";
 import { Button } from "../../components/ui/Button";
+import { Input } from "../../components/ui/Input";
 import {
   Pagination,
   PaginationContent,
@@ -20,12 +22,29 @@ export function AdminProducts() {
   const [page, setPage] = useState(1);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [deleteSuccess, setDeleteSuccess] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filters, setFilters] = useState<FilterState>({});
 
   const { products, loading, error, updateProductLocal } = useProducts({
     page,
     pageSize: PAGE_SIZE,
+    search: searchQuery || undefined,
+    type: filters.type,
+    minPrice: filters.minPrice,
+    maxPrice: filters.maxPrice,
+    isActive: filters.isActive,
   });
   const { activateProduct, deactivateProduct } = useProductActions();
+
+  function handleSearchChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setSearchQuery(event.target.value);
+    setPage(1);
+  }
+
+  function handleFiltersChange(newFilters: FilterState) {
+    setFilters(newFilters);
+    setPage(1);
+  }
 
   const handleActivateProduct = async (id: string) => {
     setDeleteError(null);
@@ -99,6 +118,16 @@ export function AdminProducts() {
           <p className="text-sm text-red-800">✗ {deleteError}</p>
         </div>
       )}
+
+      <div className="space-y-4">
+        <Input
+          placeholder="Buscar produtos..."
+          value={searchQuery}
+          onChange={handleSearchChange}
+        />
+
+        <FilterBar onFiltersChange={handleFiltersChange} isLoading={loading} isAdmin={true} />
+      </div>
 
       {loading && (
         <p className="text-sm text-gray-500">Carregando produtos...</p>

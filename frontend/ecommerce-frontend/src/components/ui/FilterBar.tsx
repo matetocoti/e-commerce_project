@@ -7,12 +7,14 @@ import { ProductType } from "../../types/product";
 interface FilterBarProps {
   readonly onFiltersChange: (filters: FilterState) => void;
   readonly isLoading?: boolean;
+  readonly isAdmin?: boolean;
 }
 
 export interface FilterState {
   type?: number;
   minPrice?: number;
   maxPrice?: number;
+  isActive?: boolean;
 }
 
 const PRODUCT_TYPES = [
@@ -20,17 +22,19 @@ const PRODUCT_TYPES = [
   { value: ProductType.DIGITAL, label: "Digital" },
 ];
 
-export function FilterBar({ onFiltersChange, isLoading = false }: Readonly<FilterBarProps>) {
+export function FilterBar({ onFiltersChange, isLoading = false, isAdmin = false }: Readonly<FilterBarProps>) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [type, setType] = useState<number | "">("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
+  const [isActive, setIsActive] = useState<"" | "true" | "false">("");
 
   function handleApplyFilters() {
     const filters: FilterState = {
       type: type === "" ? undefined : Number(type),
       minPrice: minPrice ? Number(minPrice) : undefined,
       maxPrice: maxPrice ? Number(maxPrice) : undefined,
+      isActive: isActive === "" ? undefined : isActive === "true",
     };
     onFiltersChange(filters);
   }
@@ -39,10 +43,11 @@ export function FilterBar({ onFiltersChange, isLoading = false }: Readonly<Filte
     setType("");
     setMinPrice("");
     setMaxPrice("");
+    setIsActive("");
     onFiltersChange({});
   }
 
-  const hasActiveFilters = type !== "" || minPrice || maxPrice;
+  const hasActiveFilters = type !== "" || minPrice || maxPrice || isActive !== "";
 
   return (
     <div className="w-full rounded-xl border border-gray-200 bg-white shadow-sm transition-all duration-200 hover:shadow-md overflow-hidden">
@@ -60,7 +65,7 @@ export function FilterBar({ onFiltersChange, isLoading = false }: Readonly<Filte
             Filtros
             {hasActiveFilters && (
               <span className="ml-2 sm:ml-3 inline-flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full bg-blue-600 text-[10px] sm:text-[11px] font-bold text-white shadow-sm">
-                {Number(type !== "") + Number(!!minPrice) + Number(!!maxPrice)}
+                {Number(type !== "") + Number(!!minPrice) + Number(!!maxPrice) + Number(isActive !== "")}
               </span>
             )}
           </span>
@@ -127,6 +132,26 @@ export function FilterBar({ onFiltersChange, isLoading = false }: Readonly<Filte
               />
             </div>
           </div>
+
+          {/* Status - Only for Admin */}
+          {isAdmin && (
+            <div>
+              <label htmlFor="status-select" className="mb-2 block text-sm font-medium text-gray-700">
+                Status
+              </label>
+              <select
+                id="status-select"
+                value={isActive}
+                onChange={(e) => setIsActive(e.target.value as "" | "true" | "false")}
+                disabled={isLoading}
+                className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-50"
+              >
+                <option value="">Todos os status</option>
+                <option value="true">Ativado</option>
+                <option value="false">Desativado</option>
+              </select>
+            </div>
+          )}
 
           
           <div className="flex flex-col gap-3 pt-3 sm:flex-row">
