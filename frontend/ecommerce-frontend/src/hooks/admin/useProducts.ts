@@ -37,5 +37,16 @@ export function useProducts({ page, pageSize }: UseProductsParams) {
     setRefreshKey((prev) => prev + 1);
   }, []);
 
-  return { products, loading, error, refetch };
+  const updateProductLocal = useCallback(
+    (id: string, updatedData: Partial<AdminProductDto>) => {
+      setProducts((prev) =>
+        prev.map((product) =>
+          product.id === id ? { ...product, ...updatedData } : product
+        )
+      );
+    },
+    []
+  );
+
+  return { products, loading, error, refetch, updateProductLocal };
 }

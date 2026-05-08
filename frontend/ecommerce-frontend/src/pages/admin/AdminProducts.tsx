@@ -13,8 +13,6 @@ import {
 } from "../../components/ui/Pagination";
 import { useProducts } from "../../hooks/admin/useProducts";
 import { useProductActions } from "../../hooks/admin/useProductActions";
-import { ConfirmModal } from "../../components/ui/ConfirmModal";
-import { useConfirm } from "../../hooks/ui/useConfirm";
 
 const PAGE_SIZE = 9;
 
@@ -22,50 +20,53 @@ export function AdminProducts() {
   const [page, setPage] = useState(1);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [deleteSuccess, setDeleteSuccess] = useState<string | null>(null);
-  const confirm = useConfirm();
 
-  const { products, loading, error, refetch } = useProducts({
+  const { products, loading, error, updateProductLocal } = useProducts({
     page,
     pageSize: PAGE_SIZE,
   });
-  const { deleteProduct } = useProductActions();
+  const { activateProduct, deactivateProduct } = useProductActions();
 
-  const handleDeleteProduct = async (id: string) => {
-    
+  const handleActivateProduct = async (id: string) => {
     setDeleteError(null);
     setDeleteSuccess(null);
 
     const productName = products.find((p) => p.id === id)?.name;
 
-    confirm.open({
-      title: "Deletar produto",
-      description: `Deseja deletar o produto "${productName}"?`,
-      variant: "danger",
-      confirmText: "Deletar",
-      cancelText: "Cancelar",
-      confirmButtonVariant: "destructive",
-      onConfirm: async () => {
-        confirm.setLoading(true);
-        try {
-          await deleteProduct(id);
-          setDeleteSuccess(`Produto "${productName}" deletado com sucesso!`);
-          setTimeout(() => setDeleteSuccess(null), 3000);
-          refetch();
-          confirm.close();
-        } catch (error) {
-          const errorMessage =
-            error instanceof Error ? error.message : "Erro ao deletar produto";
-          setDeleteError(
-            `Falha ao deletar "${productName}": ${errorMessage}`
-          );
+    try {
+      await activateProduct(id);
+      updateProductLocal(id, { isActive: true });
+      setDeleteSuccess(`Produto "${productName}" ativado com sucesso!`);
+      setTimeout(() => setDeleteSuccess(null), 3000);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Erro ao ativar produto";
+      setDeleteError(
+        `Falha ao ativar "${productName}": ${errorMessage}`
+      );
+      setTimeout(() => setDeleteError(null), 5000);
+    }
+  };
 
-          setTimeout(() => setDeleteError(null), 5000);
-          confirm.close();
-        } finally {
-          confirm.setLoading(false);
-        }
-      },
-    });
+  const handleDeactivateProduct = async (id: string) => {
+    setDeleteError(null);
+    setDeleteSuccess(null);
+
+    const productName = products.find((p) => p.id === id)?.name;
+
+    try {
+      await deactivateProduct(id);
+      updateProductLocal(id, { isActive: false });
+      setDeleteSuccess(`Produto "${productName}" desativado com sucesso!`);
+      setTimeout(() => setDeleteSuccess(null), 3000);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Erro ao desativar produto";
+      setDeleteError(
+        `Falha ao desativar "${productName}": ${errorMessage}`
+      );
+      setTimeout(() => setDeleteError(null), 5000);
+    }
   };
 
   
@@ -111,7 +112,11 @@ export function AdminProducts() {
 
       {!loading && !error && products.length > 0 && (
         <>
-          <ProductList products={products} onDelete={handleDeleteProduct}/>
+          <ProductList 
+            products={products} 
+            onActivate={handleActivateProduct}
+            onDeactivate={handleDeactivateProduct}
+          />
 
           <Pagination className="mt-8">
             <PaginationContent>
@@ -136,19 +141,6 @@ export function AdminProducts() {
           </Pagination>
         </>
       )}
-
-      <ConfirmModal
-        isOpen={confirm.isOpen}
-        title={confirm.title}
-        description={confirm.description}
-        variant={confirm.variant}
-        confirmText={confirm.confirmText}
-        cancelText={confirm.cancelText}
-        confirmButtonVariant={confirm.confirmButtonVariant}
-        isLoading={confirm.isLoading}
-        onConfirm={confirm.onConfirm}
-        onCancel={confirm.onCancel}
-      />
     </div>
   );
 }

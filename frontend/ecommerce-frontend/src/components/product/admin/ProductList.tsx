@@ -3,11 +3,11 @@ import { ProductCard } from "./ProductCard";
 
 interface AdminProductListProps {
   readonly products: AdminProductDto[];
-  readonly onDelete?: (id: string) => void;
-  readonly isActive?: boolean;
+  readonly onActivate?: (id: string) => void;
+  readonly onDeactivate?: (id: string) => void;
 }
 
-export function ProductList({products, onDelete}: Readonly<AdminProductListProps>) {
+export function ProductList({products, onActivate, onDeactivate}: Readonly<AdminProductListProps>) {
   if (products.length === 0) {
     return (
       <div className="rounded border border-gray-200 bg-gray-50 px-6 py-12 text-center">
@@ -22,7 +22,8 @@ export function ProductList({products, onDelete}: Readonly<AdminProductListProps
         <ProductCard
           key={product.id}
           product={product}
-          onDelete={onDelete}
+          onActivate={onActivate}
+          onDeactivate={onDeactivate}
         />
       ))}
     </ul>

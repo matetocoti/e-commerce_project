@@ -1,18 +1,22 @@
-import { Edit2, Trash2, Package, Zap, AlertCircle, Clock } from "lucide-react";
+import { Edit2, Package, Zap, AlertCircle, Clock } from "lucide-react";
 import type { AdminProductDto } from "../../../types/product";
 import { Button } from "../../ui/Button";
 import { Badge } from "../../ui/Badge";
+import { ConfirmModal } from "../../ui/ConfirmModal";
 import { formatPrice } from "../../../utils/currency/formatPrice";
 import { formatDate } from "../../../utils/date/formatDate";
 import { Link } from "react-router-dom";
+import { useConfirm } from "../../../hooks/ui/useConfirm";
 
 
 interface AdminProductCardProps {
   readonly product: AdminProductDto;
-  readonly onDelete?: (id: string) => void;
+  readonly onActivate?: (id: string) => void;
+  readonly onDeactivate?: (id: string) => void;
 }
 
-export function ProductCard({product, onDelete}: Readonly<AdminProductCardProps>) {
+export function ProductCard({product, onActivate, onDeactivate}: Readonly<AdminProductCardProps>) {
+  const confirm = useConfirm();
   const imageSrc = product.imageUrl || "/placeholder-tech.png";
   
   const isOutOfStock = product.stock === 0;
@@ -24,10 +28,6 @@ export function ProductCard({product, onDelete}: Readonly<AdminProductCardProps>
     if (isLowStock) return "bg-orange-600 text-white";
     return "bg-emerald-600 text-white";
   };
-  
-  const getProductStatus = (): boolean => {
-    return product.isActive ;
-  }
   
  
 
@@ -41,10 +41,52 @@ export function ProductCard({product, onDelete}: Readonly<AdminProductCardProps>
 
   const formattedPrice = formatPrice(product.price);
 
-  return (
-    <li className="overflow-hidden rounded border border-gray-200 bg-white transition-all duration-200 hover:shadow-lg hover:border-gray-300">
+  const handleDeactivate = () => {
+    confirm.open({
+      title: "Desativar produto",
+      description: `Tem certeza que deseja desativar "${product.name}"? O produto não será mais exibido para clientes.`,
+      variant: "warning",
+      confirmText: "Sim, desativar",
+      cancelText: "Cancelar",
+      confirmButtonVariant: "default",
+      onConfirm: () => {
+        onDeactivate?.(product.id);
+        confirm.close();
+      },
+    });
+  };
 
-      <div className="relative aspect-[4/3] w-full bg-gray-100">
+  const handleActivate = () => {
+    confirm.open({
+      title: "Ativar produto",
+      description: `Tem certeza que deseja ativar "${product.name}"? O produto será exibido para clientes.`,
+      variant: "success",
+      confirmText: "Sim, ativar",
+      cancelText: "Cancelar",
+      confirmButtonVariant: "default",
+      onConfirm: () => {
+        onActivate?.(product.id);
+        confirm.close();
+      },
+    });
+  };
+
+  return (
+    <>
+      <ConfirmModal 
+        isOpen={confirm.isOpen}
+        title={confirm.title}
+        description={confirm.description}
+        variant={confirm.variant}
+        confirmText={confirm.confirmText}
+        cancelText={confirm.cancelText}
+        confirmButtonVariant={confirm.confirmButtonVariant}
+        isLoading={confirm.isLoading}
+        onConfirm={confirm.onConfirm}
+        onCancel={confirm.onCancel}
+      />
+      <li className="overflow-hidden rounded border border-gray-200 bg-white transition-all duration-200 hover:shadow-lg hover:border-gray-300">
+        <div className="relative aspect-[4/3] w-full bg-gray-100">
         <img
           src={imageSrc}
           alt={product.name}
@@ -143,18 +185,28 @@ export function ProductCard({product, onDelete}: Readonly<AdminProductCardProps>
             </Button>
           </Link>
 
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex-1 gap-2 text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200"
-            onClick={() => onDelete?.(product.id)}
-            disabled={!getProductStatus()}
-          >
-            <Trash2 className="h-4 w-4" />
-            Deletar
-          </Button>
+          {product.isActive ? (
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1 gap-2 text-orange-600 hover:bg-orange-50 hover:text-orange-700 border-orange-200"
+              onClick={handleDeactivate}
+            >
+              Desativar
+            </Button>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1 gap-2 text-green-600 hover:bg-green-50 hover:text-green-700 border-green-200"
+              onClick={handleActivate}
+            >
+              Ativar
+            </Button>
+          )}
         </div>
       </div>
-    </li>
+      </li>
+    </>
   );
 }

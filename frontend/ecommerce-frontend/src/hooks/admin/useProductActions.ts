@@ -3,6 +3,8 @@ import {
   createAdminProduct,
   updateAdminProduct,
   deleteAdminProduct,
+  activateAdminProduct,
+  deactivateAdminProduct,
 } from "../../api/adminApi";
 import type {
   AdminProductDto,
@@ -71,12 +73,41 @@ export function useProductActions() {
     }
   };
 
- 
+  const activateProduct = async (id: string): Promise<AdminProductDto | null> => {
+    setState({ isLoading: true, error: null, isSuccess: false });
+    try {
+      const activatedProduct = await activateAdminProduct(id);
+      setState({ isLoading: false, error: null, isSuccess: true });
+      return activatedProduct;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Erro ao ativar produto";
+      setState({ isLoading: false, error: errorMessage, isSuccess: false });
+      console.error("Erro ao ativar produto:", error);
+      throw error;
+    }
+  };
+
+  const deactivateProduct = async (id: string): Promise<void> => {
+    setState({ isLoading: true, error: null, isSuccess: false });
+    try {
+      await deactivateAdminProduct(id);
+      setState({ isLoading: false, error: null, isSuccess: true });
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Erro ao desativar produto";
+      setState({ isLoading: false, error: errorMessage, isSuccess: false });
+      console.error("Erro ao desativar produto:", error);
+      throw error;
+    }
+  };
 
   return {
     // Actions
     createProduct,
     updateProduct,
+    activateProduct,
+    deactivateProduct,
     deleteProduct,
     // State
     isLoading: state.isLoading,
