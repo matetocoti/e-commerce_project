@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { LogOut, Store, Menu, X, Package } from "lucide-react";
+import { LogOut, Store, Menu, X } from "lucide-react";
 import { useAuth } from "../hooks/auth/useAuth";
 import { Button } from "./ui/Button";
 import { NavigationMenu, type NavLinkItem } from "./ui/NavigationMenu";
 
 const navLinks: NavLinkItem[] = [
-  { path: "/admin/products", label: "Produtos", icon: Package },
+  //{ path: "/admin/products", label: "Produtos", icon: Package },
 ];
 
 
