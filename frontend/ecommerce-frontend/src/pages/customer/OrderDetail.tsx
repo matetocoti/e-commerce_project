@@ -7,6 +7,7 @@ import { useCancel } from "../../hooks/order/useCancel";
 import { useConfirm } from "../../hooks/ui/useConfirm";
 import { PaymentProgress } from "../../components/payment/PaymentProgress";
 import { PaymentLoadingModal } from "../../components/payment/PaymentLoadingModal";
+import { PaymentMethodModal } from "../../components/payment/PaymentMethodModal";
 import { ConfirmModal } from "../../components/ui/ConfirmModal";
 import { OrderHeader } from "../../components/order/OrderHeader";
 import { OrderItemsSection } from "../../components/order/OrderItemsSection";
@@ -23,6 +24,8 @@ export function OrderDetail() {
   const navigate = useNavigate();
   const [isItemsExpanded, setIsItemsExpanded] = useState(false);
   const [isAddressExpanded, setIsAddressExpanded] = useState(false);
+  const [isPaymentMethodModalOpen, setIsPaymentMethodModalOpen] = useState(false);
+  const [pendingOrderId, setPendingOrderId] = useState<string | null>(null);
 
   const { order, loading, error , isPaid, reloadOrder} = useOrder({ id: id ?? "" });
   const { handlePayment, loading: paymentLoading } = usePayment({ onSuccess: reloadOrder });
@@ -51,6 +54,18 @@ export function OrderDetail() {
         }
       },
     });
+  };
+
+  const handlePaymentClick = (orderId: string) => {
+    setPendingOrderId(orderId);
+    setIsPaymentMethodModalOpen(true);
+  };
+
+  const handleSelectPixPayment = async () => {
+    if (!pendingOrderId) return;
+    await handlePayment(pendingOrderId);
+    setIsPaymentMethodModalOpen(false);
+    setPendingOrderId(null);
   };
 
   
@@ -94,6 +109,12 @@ export function OrderDetail() {
 
   return (
     <>
+      <PaymentMethodModal 
+        isOpen={isPaymentMethodModalOpen}
+        onSelectPix={handleSelectPixPayment}
+        onClose={() => setIsPaymentMethodModalOpen(false)}
+        isLoading={paymentLoading}
+      />
       <PaymentLoadingModal isOpen={paymentLoading} />
       <PaymentProgress isLoading={paymentLoading} />
       <ConfirmModal 
@@ -141,7 +162,7 @@ export function OrderDetail() {
               <div className="flex flex-col gap-6">
                 <OrderSummary order={order} />
                 <OrderActions
-                  onPayment={() => handlePayment(order.id)}
+                  onPayment={() => handlePaymentClick(order.id)}
                   onCancel={handleCancelOrder}
                   isPaid={isPaid()}
                   paymentLoading={paymentLoading}
