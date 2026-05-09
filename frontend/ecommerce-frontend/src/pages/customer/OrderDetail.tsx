@@ -8,6 +8,7 @@ import { useConfirm } from "../../hooks/ui/useConfirm";
 import { PaymentProgress } from "../../components/payment/PaymentProgress";
 import { PaymentLoadingModal } from "../../components/payment/PaymentLoadingModal";
 import { PaymentMethodModal } from "../../components/payment/PaymentMethodModal";
+import { PixPaymentModal } from "../../components/payment/PixPaymentModal";
 import { ConfirmModal } from "../../components/ui/ConfirmModal";
 import { OrderHeader } from "../../components/order/OrderHeader";
 import { OrderItemsSection } from "../../components/order/OrderItemsSection";
@@ -25,6 +26,8 @@ export function OrderDetail() {
   const [isItemsExpanded, setIsItemsExpanded] = useState(false);
   const [isAddressExpanded, setIsAddressExpanded] = useState(false);
   const [isPaymentMethodModalOpen, setIsPaymentMethodModalOpen] = useState(false);
+  const [isPixPaymentModalOpen, setIsPixPaymentModalOpen] = useState(false);
+  const [isGeneratingPayment, setIsGeneratingPayment] = useState(false);
   const [pendingOrderId, setPendingOrderId] = useState<string | null>(null);
 
   const { order, loading, error , isPaid, reloadOrder} = useOrder({ id: id ?? "" });
@@ -61,11 +64,22 @@ export function OrderDetail() {
     setIsPaymentMethodModalOpen(true);
   };
 
-  const handleSelectPixPayment = async () => {
-    if (!pendingOrderId) return;
-    await handlePayment(pendingOrderId);
+  const handleSelectPixPayment = () => {
     setIsPaymentMethodModalOpen(false);
-    setPendingOrderId(null);
+    setIsPixPaymentModalOpen(true);
+  };
+
+  const handleGeneratePixPayment = async () => {
+    if (!pendingOrderId) return;
+    
+    setIsGeneratingPayment(true);
+    try {
+      await handlePayment(pendingOrderId);
+      setIsPixPaymentModalOpen(false);
+      setPendingOrderId(null);
+    } finally {
+      setIsGeneratingPayment(false);
+    }
   };
 
   
@@ -114,6 +128,14 @@ export function OrderDetail() {
         onSelectPix={handleSelectPixPayment}
         onClose={() => setIsPaymentMethodModalOpen(false)}
         isLoading={paymentLoading}
+      />
+      <PixPaymentModal
+        isOpen={isPixPaymentModalOpen}
+        onClose={() => setIsPixPaymentModalOpen(false)}
+        onGeneratePayment={handleGeneratePixPayment}
+        isLoading={isGeneratingPayment}
+        orderTotal={order?.totalAmount ? `R$ ${order.totalAmount.toFixed(2).replace('.', ',')}` : "R$ 0,00"}
+        orderId={order?.id ?? ""}
       />
       <PaymentLoadingModal isOpen={paymentLoading} />
       <PaymentProgress isLoading={paymentLoading} />
