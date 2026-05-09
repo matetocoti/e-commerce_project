@@ -30,6 +30,9 @@ public class ProductService(AppDbContext context)
         var productsQuery = ApplyFilters(context.Products.AsQueryable(), filters);
 
         var products = await productsQuery
+            .OrderByDescending(p => !string.IsNullOrWhiteSpace(p.ImageUrl))
+            .ThenBy(p => p.Name)
+            .ThenBy(p => p.Id)
             .Skip((query.Page - 1) * query.PageSize)
             .Take(query.PageSize)
             .ToListAsync();
