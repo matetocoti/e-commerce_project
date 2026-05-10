@@ -131,7 +131,18 @@ public class ProductService(AppDbContext context)
         await context.SaveChangesAsync();
     }
 
-    #endregion
+    public async Task ToggleProductStatusAsync(Guid id)
+    {
+        var product = await context.Products
+            .FirstOrDefaultAsync(p => p.Id == id);
+
+        if (product == null)
+            throw new NotFoundException("Product not found!");
+
+        product.ToggleStatus();
+
+        await context.SaveChangesAsync();
+    }
 
     #region private methods
     private ProductDto MapToDto(Product product)
@@ -195,5 +206,6 @@ public class ProductService(AppDbContext context)
     }
     #endregion
 
+    #endregion
     #endregion
 }
