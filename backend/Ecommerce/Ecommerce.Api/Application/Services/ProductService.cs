@@ -183,6 +183,14 @@ public class ProductService(AppDbContext context)
         if (filters.IsActive.HasValue)
             query = query.Where(p => p.IsActive == filters.IsActive.Value);
 
+        if (filters.HasImage.HasValue)
+        {
+            if (filters.HasImage.Value)
+                query = query.Where(p => !string.IsNullOrWhiteSpace(p.ImageUrl));
+            else
+                query = query.Where(p => string.IsNullOrWhiteSpace(p.ImageUrl));
+        }
+
         return query;
     }
     #endregion

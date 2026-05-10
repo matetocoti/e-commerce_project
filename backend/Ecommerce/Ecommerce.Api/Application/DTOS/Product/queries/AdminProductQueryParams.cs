@@ -2,4 +2,5 @@
 public class AdminProductQueryParams : PublicProductQueryParams
 {
     public bool? IsActive { get; set; }
+    public bool? HasImage { get; set; }
 }
