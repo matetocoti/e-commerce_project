@@ -10,8 +10,6 @@ using Ecommerce.Api.Application.DTOS.Product.queries;
 public class ProductService(AppDbContext context)
 {
 
-    #region Methods
-
     #region public methods
     public async Task<List<ProductDto>> GetAllAsync(PublicProductQueryParams query)
     {
@@ -46,28 +44,6 @@ public class ProductService(AppDbContext context)
             throw new NotFoundException("Product not found.");
         return MapToDto(product);
     }
-
-    public async Task<List<ProductDto>> SearchProductsAsync(string query, int page, int pageSize)
-    {
-        if (string.IsNullOrWhiteSpace(query))
-        {
-            return [];
-        }
-        var normalizedQuery = query.Trim().ToLower();
-        var products = await context.Products
-            .Where(p =>
-                p.IsActive &&
-                (
-                    p.Name.ToLower().Contains(normalizedQuery) ||
-                    p.Description.ToLower().Contains(normalizedQuery)
-                )
-            )
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
-        return products.Select(MapToDto).ToList();
-    }
-
 
     #endregion
 
@@ -112,7 +88,9 @@ public class ProductService(AppDbContext context)
         await context.SaveChangesAsync();
         return MapToAdminDto(product);
     }
-    
+
+
+    #region Delete after frontend implementation
     public async Task DeactivateProductAsync(Guid id)
     {
         var product = await context.Products.FirstOrDefaultAsync(p => p.Id == id);
@@ -130,6 +108,7 @@ public class ProductService(AppDbContext context)
         product.Activate();
         await context.SaveChangesAsync();
     }
+    #endregion
 
     public async Task ToggleProductStatusAsync(Guid id)
     {
@@ -143,6 +122,8 @@ public class ProductService(AppDbContext context)
 
         await context.SaveChangesAsync();
     }
+
+    #endregion
 
     #region private methods
     private ProductDto MapToDto(Product product)
@@ -204,8 +185,5 @@ public class ProductService(AppDbContext context)
 
         return query;
     }
-    #endregion
-
-    #endregion
     #endregion
 }
