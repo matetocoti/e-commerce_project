@@ -160,16 +160,10 @@ public class ProductService(AppDbContext context)
     // Centralized filtering logic for product queries.
     // Used by both public and admin endpoints to ensure consistency and
     // provide a single point of maintenance for all filtering rules.
-    private static IQueryable<Product> ApplyFilters(IQueryable<Product> query,AdminProductQueryParams filters) {
-        if (!string.IsNullOrWhiteSpace(filters.Search))
-        {
-            var normalizedSearch = filters.Search.Trim().ToLower();
-
-            query = query.Where(p =>
-                p.Name.ToLower().Contains(normalizedSearch) ||
-                p.Description.ToLower().Contains(normalizedSearch)
-            );
-        }
+    private static IQueryable<Product> ApplyFilters(IQueryable<Product> query,AdminProductQueryParams filters)
+    {
+        if (filters.IsActive.HasValue)
+            query = query.Where(p => p.IsActive == filters.IsActive.Value);
 
         if (filters.Type.HasValue)
             query = query.Where(p => p.Type == filters.Type.Value);
@@ -180,15 +174,21 @@ public class ProductService(AppDbContext context)
         if (filters.MaxPrice.HasValue)
             query = query.Where(p => p.Price <= filters.MaxPrice.Value);
 
-        if (filters.IsActive.HasValue)
-            query = query.Where(p => p.IsActive == filters.IsActive.Value);
-
         if (filters.HasImage.HasValue)
         {
-            if (filters.HasImage.Value)
-                query = query.Where(p => !string.IsNullOrWhiteSpace(p.ImageUrl));
-            else
-                query = query.Where(p => string.IsNullOrWhiteSpace(p.ImageUrl));
+            query = filters.HasImage.Value
+                ? query.Where(p => !string.IsNullOrWhiteSpace(p.ImageUrl))
+                : query.Where(p => string.IsNullOrWhiteSpace(p.ImageUrl));
+        }
+
+        if (!string.IsNullOrWhiteSpace(filters.Search))
+        {
+            var normalizedSearch = filters.Search.Trim().ToLower();
+
+            query = query.Where(p =>
+                p.Name.ToLower().Contains(normalizedSearch) ||
+                p.Description.ToLower().Contains(normalizedSearch)
+            );
         }
 
         return query;
