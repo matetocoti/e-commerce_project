@@ -13,6 +13,9 @@ interface GetProductsParams {
   minPrice?: number;
   maxPrice?: number;
   search?: string;
+  hasImage?: boolean;
+  hasLowStock?: boolean;
+  outOfStock?: boolean;
 }
 
 export async function getAdminProducts(params: GetProductsParams = {}): Promise<AdminProductDto[]> {
@@ -44,6 +47,18 @@ export async function getAdminProducts(params: GetProductsParams = {}): Promise<
 
   if (params.search) {
     searchParams.append("search", params.search);
+  }
+
+  if (params.hasImage !== undefined) {
+    searchParams.append("hasImage", String(params.hasImage));
+  }
+
+  if (params.hasLowStock !== undefined) {
+    searchParams.append("hasLowStock", String(params.hasLowStock));
+  }
+
+  if (params.outOfStock !== undefined) {
+    searchParams.append("outOfStock", String(params.outOfStock));
   }
 
   const query = searchParams.toString();

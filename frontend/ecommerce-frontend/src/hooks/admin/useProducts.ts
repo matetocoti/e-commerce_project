@@ -10,9 +10,12 @@ interface UseProductsParams {
   minPrice?: number;
   maxPrice?: number;
   search?: string;
+  hasImage?: boolean;
+  hasLowStock?: boolean;
+  outOfStock?: boolean;
 }
 
-export function useProducts({ page, pageSize, isActive, type, minPrice, maxPrice, search }: UseProductsParams) {
+export function useProducts({ page, pageSize, isActive, type, minPrice, maxPrice, search, hasImage, hasLowStock, outOfStock }: UseProductsParams) {
   const [products, setProducts] = useState<AdminProductDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +26,7 @@ export function useProducts({ page, pageSize, isActive, type, minPrice, maxPrice
       setLoading(true);
       setError(null);
 
-      const data = await getAdminProducts({ page, pageSize, isActive, type, minPrice, maxPrice, search });
+      const data = await getAdminProducts({ page, pageSize, isActive, type, minPrice, maxPrice, search, hasImage, hasLowStock, outOfStock });
       setProducts(data);
     } catch (err) {
       setError(
@@ -32,11 +35,11 @@ export function useProducts({ page, pageSize, isActive, type, minPrice, maxPrice
     } finally {
       setLoading(false);
     }
-  }, [page, pageSize, isActive, type, minPrice, maxPrice, search]);
+  }, [page, pageSize, isActive, type, minPrice, maxPrice, search, hasImage, hasLowStock, outOfStock]);
 
   useEffect(() => {
     loadProducts();
-  }, [page, pageSize, isActive, type, minPrice, maxPrice, search, loadProducts, refreshKey]);
+  }, [page, pageSize, isActive, type, minPrice, maxPrice, search, hasImage, hasLowStock, outOfStock, loadProducts, refreshKey]);
 
   const refetch = useCallback(() => {
     setRefreshKey((prev) => prev + 1);

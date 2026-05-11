@@ -15,6 +15,9 @@ export interface FilterState {
   minPrice?: number;
   maxPrice?: number;
   isActive?: boolean;
+  hasImage?: boolean;
+  hasLowStock?: boolean;
+  outOfStock?: boolean;
 }
 
 const PRODUCT_TYPES = [
@@ -28,6 +31,9 @@ export function FilterBar({ onFiltersChange, isLoading = false, isAdmin = false 
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [isActive, setIsActive] = useState<"" | "true" | "false">("");
+  const [hasImage, setHasImage] = useState(false);
+  const [hasLowStock, setHasLowStock] = useState(false);
+  const [outOfStock, setOutOfStock] = useState(false);
 
   function handleApplyFilters() {
     const filters: FilterState = {
@@ -35,6 +41,9 @@ export function FilterBar({ onFiltersChange, isLoading = false, isAdmin = false 
       minPrice: minPrice ? Number(minPrice) : undefined,
       maxPrice: maxPrice ? Number(maxPrice) : undefined,
       isActive: isActive === "" ? undefined : isActive === "true",
+      hasImage: hasImage ? false : undefined,
+      hasLowStock: hasLowStock ? true : undefined,
+      outOfStock: outOfStock ? true : undefined,
     };
     onFiltersChange(filters);
   }
@@ -44,10 +53,13 @@ export function FilterBar({ onFiltersChange, isLoading = false, isAdmin = false 
     setMinPrice("");
     setMaxPrice("");
     setIsActive("");
+    setHasImage(false);
+    setHasLowStock(false);
+    setOutOfStock(false);
     onFiltersChange({});
   }
 
-  const hasActiveFilters = type !== "" || minPrice || maxPrice || isActive !== "";
+  const hasActiveFilters = type !== "" || minPrice || maxPrice || isActive !== "" || hasImage || hasLowStock || outOfStock;
 
   return (
     <div className="w-full rounded-xl border border-gray-200 bg-white shadow-sm transition-all duration-200 hover:shadow-md overflow-hidden">
@@ -135,22 +147,69 @@ export function FilterBar({ onFiltersChange, isLoading = false, isAdmin = false 
 
           {/* Status - Only for Admin */}
           {isAdmin && (
-            <div>
-              <label htmlFor="status-select" className="mb-2 block text-sm font-medium text-gray-700">
-                Status
-              </label>
-              <select
-                id="status-select"
-                value={isActive}
-                onChange={(e) => setIsActive(e.target.value as "" | "true" | "false")}
-                disabled={isLoading}
-                className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-50"
-              >
-                <option value="">Todos os status</option>
-                <option value="true">Ativado</option>
-                <option value="false">Desativado</option>
-              </select>
-            </div>
+            <>
+              <div>
+                <label htmlFor="status-select" className="mb-2 block text-sm font-medium text-gray-700">
+                  Status
+                </label>
+                <select
+                  id="status-select"
+                  value={isActive}
+                  onChange={(e) => setIsActive(e.target.value as "" | "true" | "false")}
+                  disabled={isLoading}
+                  className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-50"
+                >
+                  <option value="">Todos os status</option>
+                  <option value="true">Ativado</option>
+                  <option value="false">Desativado</option>
+                </select>
+              </div>
+
+              {/* Image Filter */}
+              <div className="flex items-center gap-3">
+                <input
+                  id="image-check"
+                  type="checkbox"
+                  checked={hasImage}
+                  onChange={(e) => setHasImage(e.target.checked)}
+                  disabled={isLoading}
+                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer disabled:opacity-50"
+                />
+                <label htmlFor="image-check" className="text-sm font-medium text-gray-700 cursor-pointer">
+                  Sem Imagem
+                </label>
+              </div>
+
+              {/* Low Stock Filter */}
+              <div className="flex items-center gap-3">
+                <input
+                  id="lowstock-check"
+                  type="checkbox"
+                  checked={hasLowStock}
+                  onChange={(e) => setHasLowStock(e.target.checked)}
+                  disabled={isLoading}
+                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer disabled:opacity-50"
+                />
+                <label htmlFor="lowstock-check" className="text-sm font-medium text-gray-700 cursor-pointer">
+                  Estoque Baixo
+                </label>
+              </div>
+
+              {/* Out of Stock Filter */}
+              <div className="flex items-center gap-3">
+                <input
+                  id="outofstock-check"
+                  type="checkbox"
+                  checked={outOfStock}
+                  onChange={(e) => setOutOfStock(e.target.checked)}
+                  disabled={isLoading}
+                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer disabled:opacity-50"
+                />
+                <label htmlFor="outofstock-check" className="text-sm font-medium text-gray-700 cursor-pointer">
+                  Sem Estoque
+                </label>
+              </div>
+            </>
           )}
 
           

@@ -33,6 +33,9 @@ export function AdminProducts() {
     minPrice: filters.minPrice,
     maxPrice: filters.maxPrice,
     isActive: filters.isActive,
+    hasImage: filters.hasImage,
+    hasLowStock: filters.hasLowStock,
+    outOfStock: filters.outOfStock,
   });
   const { toggleProductStatus } = useProductActions();
 
