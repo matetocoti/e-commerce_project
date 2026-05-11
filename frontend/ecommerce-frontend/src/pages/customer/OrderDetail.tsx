@@ -132,6 +132,10 @@ export function OrderDetail() {
       <PixPaymentModal
         isOpen={isPixPaymentModalOpen}
         onClose={() => setIsPixPaymentModalOpen(false)}
+        onBack={() => {
+          setIsPixPaymentModalOpen(false);
+          setIsPaymentMethodModalOpen(true);
+        }}
         onGeneratePayment={handleGeneratePixPayment}
         isLoading={isGeneratingPayment}
         orderTotal={order?.totalAmount ? `R$ ${order.totalAmount.toFixed(2).replace('.', ',')}` : "R$ 0,00"}
