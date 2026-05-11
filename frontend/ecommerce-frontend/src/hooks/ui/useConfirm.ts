@@ -45,7 +45,7 @@ export function useConfirm() {
         variant: options.variant || "info",
         confirmButtonVariant: options.confirmButtonVariant,
         onConfirm: options.onConfirm,
-        onCancel: options.onCancel || (() => close()),
+        onCancel: options.onCancel || (() => setState(prev => ({ ...prev, isOpen: false }))),
       }));
     },
     []

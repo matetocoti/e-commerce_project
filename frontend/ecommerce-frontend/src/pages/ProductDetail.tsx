@@ -13,6 +13,7 @@ import { ProductInfoCard } from "../components/product/ProductInfoCard";
 import { AccordionItem } from "../components/ui/AccordionItem";
 
 
+
 export function ProductDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -79,7 +80,7 @@ export function ProductDetail() {
     );
   }
 
-  const imageSrc = product.imageUrl || "/placeholder-tech.png";
+  const imageSrc = product.imageUrl || null;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8">
@@ -89,6 +90,7 @@ export function ProductDetail() {
       </Button>
 
       <div className="grid gap-8 md:grid-cols-2">
+
         <ProductImage src={imageSrc} alt={product.name} />
 
         <div className="space-y-6">
