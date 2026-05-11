@@ -36,15 +36,19 @@ export async function apiFetch<T>(endpoint: string,options: ApiFetchOptions = {}
   });
 
   if (!response.ok) {
-    let message = "Erro na requisição";
+    let message = `Erro ${response.status}: ${response.statusText || "Erro desconhecido"}`;
 
     try {
       const errorData = await response.json();
-      message = errorData.message ?? errorData.title ?? message;
+      const errorMessage = errorData.message ?? errorData.title ?? errorData.detail;
+      if (errorMessage) {
+        message = errorMessage;
+      }
     } catch {
-      message = response.statusText || message;
+      // Se não conseguir parsear JSON, usa a mensagem padrão
     }
 
+    console.error(`API Error [${response.status}] ${endpoint}:`, message);
     throw new Error(message);
   }
 

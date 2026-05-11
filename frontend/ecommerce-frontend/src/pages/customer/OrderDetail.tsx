@@ -74,9 +74,13 @@ export function OrderDetail() {
     
     setIsGeneratingPayment(true);
     try {
-      await handlePayment(pendingOrderId);
-      setIsPixPaymentModalOpen(false);
-      setPendingOrderId(null);
+      const success = await handlePayment(pendingOrderId);
+      
+      // Só fecha os modais se o pagamento foi bem-sucedido
+      if (success) {
+        setIsPixPaymentModalOpen(false);
+        setPendingOrderId(null);
+      }
     } finally {
       setIsGeneratingPayment(false);
     }

@@ -79,6 +79,17 @@ public class Order
         UpdatedAt = DateTime.UtcNow;
     }
 
+
+
+    // TODO:
+    // Expiration currently relies only on ExpiresAt comparison.
+    // This can create inconsistent states where the order is expired by time
+    // but still marked as AwaitingPayment.
+    // Future improvement:
+    // - Synchronize expiration state with OrderStatus
+    // - Centralize expiration validation
+    // - Prevent payments after expiration consistently
+    // - Add automatic expiration handling (background job / scheduler)
     public void Expire()
     {
         if (Status != OrderStatus.AwaitingPayment)

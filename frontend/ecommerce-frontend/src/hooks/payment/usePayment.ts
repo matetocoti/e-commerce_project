@@ -46,8 +46,9 @@ export function usePayment(options?: UsePaymentOptions) {
       toast.success("Pagamento realizado com sucesso!");
       await options?.onSuccess?.();
     }
+
+    return success;
   };
-  
   return {
     payOrder,
     handlePayment,
