@@ -62,28 +62,28 @@ export function FilterBar({ onFiltersChange, isLoading = false, isAdmin = false 
   const hasActiveFilters = type !== "" || minPrice || maxPrice || isActive !== "" || hasImage || hasLowStock || outOfStock;
 
   return (
-    <div className="w-full rounded-xl border border-gray-200 bg-white shadow-sm transition-all duration-200 hover:shadow-md overflow-hidden">
+    <div className="w-full rounded-2xl border border-gray-200/80 bg-white shadow-sm transition-all duration-300 hover:shadow-md hover:border-gray-300/80 overflow-hidden">
       
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className={`flex w-full items-center justify-between p-3 sm:p-4 transition-colors hover:bg-gray-50 focus:outline-none ${isExpanded ? "border-b border-gray-100" : ""}`}
+        className={`flex w-full items-center justify-between p-4 sm:p-5 transition-colors hover:bg-gray-50/50 focus:outline-none ${isExpanded ? "border-b border-gray-100 bg-gray-50/30" : ""}`}
         disabled={isLoading}
       >
-        <div className="flex items-center gap-2 sm:gap-3">
-          <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
-            <Filter className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 text-blue-600 shadow-sm border border-blue-100/50">
+            <Filter className="h-4 w-4 sm:h-5 sm:w-5" />
           </div>
-          <span className="font-semibold text-gray-700 text-sm sm:text-base">
-            Filtros
+          <span className="font-bold text-gray-800 text-sm sm:text-base tracking-wide flex items-center">
+            Filtros & Pesquisa
             {hasActiveFilters && (
-              <span className="ml-2 sm:ml-3 inline-flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full bg-blue-600 text-[10px] sm:text-[11px] font-bold text-white shadow-sm">
+              <span className="ml-3 inline-flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full bg-blue-600 text-[11px] sm:text-xs font-black text-white shadow-sm ring-2 ring-white">
                 {Number(type !== "") + Number(!!minPrice) + Number(!!maxPrice) + Number(isActive !== "") + Number(hasImage) + Number(hasLowStock) + Number(outOfStock)}
               </span>
             )}
           </span>
         </div>
-        <div className={`rounded-full p-1.5 transition-colors ${isExpanded ? "bg-gray-100 text-gray-700" : "text-gray-400 hover:bg-gray-100 hover:text-gray-600"}`}>
-          <ChevronDown className={`h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`} />
+        <div className={`rounded-full p-2 transition-all duration-300 ${isExpanded ? "bg-white shadow-sm border border-gray-200 text-gray-800" : "bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-700"}`}>
+          <ChevronDown className={`h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-500 ease-out ${isExpanded ? "rotate-180" : ""}`} />
         </div>
       </button>
 

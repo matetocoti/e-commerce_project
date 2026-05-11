@@ -98,15 +98,17 @@ export function AdminProducts() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-6 p-4 sm:p-6 lg:p-8">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Gerenciar produtos</h1>
-          <p className="text-muted-foreground">
-            Visualize, edite e gerencie os produtos cadastrados.
+          <h1 className="text-3xl font-black tracking-tight text-gray-900">Gerenciar Produtos</h1>
+          <p className="text-gray-500 mt-1 font-medium">
+            Visualize, edite e gerencie o inventário da loja.
           </p>
         </div>
         <Link to="/admin/products/create">
-          <Button>+ Criar Produto</Button>
+          <Button className="w-full sm:w-auto shadow-md hover:shadow-lg transition-all rounded-lg font-semibold bg-blue-600 hover:bg-blue-700">
+            <span className="text-lg mr-1 leading-none">+</span> Criar Produto
+          </Button>
         </Link>
       </div>
 

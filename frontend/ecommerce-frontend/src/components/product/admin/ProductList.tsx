@@ -17,7 +17,7 @@ export function ProductList({products, onActivate, onDeactivate}: Readonly<Admin
   }
 
   return (
-    <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {products.map((product) => (
         <ProductCard
           key={product.id}
