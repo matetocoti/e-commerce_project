@@ -42,25 +42,7 @@ public class AdminProductController(ProductService productService) : ControllerB
         return Ok(updatedProduct);
     }
 
-
-    #region Delete after frontend implementation
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeactivateProduct(Guid id)
-    {
-        await productService.DeactivateProductAsync(id);
-        return NoContent();
-    }
-
-    [HttpPost("{id}/activate")]
-    public async Task<IActionResult> ActivateProduct(Guid id)
-    {
-        await productService.ActivateProductAsync(id);
-        return NoContent();
-    }
-
-    #endregion
-
-    
+   
     [HttpPatch("{id}/toggle-status")]
     public async Task<IActionResult> ToggleProductStatus(Guid id)
     {

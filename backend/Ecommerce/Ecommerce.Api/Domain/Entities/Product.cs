@@ -60,26 +60,6 @@ public class Product
         UpdatedAt = DateTime.UtcNow;
     }
 
-    // TODO: Remove Activate/Deactivate methods in the future.
-    // ToggleActive should become the single source of truth for active state changes.
-    public void Deactivate()
-    {
-        if (!IsActive)
-            return;
-
-        IsActive = false;
-        UpdatedAt = DateTime.UtcNow;
-    }
-    public void Activate()
-    {
-        if (IsActive)
-            return;
-
-        IsActive = true;
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-
     public void ToggleStatus()
     {
         IsActive = !IsActive;

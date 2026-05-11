@@ -92,27 +92,6 @@ public class ProductService(AppDbContext context)
         return MapToAdminDto(product);
     }
 
-
-    #region Delete after frontend implementation
-    public async Task DeactivateProductAsync(Guid id)
-    {
-        var product = await context.Products.FirstOrDefaultAsync(p => p.Id == id);
-        if (product == null)
-            throw new NotFoundException("Product Not Found!");
-        product.Deactivate();
-        await context.SaveChangesAsync();
-    }
-
-    public async Task ActivateProductAsync(Guid id)
-    {
-        var product = await context.Products.FirstOrDefaultAsync(p => p.Id == id);
-        if (product == null)
-            throw new NotFoundException("Product Not Found!");
-        product.Activate();
-        await context.SaveChangesAsync();
-    }
-    #endregion
-
     public async Task ToggleProductStatusAsync(Guid id)
     {
         var product = await context.Products

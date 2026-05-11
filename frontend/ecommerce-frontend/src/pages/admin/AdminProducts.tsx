@@ -34,7 +34,7 @@ export function AdminProducts() {
     maxPrice: filters.maxPrice,
     isActive: filters.isActive,
   });
-  const { activateProduct, deactivateProduct } = useProductActions();
+  const { toggleProductStatus } = useProductActions();
 
   function handleSearchChange(event: React.ChangeEvent<HTMLInputElement>) {
     setSearchQuery(event.target.value);
@@ -53,7 +53,7 @@ export function AdminProducts() {
     const productName = products.find((p) => p.id === id)?.name;
 
     try {
-      await activateProduct(id);
+      await toggleProductStatus(id);
       updateProductLocal(id, { isActive: true });
       setDeleteSuccess(`Produto "${productName}" ativado com sucesso!`);
       setTimeout(() => setDeleteSuccess(null), 3000);
@@ -74,7 +74,7 @@ export function AdminProducts() {
     const productName = products.find((p) => p.id === id)?.name;
 
     try {
-      await deactivateProduct(id);
+      await toggleProductStatus(id);
       updateProductLocal(id, { isActive: false });
       setDeleteSuccess(`Produto "${productName}" desativado com sucesso!`);
       setTimeout(() => setDeleteSuccess(null), 3000);
