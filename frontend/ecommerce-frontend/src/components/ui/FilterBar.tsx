@@ -77,7 +77,7 @@ export function FilterBar({ onFiltersChange, isLoading = false, isAdmin = false 
             Filtros
             {hasActiveFilters && (
               <span className="ml-2 sm:ml-3 inline-flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full bg-blue-600 text-[10px] sm:text-[11px] font-bold text-white shadow-sm">
-                {Number(type !== "") + Number(!!minPrice) + Number(!!maxPrice) + Number(isActive !== "")}
+                {Number(type !== "") + Number(!!minPrice) + Number(!!maxPrice) + Number(isActive !== "") + Number(hasImage) + Number(hasLowStock) + Number(outOfStock)}
               </span>
             )}
           </span>
@@ -165,49 +165,51 @@ export function FilterBar({ onFiltersChange, isLoading = false, isAdmin = false 
                 </select>
               </div>
 
-              {/* Image Filter */}
-              <div className="flex items-center gap-3">
-                <input
-                  id="image-check"
-                  type="checkbox"
-                  checked={hasImage}
-                  onChange={(e) => setHasImage(e.target.checked)}
-                  disabled={isLoading}
-                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer disabled:opacity-50"
-                />
-                <label htmlFor="image-check" className="text-sm font-medium text-gray-700 cursor-pointer">
-                  Sem Imagem
-                </label>
-              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 pb-2 rounded-lg bg-gray-50 border border-gray-100 p-4">
+                <div className="flex items-center gap-3">
+                  <input
+                    id="image-check"
+                    type="checkbox"
+                    checked={hasImage}
+                    onChange={(e) => setHasImage(e.target.checked)}
+                    disabled={isLoading}
+                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer disabled:opacity-50 transition-colors"
+                  />
+                  <label htmlFor="image-check" className="text-sm font-medium text-gray-700 cursor-pointer select-none">
+                    Sem Imagem
+                  </label>
+                </div>
 
-              {/* Low Stock Filter */}
-              <div className="flex items-center gap-3">
-                <input
-                  id="lowstock-check"
-                  type="checkbox"
-                  checked={hasLowStock}
-                  onChange={(e) => setHasLowStock(e.target.checked)}
-                  disabled={isLoading}
-                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer disabled:opacity-50"
-                />
-                <label htmlFor="lowstock-check" className="text-sm font-medium text-gray-700 cursor-pointer">
-                  Estoque Baixo
-                </label>
-              </div>
+                
+                <div className="flex items-center gap-3">
+                  <input
+                    id="lowstock-check"
+                    type="checkbox"
+                    checked={hasLowStock}
+                    onChange={(e) => setHasLowStock(e.target.checked)}
+                    disabled={isLoading}
+                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer disabled:opacity-50 transition-colors"
+                  />
+                  <label htmlFor="lowstock-check" className="text-sm font-medium text-gray-700 cursor-pointer select-none">
+                    Estoque Baixo
+                  </label>
+                </div>
 
-              {/* Out of Stock Filter */}
-              <div className="flex items-center gap-3">
-                <input
-                  id="outofstock-check"
-                  type="checkbox"
-                  checked={outOfStock}
-                  onChange={(e) => setOutOfStock(e.target.checked)}
-                  disabled={isLoading}
-                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer disabled:opacity-50"
-                />
-                <label htmlFor="outofstock-check" className="text-sm font-medium text-gray-700 cursor-pointer">
-                  Sem Estoque
-                </label>
+                
+                <div className="flex items-center gap-3">
+                  <input
+                    id="outofstock-check"
+                    type="checkbox"
+                    checked={outOfStock}
+                    onChange={(e) => setOutOfStock(e.target.checked)}
+                    disabled={isLoading}
+                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer disabled:opacity-50 transition-colors"
+                  />
+                  <label htmlFor="outofstock-check" className="text-sm font-medium text-gray-700 cursor-pointer select-none">
+                    Sem Estoque
+                  </label>
+                </div>
               </div>
             </>
           )}
