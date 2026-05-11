@@ -4,7 +4,6 @@ import { Button } from "../../ui/Button";
 import { Badge } from "../../ui/Badge";
 import { ConfirmModal } from "../../ui/ConfirmModal";
 import { formatPrice } from "../../../utils/currency/formatPrice";
-import { formatDate } from "../../../utils/date/formatDate";
 import { Link } from "react-router-dom";
 import { useConfirm } from "../../../hooks/ui/useConfirm";
 

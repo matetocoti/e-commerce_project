@@ -1,4 +1,5 @@
 
+import { Logo } from "./ui/Logo";
 
 export function Footer() {
     const currentYear = new Date().getFullYear();
@@ -8,14 +9,11 @@ export function Footer() {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 md:grid-cols-4 lg:gap-12">
               <div className="flex flex-col space-y-3">
-                <div className="flex items-center gap-2">
-                  <div className="h-6 w-6 sm:h-8 sm:w-8 rounded bg-gradient-to-br from-blue-600 to-purple-600" />
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-900">TechStore</h3>
-                </div>
-                <p className="text-sm sm:text-base text-gray-500 leading-relaxed max-w-xs">
-                  Sua loja de tecnologia com os melhores produtos e preços do mercado.
-                </p>
-              </div>
+              <Logo size="sm" variant="light" />
+              <p className="text-sm sm:text-base text-gray-500 leading-relaxed max-w-xs">
+                Sua loja de tecnologia com os melhores produtos e preços do mercado.
+              </p>
+            </div>
 
               <div>
                 <h4 className="mb-4 sm:mb-5 font-semibold text-gray-900">Categorias</h4>

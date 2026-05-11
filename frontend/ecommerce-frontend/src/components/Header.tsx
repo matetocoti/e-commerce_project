@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
+import { Logo } from "./ui/Logo";
 import { Button } from "./ui/Button";
 import { NavigationMenu, type NavLinkItem } from "./ui/NavigationMenu";
 import { useAuth } from "../hooks/auth/useAuth";
@@ -44,12 +45,10 @@ export function Header({ cartItemsCount = 0 }: Readonly<HeaderProps>) {
     <header className="sticky top-0 z-50 w-full border-b bg-white shadow-sm">
       <div className="mx-auto max-w-7xl px-4">
         <div className="flex h-16 items-center justify-between gap-4">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded bg-gradient-to-br from-blue-600 to-purple-600" />
-            <span className="text-xl font-bold text-gray-900">TechStore</span>
+          <Link to="/" className="group flex items-center gap-2 transition-transform duration-200 hover:scale-[1.01] active:scale-[0.99]">
+            <Logo />
           </Link>
-
-          <nav className="hidden items-center gap-6 md:flex  border-gray-200 ">
+          <nav className="hidden items-center gap-6 border-gray-200 md:flex">
             <NavigationMenu
               navLinks={navLinks}
               currentPath={location.pathname}

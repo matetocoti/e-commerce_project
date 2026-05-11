@@ -3,12 +3,12 @@ import { Link, useLocation } from "react-router-dom";
 import { LogOut, Store, Menu, X } from "lucide-react";
 import { useAuth } from "../hooks/auth/useAuth";
 import { Button } from "./ui/Button";
+import { Logo } from "./ui/Logo";
 import { NavigationMenu, type NavLinkItem } from "./ui/NavigationMenu";
 
 const navLinks: NavLinkItem[] = [
   //{ path: "/admin/products", label: "Produtos", icon: Package },
 ];
-
 
 export function AdminHeader() {
   const { user, logout } = useAuth();
@@ -24,15 +24,16 @@ export function AdminHeader() {
     <header className="sticky top-0 z-50 w-full border-b border-gray-700 bg-gray-900">
       <div className="mx-auto max-w-7xl px-4">
         <div className="flex h-16 items-center justify-between gap-4">
-          <Link to="/admin/products" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded bg-gradient-to-br from-blue-600 to-purple-600" />
-            <div className="flex flex-col">
-              <span className="text-lg font-bold text-white">TechStore</span>
-              <span className="text-xs text-gray-400">Admin</span>
-            </div>
+          <Link
+            to="/admin/products"
+            className="group flex items-center gap-3 transition-transform duration-200 hover:scale-[1.01] active:scale-[0.99]"
+          >
+            <Logo size="md" variant="white" />
+            <span className="rounded-md border border-blue-400/20 bg-blue-500/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-widest text-blue-300 shadow-sm transition-all duration-200 group-hover:border-blue-300/40 group-hover:bg-blue-500/15">
+              Admin
+            </span>
           </Link>
-
-          <nav className="hidden items-center gap-6 md:flex  border-gray-700 ">
+          <nav className="hidden items-center gap-6 border-gray-700 md:flex">
             <NavigationMenu
               navLinks={navLinks}
               currentPath={pathname}
@@ -92,7 +93,9 @@ export function AdminHeader() {
             />
 
             <div className="border-t border-gray-700 pt-2">
-              <div className="px-4 py-2 text-sm text-gray-400">{user?.username}</div>
+              <div className="px-4 py-2 text-sm text-gray-400">
+                {user?.username}
+              </div>
 
               <Link
                 to="/"
