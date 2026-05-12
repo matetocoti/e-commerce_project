@@ -55,11 +55,11 @@ export function OrderActions({
           </>
         )}
       </Button>
-      <Link to="/orders" className="w-full">
+      <Link to="/orders" className="w-full text-center mt-2 text-sm text-gray-500 ">
         <Button
           variant="outline"
           disabled={paymentLoading || cancelLoading}
-          className="w-full"
+          className="w-full border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Voltar para pedidos
         </Button>
