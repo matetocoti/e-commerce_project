@@ -47,7 +47,7 @@ public class Order
         Status = OrderStatus.AwaitingPayment;
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = CreatedAt;
-        ExpiresAt = CreatedAt.AddHours(1);
+        ExpiresAt = CreatedAt.AddMinutes(2);
     }
     #endregion
 
@@ -79,44 +79,41 @@ public class Order
         UpdatedAt = DateTime.UtcNow;
     }
 
+    
+    public bool IsExpired()
+    {
+        return DateTime.UtcNow >= ExpiresAt;
+    }
 
-
-    // TODO:
-    // Expiration currently relies only on ExpiresAt comparison.
-    // This can create inconsistent states where the order is expired by time
-    // but still marked as AwaitingPayment.
-    // Future improvement:
-    // - Synchronize expiration state with OrderStatus
-    // - Centralize expiration validation
-    // - Prevent payments after expiration consistently
-    // - Add automatic expiration handling (background job / scheduler)
     public void Expire()
     {
+        if (Status == OrderStatus.Expired)
+            throw new DomainException("Order is already expired.");
+
         if (Status != OrderStatus.AwaitingPayment)
-            return;
+            throw new DomainException("Only orders awaiting payment can be expired.");
 
         Status = OrderStatus.Expired;
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public bool IsExpired()
+    private void EnsureCanReceivePayment()
     {
-        return DateTime.UtcNow > ExpiresAt;
+        if (IsExpired())
+            throw new DomainException("Order has expired and cannot receive payments.");
+
+        if (Status != OrderStatus.AwaitingPayment)
+            throw new DomainException("Order is not awaiting payment.");
+
+        if (Payments.Any(p => p.Status == PaymentStatus.Confirmed))
+            throw new DomainException("Order already has a confirmed payment.");
     }
 
     public void AddPayment(Payment payment)
     {
-        if (payment == null)
-            throw new DomainException("Payment is required");
+        ArgumentNullException.ThrowIfNull(payment, nameof(payment));
 
-        if (Status != OrderStatus.AwaitingPayment)
-            throw new DomainException("Cannot add payment to an order that is not awaiting payment");
-
-        if (IsExpired())
-            throw new DomainException("Cannot add payment to an expired order");
-
-        if (Payments.Any(p => p.Status == PaymentStatus.Confirmed))
-            throw new DomainException("Order already has a confirmed payment");
+        EnsureCanReceivePayment();
 
         Payments.Add(payment);
         UpdatedAt = DateTime.UtcNow;

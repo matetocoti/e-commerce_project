@@ -111,14 +111,22 @@ public class OrderService(AppDbContext context)
         if (order.Status != OrderStatus.AwaitingPayment)
             throw new BadRequestException("Only orders awaiting payment can be cancelled.");
 
-        foreach (var item in order.OrderItems)
-        {
-            item.Product.IncreaseStock(item.Quantity);
-        }
+        StockReplenishmentTask(order);
 
         order.Status = OrderStatus.Cancelled;
         order.UpdatedAt = DateTime.UtcNow;
 
+        await _context.SaveChangesAsync();
+    }
+
+    
+    private async Task ExpireOrderAsync(Order order)
+    {
+        if (order.Status != OrderStatus.AwaitingPayment)
+            throw new BadRequestException("Only orders awaiting payment can be expired.");
+        order.Status = OrderStatus.Expired;
+        order.UpdatedAt = DateTime.UtcNow;
+        StockReplenishmentTask(order);
         await _context.SaveChangesAsync();
     }
     public async Task<List<OrderDto>> GetOrdersByUserIdAsync(Guid userId, int page = 1,int pageSize = 5){
@@ -129,7 +137,6 @@ public class OrderService(AppDbContext context)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
-
         return orders.Select(MapToDto).ToList();
     }
     public async Task<OrderDto> GetOrderByIdAsync(Guid orderId)
@@ -138,7 +145,7 @@ public class OrderService(AppDbContext context)
             .Include(o => o.OrderItems)
             .FirstOrDefaultAsync(o => o.Id == orderId);
         if (order == null)
-            throw new Exception("Order not found");
+            throw new NotFoundException("Order not found.");
         return MapToDto(order);
     }
     private OrderDto MapToDto(Order order)
@@ -161,5 +168,13 @@ public class OrderService(AppDbContext context)
                 Subtotal = item.Subtotal
             }).ToList()
         };
+    }
+
+    private void StockReplenishmentTask(Order order)
+    {
+        foreach (var item in order.OrderItems)
+        {
+            item.Product.IncreaseStock(item.Quantity);
+        }
     }
 }

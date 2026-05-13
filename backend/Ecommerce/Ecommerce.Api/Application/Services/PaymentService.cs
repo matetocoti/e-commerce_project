@@ -14,13 +14,14 @@ public class PaymentService(AppDbContext context)
 
     public async Task PayOrderAsync(Guid userId, Guid orderId, PaymentMethod method)
     {
+        
         var order = await GetOrderAsync(userId, orderId);
        
         var payment = CreatePayment(order, method);
         order.AddPayment(payment);
 
-        context.Payments.Add(payment);
 
+        context.Payments.Add(payment);
         await context.SaveChangesAsync();
     }
 
@@ -28,11 +29,13 @@ public class PaymentService(AppDbContext context)
 
     #region private methods
 
+   
     private async Task<Order> GetOrderAsync(Guid userId, Guid orderId)
     {
         var order = await context.Orders
             .Include(o => o.Payments)
             .FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == userId);
+         
 
         if (order == null)
             throw new NotFoundException("Order not found.");
