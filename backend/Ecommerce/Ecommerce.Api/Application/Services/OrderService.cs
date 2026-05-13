@@ -120,12 +120,49 @@ public class OrderService(AppDbContext context)
     }
 
     // It will be called by a background service to expire orders that have passed their expiration time
-    public async Task ExpireOrderAsync(Order order)
+    public async Task ExpireOrderAsync(Guid orderId)
     {
+        var order = await _context.Orders.FindAsync(orderId);
+        
+        if (order == null)
+            throw new NotFoundException("Order not found.");
+
         order.Expire();
-        StockReplenishmentTask(order);
+        _context.Orders.Update(order);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<int> ExpireAllExpiredOrdersAsync()
+    {
+        var expiredOrders = await _context.Orders
+            .Where(o => o.Status == OrderStatus.AwaitingPayment && DateTime.UtcNow >= o.ExpiresAt)
+            .ToListAsync();
+
+        if (!expiredOrders.Any())
+            return 0;
+
+        foreach (var order in expiredOrders)
+        {
+            order.Expire();
+        }
+
+        _context.Orders.UpdateRange(expiredOrders);
+        await _context.SaveChangesAsync();
+
+        return expiredOrders.Count;
+    }
+
+    public async Task<List<OrderDto>> GetPendingExpirationOrdersAsync()
+    {
+        var orders = await _context.Orders
+            .Where(o => o.Status == OrderStatus.AwaitingPayment && DateTime.UtcNow < o.ExpiresAt)
+            .Include(o => o.OrderItems)
+            .OrderBy(o => o.ExpiresAt)
+            .ToListAsync();
+
+        return orders.Select(MapToDto).ToList();
+    }
+
     public async Task<List<OrderDto>> GetOrdersByUserIdAsync(Guid userId, int page = 1,int pageSize = 5){
         var orders = await _context.Orders
             .Include(o => o.OrderItems)
@@ -166,7 +203,6 @@ public class OrderService(AppDbContext context)
             }).ToList()
         };
     }
-
     private void StockReplenishmentTask(Order order)
     {
         foreach (var item in order.OrderItems)
