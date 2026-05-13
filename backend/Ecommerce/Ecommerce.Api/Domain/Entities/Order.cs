@@ -87,14 +87,16 @@ public class Order
 
     public void Expire()
     {
+      
         if (Status == OrderStatus.Expired)
             throw new DomainException("Order is already expired.");
-
         if (Status != OrderStatus.AwaitingPayment)
             throw new DomainException("Only orders awaiting payment can be expired.");
-
-        Status = OrderStatus.Expired;
-        UpdatedAt = DateTime.UtcNow;
+        if (IsExpired())
+        {
+            Status = OrderStatus.Expired;
+            UpdatedAt = DateTime.UtcNow;
+        }
     }
 
     private void EnsureCanReceivePayment()

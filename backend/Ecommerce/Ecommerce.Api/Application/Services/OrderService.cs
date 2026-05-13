@@ -119,13 +119,10 @@ public class OrderService(AppDbContext context)
         await _context.SaveChangesAsync();
     }
 
-    
-    private async Task ExpireOrderAsync(Order order)
+    // It will be called by a background service to expire orders that have passed their expiration time
+    public async Task ExpireOrderAsync(Order order)
     {
-        if (order.Status != OrderStatus.AwaitingPayment)
-            throw new BadRequestException("Only orders awaiting payment can be expired.");
-        order.Status = OrderStatus.Expired;
-        order.UpdatedAt = DateTime.UtcNow;
+        order.Expire();
         StockReplenishmentTask(order);
         await _context.SaveChangesAsync();
     }
