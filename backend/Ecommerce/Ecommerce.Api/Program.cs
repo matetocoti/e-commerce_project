@@ -3,6 +3,7 @@ using Ecommerce.Api.Api.Middleware;
 using Ecommerce.Api.Application.Common.Interfaces;
 using Ecommerce.Api.Application.Common.Security;
 using Ecommerce.Api.Application.Services;
+using Ecommerce.Api.Application.Services.Background;
 using Ecommerce.Api.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -43,6 +44,7 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddHostedService<OrderExpirationService>();
+builder.Services.AddHostedService<ProductStockManagementService>();
 
 var jwtKey = builder.Configuration["Jwt:Key"];
 if (string.IsNullOrEmpty(jwtKey))
