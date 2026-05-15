@@ -33,7 +33,6 @@ export function useOrder({ id }: Readonly<UseOrderParams> ) {
       setLoading(false);
     }
   }, [id]);
-
   const isOrderPaid = () => {
     return order?.status === "Paid";
   };

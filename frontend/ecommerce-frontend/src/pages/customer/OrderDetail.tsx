@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { usePayment } from "../../hooks/payment/usePayment";
 import { useCancel } from "../../hooks/order/useCancel";
 import { useConfirm } from "../../hooks/ui/useConfirm";
+import { usePolling } from "../../hooks/ui/usePolling";
 import { PaymentProgress } from "../../components/payment/PaymentProgress";
 import { PaymentLoadingModal } from "../../components/payment/PaymentLoadingModal";
 import { PaymentMethodModal } from "../../components/payment/PaymentMethodModal";
@@ -15,6 +16,7 @@ import { OrderItemsSection } from "../../components/order/OrderItemsSection";
 import { OrderAddressSection } from "../../components/order/OrderAddressSection";
 import { OrderSummary } from "../../components/order/OrderSummary";
 import { OrderActions } from "../../components/order/OrderActions";
+
 
 import { useOrder } from "../../hooks/order/useOrder";
 import { Button } from "../../components/ui/Button";
@@ -69,24 +71,35 @@ export function OrderDetail() {
     setIsPixPaymentModalOpen(true);
   };
 
-  const handleGeneratePixPayment = async () => {
-    if (!pendingOrderId) return;
-    
-    setIsGeneratingPayment(true);
-    try {
-      const success = await handlePayment(pendingOrderId);
-      
-      // Só fecha os modais se o pagamento foi bem-sucedido
-      if (success) {
-        setIsPixPaymentModalOpen(false);
-        setPendingOrderId(null);
-      }
-    } finally {
-      setIsGeneratingPayment(false);
-    }
-  };
+ const handleGeneratePixPayment = async () => {
+   if (!pendingOrderId) return;
 
+   setIsGeneratingPayment(true);
+   try {
+     const success = await handlePayment(pendingOrderId);
+
+     if (success) {
+       setIsPixPaymentModalOpen(false);
+       setPendingOrderId(null);
+     }
+   } finally {
+     setIsGeneratingPayment(false);
+   }
+ };
   
+  
+  function shouldPoll() {
+    return (
+      !!order &&
+      !isPaid() &&
+      order.status !== "Cancelled" &&
+      order.status !== "Expired"
+    );
+  }
+  
+  usePolling(() => reloadOrder(), 10000, shouldPoll());
+  
+
   if (loading) {
     return (
       <div className="mx-auto max-w-5xl px-4 py-10">
