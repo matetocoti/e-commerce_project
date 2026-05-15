@@ -1,0 +1,10 @@
+﻿namespace Ecommerce.Api.Application.DTOS.Payment;
+using Ecommerce.Api.Domain.Enums;
+
+public class PaymentDto
+{
+    public Guid Id { get; set; }
+    public decimal Amount { get; set; }
+    public PaymentMethod Method { get; set; }
+    public DateTime ?PaidAt { get; set; } 
+}

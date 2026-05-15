@@ -3,6 +3,7 @@ using Ecommerce.Api.Domain.Entities;
 using Ecommerce.Api.Domain.Enums;
 using Ecommerce.Api.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Ecommerce.Api.Application.DTOS.Payment;
 
 namespace Ecommerce.Api.Application.Services;
 
@@ -25,11 +26,14 @@ public class PaymentService(AppDbContext context)
         await context.SaveChangesAsync();
     }
 
+
+    
+
     #endregion
 
     #region private methods
 
-   
+
     private async Task<Order> GetOrderAsync(Guid userId, Guid orderId)
     {
         var order = await context.Orders
@@ -73,6 +77,6 @@ public class PaymentService(AppDbContext context)
     }
 
     #endregion
-
+   
     
 }

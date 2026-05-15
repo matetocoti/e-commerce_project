@@ -5,10 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-/// <summary>
-/// Serviço em background que desativa automaticamente produtos com estoque zerado.
-/// Executa a cada 5 minutos para manter o catálogo atualizado.
-/// </summary>
+
 public class ProductStockManagementService : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;

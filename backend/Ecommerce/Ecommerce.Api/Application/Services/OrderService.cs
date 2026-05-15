@@ -3,6 +3,7 @@
 using Ecommerce.Api.Application.Common.Security;
 using Ecommerce.Api.Application.DTOS.Order;
 using Ecommerce.Api.Application.DTOS.OrderItem;
+using Ecommerce.Api.Application.DTOS.Payment;
 using Ecommerce.Api.Application.Exceptions;
 using Ecommerce.Api.Domain.Entities;
 using Ecommerce.Api.Domain.Entities.ValueObject;
@@ -134,11 +135,14 @@ public class OrderService(AppDbContext context)
     {
         var order = await _context.Orders
             .Include(o => o.OrderItems)
+            .Include(o => o.Payments)
             .FirstOrDefaultAsync(o => o.Id == orderId);
         if (order == null)
             throw new NotFoundException("Order not found.");
         return MapToDto(order);
     }
+
+    // TODO: Create separate DTOs for order list and order details views.
     private OrderDto MapToDto(Order order)
     {
         return new OrderDto
@@ -157,7 +161,14 @@ public class OrderService(AppDbContext context)
                 UnitPrice = item.UnitPrice,
                 Quantity = item.Quantity,
                 Subtotal = item.Subtotal
-            }).ToList()
+            }).ToList(),
+            Payments = order.Payments.Select(payment => new PaymentDto
+            {
+                Id = payment.Id,
+                Amount = payment.Amount,
+                Method = payment.Method,
+                PaidAt = payment.ConfirmedAt
+            }).ToList(),
         };
     }
     private void StockReplenishmentTask(Order order)
