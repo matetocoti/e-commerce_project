@@ -1,6 +1,7 @@
 import { X, Copy, Check, QrCode } from "lucide-react";
 import { useState } from "react";
 import { Button } from "../ui/Button";
+import { formatPrice } from "../../utils/currency/formatPrice";
 
 interface PixPaymentModalProps {
   readonly isOpen: boolean;
@@ -86,7 +87,7 @@ export function PixPaymentModal({
           {/* Valor Section */}
           <div className="rounded-xl bg-gradient-to-br from-blue-50 to-blue-100/50 border border-blue-200/50 p-3 sm:p-4">
             <p className="text-xs sm:text-sm font-medium text-gray-600">Valor a pagar</p>
-            <p className="text-2xl sm:text-2xl font-bold text-blue-700 mt-1">{orderTotal}</p>
+            <p className="text-2xl sm:text-2xl font-bold text-blue-700 mt-1">{formatPrice(+orderTotal)}</p>
           </div>
 
           {/* PIX Key Section */}

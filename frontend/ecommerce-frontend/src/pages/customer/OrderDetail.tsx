@@ -21,6 +21,8 @@ import { OrderActions } from "../../components/order/OrderActions";
 import { useOrder } from "../../hooks/order/useOrder";
 import { Button } from "../../components/ui/Button";
 
+import { formatPrice } from "../../utils/currency/formatPrice";
+
 
 export function OrderDetail() {
   const { id } = useParams<{ id: string }>();
@@ -155,7 +157,7 @@ export function OrderDetail() {
         }}
         onGeneratePayment={handleGeneratePixPayment}
         isLoading={isGeneratingPayment}
-        orderTotal={order?.totalAmount ? `R$ ${order.totalAmount.toFixed(2).replace('.', ',')}` : "R$ 0,00"}
+        orderTotal={order?.totalAmount ? `R$ ${formatPrice(order.totalAmount)}` : "R$ 0,00"}
         orderId={order?.id ?? ""}
       />
       <PaymentLoadingModal isOpen={paymentLoading} />

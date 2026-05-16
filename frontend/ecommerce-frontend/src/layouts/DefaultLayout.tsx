@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import { useEffect } from "react";
+import { usePolling } from "../hooks/ui/usePolling";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { AppToaster } from "../components/ui/AppToaster";
@@ -9,13 +9,7 @@ export function DefaultLayout() {
   const { cart, reloadCart } = useCart();
   const cartCount = cart?.items?.length ?? 0;
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      void reloadCart();
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, [reloadCart]);
+  usePolling(() => reloadCart(), 2000);
   
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
