@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { ShoppingCart, PackageOpen, CreditCard } from "lucide-react";
 
 import { Card } from "../../components/ui/Card";
 import { CartItemRow } from "../../components/cart/CartItemRow";
@@ -13,6 +14,7 @@ import { useAccount } from "../../hooks/account/useAccount";
 import { ProductType } from "../../types/product";
 import { toast } from "sonner";
 
+// Todo: Refactor this page into separate components for better readability and maintainability. 
 export function Cart() {
   const navigate = useNavigate();
   const { user } = useAccount();
@@ -44,6 +46,7 @@ export function Cart() {
 
   const items = cart?.items ?? [];
   const total = items.reduce((sum, item) => sum + item.subtotal, 0);
+  const itemCount = items.reduce((count, item) => count + item.quantity, 0);
 
   const submitting = cartSubmitting || checkoutSubmitting;
 
@@ -107,87 +110,133 @@ export function Cart() {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-10">
-        <p className="text-gray-600">Carregando carrinho...</p>
+      <div className="mx-auto flex max-w-6xl min-h-[50vh] flex-col items-center justify-center px-4 py-10">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
+        <p className="mt-4 text-gray-500">Carregando seu carrinho...</p>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-10">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Carrinho</h1>
-        <p className="mt-2 text-gray-600">
-          Veja os itens adicionados antes de finalizar sua compra.
+    <div className="mx-auto flex min-h-[50vh] max-w-6xl flex-col gap-6 px-4 py-10 sm:px-6 sm:py-12 lg:px-8 xl:gap-8">
+      <div className="mb-3">
+        <h1 className="flex items-center gap-3 text-3xl font-bold tracking-tight text-gray-900">
+          <ShoppingCart className="h-8 w-8 text-blue-600" />
+          Meu Carrinho
+        </h1>
+        <p className="mt-1 text-sm text-gray-500">
+          Confira seus itens e preencha os dados para finalizar a compra.
         </p>
       </div>
 
       {cartError && (
-        <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {cartError}
+        <div className="mb-8 flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 shadow-sm">
+          <span>{cartError}</span>
         </div>
       )}
 
       {checkoutError && (
-        <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {checkoutError}
+        <div className="mb-8 flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 shadow-sm">
+          <span>{checkoutError}</span>
         </div>
       )}
 
       {items.length === 0 ? (
-        <Card className="p-8">
-          <p className="text-gray-600">Seu carrinho está vazio.</p>
+        <Card className="flex flex-col items-center justify-center overflow-hidden border-dashed py-16 text-center shadow-none bg-gray-50/50">
+          <div className="mb-4 rounded-full bg-blue-50 p-4 text-blue-600">
+            <PackageOpen className="h-10 w-10" />
+          </div>
+          <h2 className="text-xl font-semibold text-gray-900">Seu carrinho está vazio</h2>
+          <p className="mt-2 max-w-md text-gray-500">
+            Parece que você ainda não adicionou nenhum produto. Navegue pela nossa loja e encontre o que precisa.
+          </p>
+          <button 
+            onClick={() => navigate('/')} 
+            className="mt-6 rounded-lg bg-blue-600 px-6 py-2.5 font-medium text-white transition-colors hover:bg-blue-700"
+          >
+            Continuar Comprando
+          </button>
         </Card>
       ) : (
-        <div className="space-y-6">
-          <Card className="p-6">
-            <div className="space-y-4">
-              {items.map((item) => (
-                <CartItemRow
-                  key={item.productId}
-                  item={item}
-                  disabled={submitting}
-                  onDecrease={(productId) => void removeItem(productId, 1)}
-                  onIncrease={(productId) => void addItem(productId, 1)}
-                />
-              ))}
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 items-start">
+          <div className="space-y-6 lg:col-span-8">
+            <Card className="overflow-hidden border-gray-200 shadow-sm transition-shadow hover:shadow-md">
+              <div className="border-b border-gray-100 bg-gray-50/50 px-6 py-4">
+                <h2 className="text-lg font-semibold text-gray-900">Itens do Pedido</h2>
+              </div>
+              <div className="p-6">
+                <div className="space-y-6">
+                  {items.map((item) => (
+                    <CartItemRow
+                      key={item.productId}
+                      item={item}
+                      disabled={submitting}
+                      onDecrease={(productId) => void removeItem(productId, 1)}
+                      onIncrease={(productId) => void addItem(productId, 1)}
+                    />
+                  ))}
+                </div>
+              </div>
+            </Card>
+
+            <Card className="overflow-hidden border-gray-200 shadow-sm transition-shadow hover:shadow-md">
+              <div className="border-b border-gray-100 bg-gray-50/50 px-6 py-4">
+                <h2 className="text-lg font-semibold text-gray-900">Dados da Entrega</h2>
+              </div>
+              <div className="p-6">
+                {hasPhysicalProducts && (
+                  <div className="mb-2">
+                    <PhysicalOrderForm
+                      street={street}
+                      city={city}
+                      zipCode={zipCode}
+                      state={state}
+                      notes={notes}
+                      onStreetChange={setStreet}
+                      onCityChange={setCity}
+                      onZipCodeChange={setZipCode}
+                      onStateChange={setState}
+                      onNotesChange={setNotes}
+                    />
+                  </div>
+                )}
+
+                {hasDigitalProducts && (
+                  <div className="mt-2">
+                    <DigitalOrderForm
+                      email={email}
+                      phoneNumber={phoneNumber}
+                      userEmail={user?.email ?? undefined}
+                      userPhoneNumber={user?.phoneNumber ?? undefined}
+                      onEmailChange={setEmail}
+                      onPhoneNumberChange={setPhoneNumber}
+                    />
+                  </div>
+                )}
+              </div>
+            </Card>
+          </div>
+
+          <div className="lg:col-span-4">
+            <div className="relative">
+              <div className="absolute -inset-1 rounded-2xl bg-gradient-to-b from-blue-100 to-transparent opacity-50 blur"></div>
+              <Card className="relative overflow-hidden border-blue-100 shadow-md">
+                <div className="border-b border-gray-100 bg-blue-50/80 px-6 py-4 flex items-center gap-3">
+                  <CreditCard className="h-5 w-5 text-blue-600" />
+                  <h2 className="text-lg font-semibold text-gray-900">Resumo da Compra</h2>
+                </div>
+                <div className="p-6">
+                  <CartSummary
+                    total={total}
+                    itemCount={itemCount}
+                    submitting={submitting}
+                    onClear={() => void clear()}
+                    onCheckout={() => void handleCheckout()}
+                  />
+                </div>
+              </Card>
             </div>
-          </Card>
-
-          <Card className="p-6">
-            {hasPhysicalProducts && (
-              <PhysicalOrderForm
-                street={street}
-                city={city}
-                zipCode={zipCode}
-                state={state}
-                notes={notes}
-                onStreetChange={setStreet}
-                onCityChange={setCity}
-                onZipCodeChange={setZipCode}
-                onStateChange={setState}
-                onNotesChange={setNotes}
-              />
-            )}
-
-            {hasDigitalProducts && (
-              <DigitalOrderForm
-                email={email}
-                phoneNumber={phoneNumber}
-                userEmail={user?.email ?? undefined}
-                userPhoneNumber={user?.phoneNumber ?? undefined}
-                onEmailChange={setEmail}
-                onPhoneNumberChange={setPhoneNumber}
-              />
-            )}
-          </Card>
-
-          <CartSummary
-            total={total}
-            submitting={submitting}
-            onClear={() => void clear()}
-            onCheckout={() => void handleCheckout()}
-          />
+          </div>
         </div>
       )}
     </div>
