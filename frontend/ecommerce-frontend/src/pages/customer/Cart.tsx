@@ -9,11 +9,13 @@ import { DigitalOrderForm } from "../../components/order/DigitalOrderForm";
 import { useCart } from "../../hooks/cart/useCart";
 import { useCheckout } from "../../hooks/order/useCheckout";
 import { useProduct } from "../../hooks/product/useProduct";
+import { useAccount } from "../../hooks/account/useAccount";
 import { ProductType } from "../../types/product";
 import { toast } from "sonner";
 
 export function Cart() {
   const navigate = useNavigate();
+  const { user } = useAccount();
 
   const {
     cart,
@@ -60,13 +62,13 @@ export function Cart() {
 
 
   async function handleCheckout() {
-    // Validate physical products
+    
     if (hasPhysicalProducts && (!street || !city || !zipCode || !state)) {
       toast.error("Preencha todos os dados de endereço para produtos físicos.");
       return;
     }
 
-    // Validate digital products
+    
     if (hasDigitalProducts && (!email || !phoneNumber)) {
       toast.error("Preencha email e telefone para produtos digitais.");
       return;
@@ -172,6 +174,8 @@ export function Cart() {
               <DigitalOrderForm
                 email={email}
                 phoneNumber={phoneNumber}
+                userEmail={user?.email ?? undefined}
+                userPhoneNumber={user?.phoneNumber ?? undefined}
                 onEmailChange={setEmail}
                 onPhoneNumberChange={setPhoneNumber}
               />
