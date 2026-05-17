@@ -22,6 +22,7 @@ import { Button } from "../../components/ui/Button";
 
 import { formatPrice } from "../../utils/currency/formatPrice";
 
+// todo: refactor for better separation of concerns, maybe split into smaller components and hooks if needed. Also consider adding error handling and edge case handling as needed.
 export function OrderDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();

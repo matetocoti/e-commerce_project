@@ -60,6 +60,14 @@ export function useOrders() {
     void loadOrders(1);
   }, [loadOrders]);
 
+  const updateOrderStatus = useCallback((updatedOrder: OrderDto) => {
+    setOrders((prev) =>
+      prev.map((order) =>
+        order.id === updatedOrder.id ? updatedOrder : order
+      )
+    );
+  }, []);
+
   return {
     orders,
     loading,
@@ -68,5 +76,6 @@ export function useOrders() {
     error,
     loadMoreOrders,
     reloadOrders,
+    updateOrderStatus,
   };
 }

@@ -3,16 +3,40 @@ import { Package, ShoppingBag, ArrowUp } from "lucide-react";
 import { useState, useEffect } from "react";
 
 import { useOrders } from "../../hooks/order/useOrders";
+import { useOrdersStatusPolling } from "../../hooks/order/useOrdersStatusPolling";
 import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { formatPrice } from "../../utils/currency/formatPrice";
 import { formatDate } from "../../utils/date/formatDate";
 import { getOrderStatusInfo } from "../../utils/order/getOrderStatusInfo";
 
+
+
+// todo: refactor for better separation of concerns, maybe split into smaller components and hooks if needed. Also consider adding error handling and edge case handling as needed.
 export function Orders() {
-  const { orders, loading, error, loadMoreOrders, loadingMore, hasMore } =
+  const { orders, loading, error, loadMoreOrders, loadingMore, hasMore, updateOrderStatus } =
     useOrders();
   const [showScrollTop, setShowScrollTop] = useState(false);
+
+  
+  const shouldPoll = () => {
+    return orders.some(
+      (order) =>
+        order.status !== "Paid" &&
+        order.status !== "Cancelled" &&
+        order.status !== "Expired",
+    );
+  }
+
+  useOrdersStatusPolling({
+    orderIds: orders.map((order) => order.id),
+    onOrderUpdate: updateOrderStatus,
+    interval: 10000,
+    enabled: orders.length > 0 && shouldPoll(),
+  });
+
+
+
 
   useEffect(() => {
     const handleScroll = () => {
