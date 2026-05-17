@@ -40,6 +40,10 @@ export function useOrder({ id }: Readonly<UseOrderParams> ) {
     return order?.status === "Cancelled";
   }
 
+  const updateOrderStatus = (updatedOrder: OrderDto) => {
+    setOrder(updatedOrder);
+  };
+
   
   useEffect(() => {
     void loadOrder();
@@ -53,5 +57,6 @@ export function useOrder({ id }: Readonly<UseOrderParams> ) {
     reloadOrder: loadOrder,
     isPaid: isOrderPaid,
     isCancelled: isOrderCancelled,
+    updateOrderStatus,
   };
 }

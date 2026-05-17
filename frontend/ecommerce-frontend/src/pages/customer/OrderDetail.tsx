@@ -5,7 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { usePayment } from "../../hooks/payment/usePayment";
 import { useCancel } from "../../hooks/order/useCancel";
 import { useConfirm } from "../../hooks/ui/useConfirm";
-import { usePolling } from "../../hooks/ui/usePolling";
+import { useOrderStatusPolling } from "../../hooks/order/useOrderStatusPolling";
 import { PaymentProgress } from "../../components/payment/PaymentProgress";
 import { PaymentLoadingModal } from "../../components/payment/PaymentLoadingModal";
 import { PaymentMethodModal } from "../../components/payment/PaymentMethodModal";
@@ -17,34 +17,53 @@ import { OrderAddressSection } from "../../components/order/OrderAddressSection"
 import { OrderSummary } from "../../components/order/OrderSummary";
 import { OrderActions } from "../../components/order/OrderActions";
 
-
 import { useOrder } from "../../hooks/order/useOrder";
 import { Button } from "../../components/ui/Button";
 
 import { formatPrice } from "../../utils/currency/formatPrice";
-
 
 export function OrderDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [isItemsExpanded, setIsItemsExpanded] = useState(false);
   const [isAddressExpanded, setIsAddressExpanded] = useState(false);
-  const [isPaymentMethodModalOpen, setIsPaymentMethodModalOpen] = useState(false);
+  const [isPaymentMethodModalOpen, setIsPaymentMethodModalOpen] =
+    useState(false);
   const [isPixPaymentModalOpen, setIsPixPaymentModalOpen] = useState(false);
   const [isGeneratingPayment, setIsGeneratingPayment] = useState(false);
   const [pendingOrderId, setPendingOrderId] = useState<string | null>(null);
 
-  const { order, loading, error , isPaid, reloadOrder} = useOrder({ id: id ?? "" });
-  const { handlePayment, loading: paymentLoading } = usePayment({ onSuccess: reloadOrder });
+  const { order, loading, error, isPaid, reloadOrder, updateOrderStatus } =
+    useOrder({ id: id ?? "" });
+  const { handlePayment, loading: paymentLoading } = usePayment({
+    onSuccess: reloadOrder,
+  });
   const { cancel: cancelOrder, loading: cancelLoading } = useCancel();
   const confirm = useConfirm();
 
+  function shouldPoll() {
+    return (
+      !!order &&
+      !isPaid() &&
+      order.status !== "Cancelled" &&
+      order.status !== "Expired"
+    );
+  }
+
+  useOrderStatusPolling({
+    orderId: id ?? "",
+    onOrderUpdate: updateOrderStatus,
+    interval: 10000,
+    enabled: shouldPoll(),
+  });
+
   const handleCancelOrder = async () => {
     if (!id) return;
-    
+
     confirm.open({
       title: "Cancelar pedido",
-      description: "Tem certeza que deseja cancelar este pedido? Esta ação não pode ser desfeita.",
+      description:
+        "Tem certeza que deseja cancelar este pedido? Esta ação não pode ser desfeita.",
       variant: "danger",
       confirmText: "Sim, cancelar",
       cancelText: "Não, manter",
@@ -73,34 +92,21 @@ export function OrderDetail() {
     setIsPixPaymentModalOpen(true);
   };
 
- const handleGeneratePixPayment = async () => {
-   if (!pendingOrderId) return;
+  const handleGeneratePixPayment = async () => {
+    if (!pendingOrderId) return;
 
-   setIsGeneratingPayment(true);
-   try {
-     const success = await handlePayment(pendingOrderId);
+    setIsGeneratingPayment(true);
+    try {
+      const success = await handlePayment(pendingOrderId);
 
-     if (success) {
-       setIsPixPaymentModalOpen(false);
-       setPendingOrderId(null);
-     }
-   } finally {
-     setIsGeneratingPayment(false);
-   }
- };
-  
-  
-  function shouldPoll() {
-    return (
-      !!order &&
-      !isPaid() &&
-      order.status !== "Cancelled" &&
-      order.status !== "Expired"
-    );
-  }
-  
-  usePolling(() => reloadOrder(), 10000, shouldPoll());
-  
+      if (success) {
+        setIsPixPaymentModalOpen(false);
+        setPendingOrderId(null);
+      }
+    } finally {
+      setIsGeneratingPayment(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -134,15 +140,14 @@ export function OrderDetail() {
     !!order.address?.notes;
 
   const hasDigitalContact =
-    !!order.digitalContact?.email ||
-    !!order.digitalContact?.phoneNumber;
+    !!order.digitalContact?.email || !!order.digitalContact?.phoneNumber;
 
   const isPhysical = hasAddress;
   const isDigital = !hasAddress && hasDigitalContact;
 
   return (
     <>
-      <PaymentMethodModal 
+      <PaymentMethodModal
         isOpen={isPaymentMethodModalOpen}
         onSelectPix={handleSelectPixPayment}
         onClose={() => setIsPaymentMethodModalOpen(false)}
@@ -157,12 +162,16 @@ export function OrderDetail() {
         }}
         onGeneratePayment={handleGeneratePixPayment}
         isLoading={isGeneratingPayment}
-        orderTotal={order?.totalAmount ? `R$ ${formatPrice(order.totalAmount)}` : "R$ 0,00"}
+        orderTotal={
+          order?.totalAmount
+            ? `R$ ${formatPrice(order.totalAmount)}`
+            : "R$ 0,00"
+        }
         orderId={order?.id ?? ""}
       />
       <PaymentLoadingModal isOpen={paymentLoading} />
       <PaymentProgress isLoading={paymentLoading} />
-      <ConfirmModal 
+      <ConfirmModal
         isOpen={confirm.isOpen}
         title={confirm.title}
         description={confirm.description}
@@ -188,7 +197,7 @@ export function OrderDetail() {
         <div className="flex flex-col lg:flex-row gap-6 sm:gap-8">
           <div className="flex-1 space-y-6">
             <OrderHeader order={order} />
-            <OrderItemsSection 
+            <OrderItemsSection
               order={order}
               isExpanded={isItemsExpanded}
               onToggle={setIsItemsExpanded}

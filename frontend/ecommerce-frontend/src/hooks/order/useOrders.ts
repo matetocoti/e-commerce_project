@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState } from "react";
 import { getOrders } from "../../api/orderApi";
 import type { OrderDto } from "../../types/order";
 
-
 const PAGE_SIZE = 5;
 
 export function useOrders() {

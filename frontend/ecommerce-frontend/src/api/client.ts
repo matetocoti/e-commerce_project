@@ -20,7 +20,10 @@ function getStoredToken(): string | null {
   }
 }
 
-export async function apiFetch<T>(endpoint: string,options: ApiFetchOptions = {}): Promise<T> {
+export async function apiFetch<T>(
+  endpoint: string,
+  options: ApiFetchOptions = {},
+): Promise<T> {
   const { token, headers, body, ...rest } = options;
 
   const authToken = token ?? getStoredToken();
@@ -40,7 +43,8 @@ export async function apiFetch<T>(endpoint: string,options: ApiFetchOptions = {}
 
     try {
       const errorData = await response.json();
-      const errorMessage = errorData.message ?? errorData.title ?? errorData.detail;
+      const errorMessage =
+        errorData.message ?? errorData.title ?? errorData.detail;
       if (errorMessage) {
         message = errorMessage;
       }
