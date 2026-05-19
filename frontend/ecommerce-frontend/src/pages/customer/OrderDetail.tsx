@@ -1,15 +1,12 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
-import { usePayment } from "../../hooks/payment/usePayment";
 import { useCancel } from "../../hooks/order/useCancel";
 import { useConfirm } from "../../hooks/ui/useConfirm";
 import { useOrderStatusPolling } from "../../hooks/order/useOrderStatusPolling";
+import { useOrderPaymentFlow } from "../../hooks/order/useOrderPaymentFlow";
 import { PaymentProgress } from "../../components/payment/PaymentProgress";
-import { PaymentLoadingModal } from "../../components/payment/PaymentLoadingModal";
-import { PaymentMethodModal } from "../../components/payment/PaymentMethodModal";
-import { PixPaymentModal } from "../../components/payment/PixPaymentModal";
-import { ConfirmModal } from "../../components/ui/ConfirmModal";
+import { OrderModals } from "../../components/order/OrderModals";
 import { Loading } from "../../components/ui/Loading";
 import { MyError } from "../../components/ui/MyError";
 import { OrderHeader } from "../../components/order/OrderHeader";
@@ -18,27 +15,34 @@ import { OrderAddressSection } from "../../components/order/OrderAddressSection"
 import { OrderSummary } from "../../components/order/OrderSummary";
 import { OrderActions } from "../../components/order/OrderActions";
 import { useOrder } from "../../hooks/order/useOrder";
-import { formatPrice } from "../../utils/currency/formatPrice";
 
-// todo: refactor for better separation of concerns, maybe split into smaller components and hooks if needed. Also consider adding error handling and edge case handling as needed.
 export function OrderDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   
-  const [ui, setUI] = useState({
-    itemsExpanded: false,
-    addressExpanded: false,
-    paymentMethodOpen: false,
-    pixPaymentOpen: false,
-    generatingPayment: false,
+  const [expandedSections, setExpandedSections] = useState({
+    items: false,
+    address: false,
   });
-  const [pendingOrderId, setPendingOrderId] = useState<string | null>(null);
 
-  const { order, loading, error, isPaid, reloadOrder, updateOrderStatus } =
-    useOrder({ id: id ?? "" });
-  const { handlePayment, loading: paymentLoading } = usePayment({
-    onSuccess: reloadOrder,
-  });
+  const { 
+    order, 
+    loading, 
+    error, 
+    isPaid, 
+    reloadOrder, 
+    updateOrderStatus 
+  } = useOrder({ id: id ?? "" });
+  
+  const {
+    paymentState,
+    handlePaymentClick,
+    handleSelectPixPayment,
+    handleGeneratePixPayment,
+    paymentLoading,
+    closePaymentModals,
+  } = useOrderPaymentFlow( {onSuccess: reloadOrder,} );
+
   const { cancel: cancelOrder, loading: cancelLoading } = useCancel();
   const confirm = useConfirm();
 
@@ -77,31 +81,6 @@ export function OrderDetail() {
         }
       },
     });
-  };
-
-  const handlePaymentClick = (orderId: string) => {
-    setPendingOrderId(orderId);
-    setUI(prev => ({ ...prev, paymentMethodOpen: true }));
-  };
-
-  const handleSelectPixPayment = () => {
-    setUI(prev => ({ ...prev, paymentMethodOpen: false, pixPaymentOpen: true }));
-  };
-
-  const handleGeneratePixPayment = async () => {
-    if (!pendingOrderId) return;
-
-    setUI(prev => ({ ...prev, generatingPayment: true }));
-    try {
-      const success = await handlePayment(pendingOrderId);
-
-      if (success) {
-        setUI(prev => ({ ...prev, pixPaymentOpen: false }));
-        setPendingOrderId(null);
-      }
-    } finally {
-      setUI(prev => ({ ...prev, generatingPayment: false }));
-    }
   };
 
   if (loading) {
@@ -150,41 +129,23 @@ export function OrderDetail() {
 
   return (
     <>
-      <PaymentMethodModal
-        isOpen={ui.paymentMethodOpen}
-        onSelectPix={handleSelectPixPayment}
-        onClose={() => setUI(prev => ({ ...prev, paymentMethodOpen: false }))}
-        isLoading={paymentLoading}
-      />
-      <PixPaymentModal
-        isOpen={ui.pixPaymentOpen}
-        onClose={() => setUI(prev => ({ ...prev, pixPaymentOpen: false }))}
-        onBack={() => {
-          setUI(prev => ({ ...prev, pixPaymentOpen: false, paymentMethodOpen: true }));
+      <OrderModals
+        order={order}
+        confirm={confirm}
+        paymentMethodOpen={paymentState.paymentMethodOpen}
+        pixPaymentOpen={paymentState.pixPaymentOpen}
+        generatingPayment={paymentState.generatingPayment}
+        paymentLoading={paymentLoading}
+        onSelectPixPayment={handleSelectPixPayment}
+        onGeneratePixPayment={handleGeneratePixPayment}
+        onClosePaymentMethod={closePaymentModals}
+        onClosePixPayment={closePaymentModals}
+        onBackFromPixPayment={() => {
+          closePaymentModals();
+          handlePaymentClick(order.id);
         }}
-        onGeneratePayment={handleGeneratePixPayment}
-        isLoading={ui.generatingPayment}
-        orderTotal={
-          order?.totalAmount
-            ? `R$ ${formatPrice(order.totalAmount)}`
-            : "R$ 0,00"
-        }
-        orderId={order?.id ?? ""}
       />
-      <PaymentLoadingModal isOpen={paymentLoading} />
       <PaymentProgress isLoading={paymentLoading} />
-      <ConfirmModal
-        isOpen={confirm.isOpen}
-        title={confirm.title}
-        description={confirm.description}
-        variant={confirm.variant}
-        confirmText={confirm.confirmText}
-        cancelText={confirm.cancelText}
-        confirmButtonVariant={confirm.confirmButtonVariant}
-        isLoading={confirm.isLoading}
-        onConfirm={confirm.onConfirm}
-        onCancel={confirm.onCancel}
-      />
       <div className="mx-auto max-w-7xl w-full px-4 py-8 sm:py-12 bg-transparent min-h-[calc(100vh-16rem)]">
         <div className="mb-6 sm:mb-8">
           <button
@@ -200,13 +161,13 @@ export function OrderDetail() {
             <OrderHeader order={order} />
             <OrderItemsSection
               order={order}
-              isExpanded={ui.itemsExpanded}
-              onToggle={(expanded) => setUI(prev => ({ ...prev, itemsExpanded: expanded }))}
+              isExpanded={expandedSections.items}
+              onToggle={(expanded) => setExpandedSections(prev => ({ ...prev, items: expanded }))}
             />
             <OrderAddressSection
               order={order}
-              isExpanded={ui.addressExpanded}
-              onToggle={(expanded) => setUI(prev => ({ ...prev, addressExpanded: expanded }))}
+              isExpanded={expandedSections.address}
+              onToggle={(expanded) => setExpandedSections(prev => ({ ...prev, address: expanded }))}
               isPhysical={isPhysical}
               isDigital={isDigital}
             />
