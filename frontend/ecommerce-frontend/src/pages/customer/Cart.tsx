@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ShoppingCart, PackageOpen, CreditCard } from "lucide-react";
+import { ShoppingCart, PackageOpen, CreditCard, ChevronDown } from "lucide-react";
 
 import { Card } from "../../components/ui/Card";
 import { Loading } from "../../components/ui/Loading";
@@ -15,7 +15,6 @@ import { useAccount } from "../../hooks/account/useAccount";
 import { ProductType } from "../../types/product";
 import { toast } from "sonner";
 
-// Todo: Refactor this page into separate components for better readability and maintainability.
 export function Cart() {
   const navigate = useNavigate();
   const { user } = useAccount();
@@ -37,6 +36,10 @@ export function Cart() {
     error: checkoutError,
   } = useCheckout();
 
+  const [expandedSections, setExpandedSections] = useState({
+    items: true,
+    delivery: true,
+  });
   const [street, setStreet] = useState("");
   const [city, setCity] = useState("");
   const [zipCode, setZipCode] = useState("");
@@ -164,59 +167,79 @@ export function Cart() {
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 items-start">
           <div className="space-y-6 lg:col-span-8">
             <Card className="overflow-hidden border-gray-200 shadow-sm transition-shadow hover:shadow-md">
-              <div className="border-b border-gray-100 bg-gray-50/50 px-6 py-4">
+              <button
+                onClick={() => setExpandedSections(prev => ({ ...prev, items: !prev.items }))}
+                className="w-full flex items-center justify-between border-b border-gray-100 bg-gray-50/50 px-6 py-4 hover:bg-gray-100/50 transition-colors"
+              >
                 <h2 className="text-lg font-semibold text-gray-900">Itens do Pedido</h2>
-              </div>
-              <div className="p-6">
-                <div className="space-y-6">
-                  {items.map((item) => (
-                    <CartItemRow
-                      key={item.productId}
-                      item={item}
-                      disabled={submitting}
-                      onDecrease={(productId) => void removeItem(productId, 1)}
-                      onIncrease={(productId) => void addItem(productId, 1)}
-                    />
-                  ))}
+                <ChevronDown
+                  className={`h-5 w-5 text-gray-400 transition-transform duration-300 ${
+                    expandedSections.items ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+              {expandedSections.items && (
+                <div className="p-6 animate-in slide-in-from-top-2 fade-in duration-200">
+                  <div className="space-y-6">
+                    {items.map((item) => (
+                      <CartItemRow
+                        key={item.productId}
+                        item={item}
+                        disabled={submitting}
+                        onDecrease={(productId) => void removeItem(productId, 1)}
+                        onIncrease={(productId) => void addItem(productId, 1)}
+                      />
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </Card>
 
             <Card className="overflow-hidden border-gray-200 shadow-sm transition-shadow hover:shadow-md">
-              <div className="border-b border-gray-100 bg-gray-50/50 px-6 py-4">
+              <button
+                onClick={() => setExpandedSections(prev => ({ ...prev, delivery: !prev.delivery }))}
+                className="w-full flex items-center justify-between border-b border-gray-100 bg-gray-50/50 px-6 py-4 hover:bg-gray-100/50 transition-colors"
+              >
                 <h2 className="text-lg font-semibold text-gray-900">Dados da Entrega</h2>
-              </div>
-              <div className="p-6">
-                {hasPhysicalProducts && (
-                  <div className="mb-2">
-                    <PhysicalOrderForm
-                      street={street}
-                      city={city}
-                      zipCode={zipCode}
-                      state={state}
-                      notes={notes}
-                      onStreetChange={setStreet}
-                      onCityChange={setCity}
-                      onZipCodeChange={setZipCode}
-                      onStateChange={setState}
-                      onNotesChange={setNotes}
-                    />
-                  </div>
-                )}
+                <ChevronDown
+                  className={`h-5 w-5 text-gray-400 transition-transform duration-300 ${
+                    expandedSections.delivery ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+              {expandedSections.delivery && (
+                <div className="p-6 animate-in slide-in-from-top-2 fade-in duration-200">
+                  {hasPhysicalProducts && (
+                    <div className="mb-2">
+                      <PhysicalOrderForm
+                        street={street}
+                        city={city}
+                        zipCode={zipCode}
+                        state={state}
+                        notes={notes}
+                        onStreetChange={setStreet}
+                        onCityChange={setCity}
+                        onZipCodeChange={setZipCode}
+                        onStateChange={setState}
+                        onNotesChange={setNotes}
+                      />
+                    </div>
+                  )}
 
-                {hasDigitalProducts && (
-                  <div className="mt-2">
-                    <DigitalOrderForm
-                      email={email}
-                      phoneNumber={phoneNumber}
-                      userEmail={user?.email ?? undefined}
-                      userPhoneNumber={user?.phoneNumber ?? undefined}
-                      onEmailChange={setEmail}
-                      onPhoneNumberChange={setPhoneNumber}
-                    />
-                  </div>
-                )}
-              </div>
+                  {hasDigitalProducts && (
+                    <div className="mt-2">
+                      <DigitalOrderForm
+                        email={email}
+                        phoneNumber={phoneNumber}
+                        userEmail={user?.email ?? undefined}
+                        userPhoneNumber={user?.phoneNumber ?? undefined}
+                        onEmailChange={setEmail}
+                        onPhoneNumberChange={setPhoneNumber}
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
             </Card>
           </div>
 
