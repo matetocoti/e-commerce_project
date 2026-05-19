@@ -1,7 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
-
 import { usePayment } from "../../hooks/payment/usePayment";
 import { useCancel } from "../../hooks/order/useCancel";
 import { useConfirm } from "../../hooks/ui/useConfirm";
@@ -18,21 +17,21 @@ import { OrderItemsSection } from "../../components/order/OrderItemsSection";
 import { OrderAddressSection } from "../../components/order/OrderAddressSection";
 import { OrderSummary } from "../../components/order/OrderSummary";
 import { OrderActions } from "../../components/order/OrderActions";
-
 import { useOrder } from "../../hooks/order/useOrder";
-
 import { formatPrice } from "../../utils/currency/formatPrice";
 
 // todo: refactor for better separation of concerns, maybe split into smaller components and hooks if needed. Also consider adding error handling and edge case handling as needed.
 export function OrderDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [isItemsExpanded, setIsItemsExpanded] = useState(false);
-  const [isAddressExpanded, setIsAddressExpanded] = useState(false);
-  const [isPaymentMethodModalOpen, setIsPaymentMethodModalOpen] =
-    useState(false);
-  const [isPixPaymentModalOpen, setIsPixPaymentModalOpen] = useState(false);
-  const [isGeneratingPayment, setIsGeneratingPayment] = useState(false);
+  
+  const [ui, setUI] = useState({
+    itemsExpanded: false,
+    addressExpanded: false,
+    paymentMethodOpen: false,
+    pixPaymentOpen: false,
+    generatingPayment: false,
+  });
   const [pendingOrderId, setPendingOrderId] = useState<string | null>(null);
 
   const { order, loading, error, isPaid, reloadOrder, updateOrderStatus } =
@@ -43,20 +42,16 @@ export function OrderDetail() {
   const { cancel: cancelOrder, loading: cancelLoading } = useCancel();
   const confirm = useConfirm();
 
-  function shouldPoll() {
-    return (
-      !!order &&
-      !isPaid() &&
+  const shouldPoll = 
+      !!order && !isPaid() &&
       order.status !== "Cancelled" &&
-      order.status !== "Expired"
-    );
-  }
+      order.status !== "Expired";
 
   useOrderStatusPolling({
     orderId: id ?? "",
     onOrderUpdate: updateOrderStatus,
     interval: 10000,
-    enabled: shouldPoll(),
+    enabled: shouldPoll,
   });
 
   const handleCancelOrder = async () => {
@@ -86,27 +81,26 @@ export function OrderDetail() {
 
   const handlePaymentClick = (orderId: string) => {
     setPendingOrderId(orderId);
-    setIsPaymentMethodModalOpen(true);
+    setUI(prev => ({ ...prev, paymentMethodOpen: true }));
   };
 
   const handleSelectPixPayment = () => {
-    setIsPaymentMethodModalOpen(false);
-    setIsPixPaymentModalOpen(true);
+    setUI(prev => ({ ...prev, paymentMethodOpen: false, pixPaymentOpen: true }));
   };
 
   const handleGeneratePixPayment = async () => {
     if (!pendingOrderId) return;
 
-    setIsGeneratingPayment(true);
+    setUI(prev => ({ ...prev, generatingPayment: true }));
     try {
       const success = await handlePayment(pendingOrderId);
 
       if (success) {
-        setIsPixPaymentModalOpen(false);
+        setUI(prev => ({ ...prev, pixPaymentOpen: false }));
         setPendingOrderId(null);
       }
     } finally {
-      setIsGeneratingPayment(false);
+      setUI(prev => ({ ...prev, generatingPayment: false }));
     }
   };
 
@@ -157,20 +151,19 @@ export function OrderDetail() {
   return (
     <>
       <PaymentMethodModal
-        isOpen={isPaymentMethodModalOpen}
+        isOpen={ui.paymentMethodOpen}
         onSelectPix={handleSelectPixPayment}
-        onClose={() => setIsPaymentMethodModalOpen(false)}
+        onClose={() => setUI(prev => ({ ...prev, paymentMethodOpen: false }))}
         isLoading={paymentLoading}
       />
       <PixPaymentModal
-        isOpen={isPixPaymentModalOpen}
-        onClose={() => setIsPixPaymentModalOpen(false)}
+        isOpen={ui.pixPaymentOpen}
+        onClose={() => setUI(prev => ({ ...prev, pixPaymentOpen: false }))}
         onBack={() => {
-          setIsPixPaymentModalOpen(false);
-          setIsPaymentMethodModalOpen(true);
+          setUI(prev => ({ ...prev, pixPaymentOpen: false, paymentMethodOpen: true }));
         }}
         onGeneratePayment={handleGeneratePixPayment}
-        isLoading={isGeneratingPayment}
+        isLoading={ui.generatingPayment}
         orderTotal={
           order?.totalAmount
             ? `R$ ${formatPrice(order.totalAmount)}`
@@ -202,24 +195,22 @@ export function OrderDetail() {
             Voltar
           </button>
         </div>
-
         <div className="flex flex-col lg:flex-row gap-6 sm:gap-8">
           <div className="flex-1 space-y-6">
             <OrderHeader order={order} />
             <OrderItemsSection
               order={order}
-              isExpanded={isItemsExpanded}
-              onToggle={setIsItemsExpanded}
+              isExpanded={ui.itemsExpanded}
+              onToggle={(expanded) => setUI(prev => ({ ...prev, itemsExpanded: expanded }))}
             />
             <OrderAddressSection
               order={order}
-              isExpanded={isAddressExpanded}
-              onToggle={setIsAddressExpanded}
+              isExpanded={ui.addressExpanded}
+              onToggle={(expanded) => setUI(prev => ({ ...prev, addressExpanded: expanded }))}
               isPhysical={isPhysical}
               isDigital={isDigital}
             />
           </div>
-
           <div className="lg:w-80 xl:w-96 flex-shrink-0">
             <div>
               <div className="flex flex-col gap-6">
