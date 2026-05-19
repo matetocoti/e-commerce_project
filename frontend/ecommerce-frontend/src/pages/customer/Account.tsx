@@ -1,7 +1,8 @@
-import { RefreshCw, AlertCircle, Edit2 } from "lucide-react";
+import { Edit2, RefreshCw } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { Loading } from "../../components/ui/Loading";
+import { MyError } from "../../components/ui/MyError";
 import { UserCard } from "../../components/account/UserCard";
 import { useAccount } from "../../hooks/account/useAccount";
 
@@ -20,22 +21,11 @@ export function Account() {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 px-4">
-        <div className="bg-white border border-red-100 rounded-xl shadow-sm p-8 max-w-md w-full flex flex-col items-center text-center">
-          <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-6">
-            <AlertCircle className="w-8 h-8 text-red-500" />
-          </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Ops! Algo deu errado</h2>
-          <p className="text-gray-600 mb-8">{error}</p>
-          <button
-            onClick={reload}
-            className="w-full py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 font-medium"
-          >
-            <RefreshCw className="w-5 h-5" />
-            Tentar novamente
-          </button>
-        </div>
-      </div>
+      <MyError
+        message={error}
+        onRetry={reload}
+        variant="detailed"
+      />
     );
   }
 

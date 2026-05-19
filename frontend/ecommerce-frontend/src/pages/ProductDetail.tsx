@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Package } from "lucide-react";
 
 import { useProduct } from "../hooks/product/useProduct";
@@ -8,6 +8,7 @@ import { useCart } from "../hooks/cart/useCart";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { Loading } from "../components/ui/Loading";
+import { MyError } from "../components/ui/MyError";
 import { ProductImage } from "../components/product/ProductImage";
 import { ProductPrice } from "../components/product/ProductPrice";
 import { ProductInfoCard } from "../components/product/ProductInfoCard";
@@ -67,17 +68,21 @@ export function ProductDetail() {
 
   if (error || !product) {
     return (
-      <div className="mx-auto max-w-7xl px-4 py-16 text-center">
-        <h1 className="mb-4 text-2xl font-bold">Produto não encontrado</h1>
-
-        <p className="mb-6 text-sm text-gray-600">
-          {error ?? "Não foi possível localizar este produto."}
-        </p>
-
-        <Link to="/">
-          <Button>Voltar para a loja</Button>
-        </Link>
-      </div>
+      <MyError
+        title="Produto não encontrado"
+        message={error ?? "Não foi possível localizar este produto."}
+        variant="simple"
+        maxWidth="max-w-7xl"
+        minHeight="py-16"
+        showIcon={false}
+        actions={[
+          {
+            label: "Voltar para a loja",
+            onClick: () => navigate("/"),
+            variant: "secondary"
+          }
+        ]}
+      />
     );
   }
 

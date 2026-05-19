@@ -15,7 +15,7 @@ import { useAccount } from "../../hooks/account/useAccount";
 import { ProductType } from "../../types/product";
 import { toast } from "sonner";
 
-// Todo: Refactor this page into separate components for better readability and maintainability. 
+// Todo: Refactor this page into separate components for better readability and maintainability.
 export function Cart() {
   const navigate = useNavigate();
   const { user } = useAccount();

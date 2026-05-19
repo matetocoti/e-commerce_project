@@ -6,12 +6,11 @@ import { useOrders } from "../../hooks/order/useOrders";
 import { useOrdersStatusPolling } from "../../hooks/order/useOrdersStatusPolling";
 import { Card } from "../../components/ui/Card";
 import { Loading } from "../../components/ui/Loading";
+import { MyError } from "../../components/ui/MyError";
 import { Button } from "../../components/ui/Button";
 import { formatPrice } from "../../utils/currency/formatPrice";
 import { formatDate } from "../../utils/date/formatDate";
 import { getOrderStatusInfo } from "../../utils/order/getOrderStatusInfo";
-
-
 
 // todo: refactor for better separation of concerns, maybe split into smaller components and hooks if needed. Also consider adding error handling and edge case handling as needed.
 export function Orders() {
@@ -65,11 +64,14 @@ export function Orders() {
 
   if (error) {
     return (
-      <div className="mx-auto max-w-5xl px-4 py-10">
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {error}
-        </div>
-      </div>
+      <MyError
+        title="Erro ao carregar pedidos"
+        message={error}
+        variant="simple"
+        maxWidth="max-w-5xl"
+        minHeight="py-10"
+        showIcon={false}
+      />
     );
   }
 

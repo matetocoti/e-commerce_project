@@ -1,4 +1,4 @@
-import { useNavigate, useParams, Link } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
 
@@ -12,6 +12,7 @@ import { PaymentMethodModal } from "../../components/payment/PaymentMethodModal"
 import { PixPaymentModal } from "../../components/payment/PixPaymentModal";
 import { ConfirmModal } from "../../components/ui/ConfirmModal";
 import { Loading } from "../../components/ui/Loading";
+import { MyError } from "../../components/ui/MyError";
 import { OrderHeader } from "../../components/order/OrderHeader";
 import { OrderItemsSection } from "../../components/order/OrderItemsSection";
 import { OrderAddressSection } from "../../components/order/OrderAddressSection";
@@ -19,7 +20,6 @@ import { OrderSummary } from "../../components/order/OrderSummary";
 import { OrderActions } from "../../components/order/OrderActions";
 
 import { useOrder } from "../../hooks/order/useOrder";
-import { Button } from "../../components/ui/Button";
 
 import { formatPrice } from "../../utils/currency/formatPrice";
 
@@ -123,17 +123,21 @@ export function OrderDetail() {
 
   if (error || !order) {
     return (
-      <div className="mx-auto max-w-5xl px-4 py-16 text-center">
-        <h1 className="mb-4 text-2xl font-bold">Pedido não encontrado</h1>
-
-        <p className="mb-6 text-sm text-gray-600">
-          {error ?? "Não foi possível localizar este pedido."}
-        </p>
-
-        <Link to="/orders">
-          <Button>Voltar para pedidos</Button>
-        </Link>
-      </div>
+      <MyError
+        title="Pedido não encontrado"
+        message={error ?? "Não foi possível localizar este pedido."}
+        variant="simple"
+        maxWidth="max-w-5xl"
+        minHeight="py-16"
+        showIcon={false}
+        actions={[
+          {
+            label: "Voltar para pedidos",
+            onClick: () => navigate("/orders"),
+            variant: "secondary"
+          }
+        ]}
+      />
     );
   }
 
