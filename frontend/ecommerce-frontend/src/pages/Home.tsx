@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ProductList } from "../components/product/ProductList";
 import { Input } from "../components/ui/Input";
+import { Loading } from "../components/ui/Loading";
 import { FilterBar, type FilterState } from "../components/ui/FilterBar";
 import {
   Pagination,
@@ -61,7 +62,7 @@ export function Home() {
       </div>
 
       {loading && (
-        <p className="text-sm text-gray-500">Carregando produtos...</p>
+        <Loading message="Carregando produtos..." size="sm" minHeight="h-40" />
       )}
 
       {error && (

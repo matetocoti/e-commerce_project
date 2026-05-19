@@ -5,6 +5,7 @@ import { ProductList } from "../../components/product/admin/ProductList";
 import { FilterBar, type FilterState } from "../../components/ui/FilterBar";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
+import { Loading } from "../../components/ui/Loading";
 import {
   Pagination,
   PaginationContent,
@@ -135,7 +136,7 @@ export function AdminProducts() {
       </div>
 
       {loading && (
-        <p className="text-sm text-gray-500">Carregando produtos...</p>
+        <Loading message="Carregando produtos..." size="sm" minHeight="h-40" />
       )}
 
       {error && <p className="text-sm text-red-600">Erro: {error}</p>}

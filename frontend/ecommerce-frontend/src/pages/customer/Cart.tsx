@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ShoppingCart, PackageOpen, CreditCard } from "lucide-react";
 
 import { Card } from "../../components/ui/Card";
+import { Loading } from "../../components/ui/Loading";
 import { CartItemRow } from "../../components/cart/CartItemRow";
 import { CartSummary } from "../../components/cart/CartSummary";
 import { PhysicalOrderForm } from "../../components/order/PhysicalOrderForm";
@@ -110,10 +111,12 @@ export function Cart() {
 
   if (loading) {
     return (
-      <div className="mx-auto flex max-w-6xl min-h-[50vh] flex-col items-center justify-center px-4 py-10">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
-        <p className="mt-4 text-gray-500">Carregando seu carrinho...</p>
-      </div>
+      <Loading 
+        message="Carregando seu carrinho..." 
+        minHeight="min-h-[50vh]"
+        maxWidth="max-w-6xl"
+        size="md"
+      />
     );
   }
 

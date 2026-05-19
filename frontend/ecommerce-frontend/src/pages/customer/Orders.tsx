@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useOrders } from "../../hooks/order/useOrders";
 import { useOrdersStatusPolling } from "../../hooks/order/useOrdersStatusPolling";
 import { Card } from "../../components/ui/Card";
+import { Loading } from "../../components/ui/Loading";
 import { Button } from "../../components/ui/Button";
 import { formatPrice } from "../../utils/currency/formatPrice";
 import { formatDate } from "../../utils/date/formatDate";
@@ -53,9 +54,12 @@ export function Orders() {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-5xl px-4 py-10">
-        <p className="text-gray-600">Carregando pedidos...</p>
-      </div>
+      <Loading 
+        message="Carregando pedidos..." 
+        maxWidth="max-w-5xl"
+        minHeight="py-10"
+        showSpinner={false}
+      />
     );
   }
 

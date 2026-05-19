@@ -7,6 +7,7 @@ import { useAuth } from "../hooks/auth/useAuth";
 import { useCart } from "../hooks/cart/useCart";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
+import { Loading } from "../components/ui/Loading";
 import { ProductImage } from "../components/product/ProductImage";
 import { ProductPrice } from "../components/product/ProductPrice";
 import { ProductInfoCard } from "../components/product/ProductInfoCard";
@@ -61,7 +62,7 @@ export function ProductDetail() {
   }
 
   if (loading) {
-    return <div className="p-8">Carregando produto...</div>;
+    return <Loading message="Carregando produto..." size="md" />;
   }
 
   if (error || !product) {

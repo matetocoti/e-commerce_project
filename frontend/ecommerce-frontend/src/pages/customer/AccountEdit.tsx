@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { UserEditForm } from "../../components/account/UserEditForm";
+import { Loading } from "../../components/ui/Loading";
 import { useAccount } from "../../hooks/account/useAccount";
 import { useAccountActions } from "../../hooks/account/useAccountActions";
 import type { UserDto } from "../../types/user";
@@ -11,10 +12,11 @@ export function AccountEdit() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-20">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600 mb-4" />
-        <p className="text-gray-500 font-medium">Carregando seus dados...</p>
-      </div>
+      <Loading 
+        message="Carregando seus dados..." 
+        minHeight="py-20"
+        size="md"
+      />
     );
   }
 

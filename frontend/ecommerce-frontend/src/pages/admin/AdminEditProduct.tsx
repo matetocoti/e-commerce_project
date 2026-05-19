@@ -7,6 +7,7 @@ import { useProductActions } from "../../hooks/admin/useProductActions";
 import { ProductForm } from "../../components/product/admin/ProductForm";
 import { Button } from "../../components/ui/Button";
 import { Card } from "../../components/ui/Card";
+import { Loading } from "../../components/ui/Loading";
 import { ProductType, type UpdateProductDto } from "../../types/product";
 
 export function AdminEditProduct() {
@@ -114,9 +115,12 @@ export function AdminEditProduct() {
 
   if (productLoading || !formData) {
     return (
-      <div className="mx-auto max-w-2xl p-4 sm:p-6 lg:p-8">
-        <p className="text-sm text-gray-500">Carregando formulário...</p>
-      </div>
+      <Loading 
+        message="Carregando formulário..." 
+        maxWidth="max-w-2xl"
+        minHeight="p-4"
+        size="sm"
+      />
     );
   }
 
