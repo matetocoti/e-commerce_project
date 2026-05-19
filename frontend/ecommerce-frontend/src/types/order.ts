@@ -1,3 +1,5 @@
+import type { PaymentDto } from "./payment";
+
 export interface Address {
   street: string;
   city: string;
@@ -37,6 +39,7 @@ export interface OrderDto {
   address?: Address;
   digitalContact?: DigitalContactInfo;
   items: OrderItemDto[];
+  payments?: PaymentDto[];
 }
 
 export type CreateOrderDto = CreatePhysicalOrderDto | CreateDigitalOrderDto;

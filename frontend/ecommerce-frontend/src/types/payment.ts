@@ -9,3 +9,10 @@ export type PaymentMethod =
 export interface PayOrderRequestDto {
   method: PaymentMethod;
 }
+
+export interface PaymentDto {
+  id: string;
+  amount: number;
+  method: PaymentMethod;
+  paidAt: string;
+}

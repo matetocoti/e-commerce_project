@@ -12,6 +12,7 @@ import { MyError } from "../../components/ui/MyError";
 import { OrderHeader } from "../../components/order/OrderHeader";
 import { OrderItemsSection } from "../../components/order/OrderItemsSection";
 import { OrderAddressSection } from "../../components/order/OrderAddressSection";
+import { OrderPaymentSection } from "../../components/order/OrderPaymentSection";
 import { OrderSummary } from "../../components/order/OrderSummary";
 import { OrderActions } from "../../components/order/OrderActions";
 import { useOrder } from "../../hooks/order/useOrder";
@@ -23,6 +24,7 @@ export function OrderDetail() {
   const [expandedSections, setExpandedSections] = useState({
     items: false,
     address: false,
+    payment: false,
   });
 
   const { 
@@ -170,6 +172,11 @@ export function OrderDetail() {
               onToggle={(expanded) => setExpandedSections(prev => ({ ...prev, address: expanded }))}
               isPhysical={isPhysical}
               isDigital={isDigital}
+            />
+            <OrderPaymentSection
+              order={order}
+              isExpanded={expandedSections.payment}
+              onToggle={(expanded) => setExpandedSections(prev => ({ ...prev, payment: expanded }))}
             />
           </div>
           <div className="lg:w-80 xl:w-96 flex-shrink-0">
