@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Ecommerce.Api.Infrastructure.Payments.MercadoPagoProvider;
+using MercadoPago.Config;
 
 
 DotNetEnv.Env.Load();
@@ -55,12 +56,13 @@ if (string.IsNullOrEmpty(jwtKey))
 }
 var key = Encoding.UTF8.GetBytes(jwtKey);
 
+// Setup MercadoPago Access Token
 var mercadopagoAccessToken = builder.Configuration["MercadoPago:AccessToken"];
 if (string.IsNullOrEmpty(mercadopagoAccessToken))
 {
     throw new InvalidOperationException("MercadoPago:AccessToken não foi configurado. Verifique seu arquivo .env ou variáveis de ambiente.");
 }
-
+MercadoPagoConfig.AccessToken = mercadopagoAccessToken;
 builder.Services.Configure<MercadoPagoOptions>(builder.Configuration.GetSection("MercadoPago"));
 
 

@@ -2,22 +2,12 @@
 
 using MercadoPago.Client.Payment;
 using MercadoPago.Client.Common;
-using MercadoPago.Config;
 using MercadoPago.Resource.Payment;
-using Microsoft.Extensions.Options;
+using Ecommerce.Api.Application.Exceptions; 
 using System.Threading.Tasks;
 
 public class MercadoPagoService
 {
-    private readonly MercadoPagoOptions _options;
-
-    public MercadoPagoService(IOptions<MercadoPagoOptions> options)
-    {
-        _options = options.Value;
-        MercadoPagoConfig.AccessToken = _options.AccessToken;
-    }
-
-
     public async Task<Payment> CreatePixPaymentAsync(decimal amount, string description, string email, string cpf)
     {
         var client = new PaymentClient();
@@ -26,18 +16,26 @@ public class MercadoPagoService
         {
             TransactionAmount = amount,
             Description = description,
-            PaymentMethodId = "pix", 
+            PaymentMethodId = "pix",
             Payer = new PaymentPayerRequest
             {
                 Email = email,
                 Identification = new IdentificationRequest
                 {
                     Type = "CPF",
-                    Number = cpf 
+                    Number = cpf
                 }
             }
         };
-        Payment payment = await client.CreateAsync(request);
-        return payment;
+        try
+        {
+            Payment payment = await client.CreateAsync(request);
+            return payment;
+        }
+        catch (MercadoPago.Error.MercadoPagoException ex)
+        {
+            var detail = ex.Message;
+            throw new PaymentGatewayException($"Falha ao processar pagamento no provedor externo: {detail}");
+        }
     }
 }

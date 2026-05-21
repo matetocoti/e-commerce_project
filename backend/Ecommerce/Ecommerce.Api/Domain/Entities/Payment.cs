@@ -14,9 +14,8 @@ public class Payment
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-
-    // Marca quando o pagamento foi confirmado
     public DateTime? ConfirmedAt { get; private set; }
+    public string? ExternalPaymentId { get; private set; }
 
     #endregion
 
@@ -60,6 +59,17 @@ public class Payment
         Status = PaymentStatus.Confirmed;
         ConfirmedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
+    }
+
+
+    public static Payment CreatePending(decimal amount, PaymentMethod method, Guid orderId, string externalPaymentId)
+    {
+        var payment = new Payment(amount, method, orderId)
+        {
+            ExternalPaymentId = externalPaymentId // Sets the gateway's payment ID for later reference
+        };
+
+        return payment;
     }
 
     public static Payment CreateConfirmed(decimal amount, PaymentMethod method, Guid orderId)

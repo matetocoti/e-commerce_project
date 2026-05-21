@@ -3,7 +3,7 @@ using Ecommerce.Api.Domain.Entities;
 using Ecommerce.Api.Domain.Enums;
 using Ecommerce.Api.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Ecommerce.Api.Application.DTOS.Payment;
+
 
 namespace Ecommerce.Api.Application.Services;
 
