@@ -15,13 +15,10 @@ public class PaymentService(AppDbContext context)
 
     public async Task PayOrderAsync(Guid userId, Guid orderId, PaymentMethod method)
     {
-        
         var order = await GetOrderAsync(userId, orderId);
-       
         var payment = CreatePayment(order, method);
+
         order.AddPayment(payment);
-
-
         context.Payments.Add(payment);
         await context.SaveChangesAsync();
     }
@@ -38,16 +35,12 @@ public class PaymentService(AppDbContext context)
     {
         var order = await context.Orders
             .Include(o => o.Payments)
-            .FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == userId);
-         
-
-        if (order == null)
-            throw new NotFoundException("Order not found.");
-
+            .FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == userId) 
+            ?? throw new NotFoundException("Order not found.");
         return order;
     }
 
-    private Payment CreatePayment(Order order, PaymentMethod method)
+    private static Payment CreatePayment(Order order, PaymentMethod method)
     {
         // OBS: Fake mode (ambiente dev/teste)
         if (IsFakeMode())
@@ -62,7 +55,6 @@ public class PaymentService(AppDbContext context)
         // Fluxo real (ainda não implementado)
         if (method == PaymentMethod.PIX)
             throw new BadRequestException("Payment method not available.");
-
         if (method == PaymentMethod.LIGHTNING)
             throw new BadRequestException("Payment method not available.");
 
@@ -71,7 +63,7 @@ public class PaymentService(AppDbContext context)
 
     // If necessary ,disable fake mode and implement real payment processing logic (e.g., integrating with a payment gateway).
     // If it is on fake mode, it will create a confirmed payment without actually processing it.
-    private bool IsFakeMode()
+    private static bool IsFakeMode()
     {
         return true; // depois trocar por config
     }

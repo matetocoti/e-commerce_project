@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Ecommerce.Api.Infrastructure.Payments.MercadoPagoProvider;
 
 
 DotNetEnv.Env.Load();
@@ -45,14 +46,23 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddHostedService<OrderExpirationService>();
 builder.Services.AddHostedService<ProductStockManagementService>();
+builder.Services.AddScoped<MercadoPagoService>();
 
 var jwtKey = builder.Configuration["Jwt:Key"];
 if (string.IsNullOrEmpty(jwtKey))
 {
     throw new InvalidOperationException("Jwt:Key não foi configurada. Verifique seu arquivo .env ou variáveis de ambiente.");
 }
-
 var key = Encoding.UTF8.GetBytes(jwtKey);
+
+var mercadopagoAccessToken = builder.Configuration["MercadoPago:AccessToken"];
+if (string.IsNullOrEmpty(mercadopagoAccessToken))
+{
+    throw new InvalidOperationException("MercadoPago:AccessToken não foi configurado. Verifique seu arquivo .env ou variáveis de ambiente.");
+}
+
+builder.Services.Configure<MercadoPagoOptions>(builder.Configuration.GetSection("MercadoPago"));
+
 
 builder.Services.AddAuthentication(options =>
 {
