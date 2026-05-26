@@ -2,7 +2,7 @@ import { ChevronDown, CreditCard } from "lucide-react";
 import type { OrderDto } from "../../types/order";
 import { Card } from "../ui/Card";
 import { formatPrice } from "../../utils/currency/formatPrice";
-import { formatDate } from "../../utils/date/formatDate";
+import { formatDateTime } from "../../utils/date/formatDate";
 
 interface OrderPaymentSectionProps {
   readonly order: OrderDto;
@@ -15,11 +15,7 @@ const PAYMENT_METHOD_LABELS = {
   2: "Lightning Network",
 } as const;
 
-export function OrderPaymentSection({
-  order,
-  isExpanded,
-  onToggle,
-}: OrderPaymentSectionProps) {
+export function OrderPaymentSection({ order, isExpanded, onToggle,}: OrderPaymentSectionProps) {
   const payments = order.payments ?? [];
   const hasPayments = payments.length > 0;
 
@@ -62,7 +58,7 @@ export function OrderPaymentSection({
                   {PAYMENT_METHOD_LABELS[payment.method] ?? "Desconhecido"}
                 </h3>
                 <p className="text-sm text-gray-500 mt-1">
-                  {formatDate(payment.paidAt)}
+                  {formatDateTime(payment.paidAt)}
                 </p>
               </div>
               <p className="font-bold text-emerald-600 text-sm sm:text-base whitespace-nowrap flex-shrink-0">
