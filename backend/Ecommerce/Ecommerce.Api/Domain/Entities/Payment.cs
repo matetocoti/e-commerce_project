@@ -66,7 +66,7 @@ public class Payment
     {
         var payment = new Payment(amount, method, orderId)
         {
-            ExternalPaymentId = externalPaymentId // Sets the gateway's payment ID for later reference
+            ExternalPaymentId = externalPaymentId 
         };
 
         return payment;

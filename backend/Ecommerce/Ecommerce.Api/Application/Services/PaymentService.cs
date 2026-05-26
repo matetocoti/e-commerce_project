@@ -1,74 +1,150 @@
-﻿using Ecommerce.Api.Application.Exceptions;
+﻿namespace Ecommerce.Api.Application.Services;
+
+using Ecommerce.Api.Application.Exceptions;
 using Ecommerce.Api.Domain.Entities;
 using Ecommerce.Api.Domain.Enums;
 using Ecommerce.Api.Infrastructure.Persistence;
+using Ecommerce.Api.Infrastructure.Payments.MercadoPagoProvider; 
 using Microsoft.EntityFrameworkCore;
+using Ecommerce.Api.Application.Common.Security;
+using Ecommerce.Api.Application.DTOS.Payment;
 
 
-namespace Ecommerce.Api.Application.Services;
 
-public class PaymentService(AppDbContext context)
+
+public class PaymentService(AppDbContext context, MercadoPagoService mercadoPagoService)
 {
-    
-
     #region public methods
 
-    public async Task PayOrderAsync(Guid userId, Guid orderId, PaymentMethod method)
+    
+    public async Task<PaymentDto> PayOrderAsync(Guid userId, Guid orderId, PayOrderRequestDto request)
     {
         var order = await GetOrderAsync(userId, orderId);
-        var payment = CreatePayment(order, method);
-
+        var (payment, paymentDto) = await CreatePaymentAsync(order, request);
         order.AddPayment(payment);
         context.Payments.Add(payment);
         await context.SaveChangesAsync();
+        return paymentDto;
     }
 
+    public async Task ProcessExternalPaymentNotificationAsync(string externalPaymentId)
+    {
+      
+        if (!long.TryParse(externalPaymentId, out long mpPaymentId))
+            return; 
 
-    
+        var mpPaymentDetails = await mercadoPagoService.GetPaymentByIdAsync(mpPaymentId);
+
+        if (mpPaymentDetails.Status != "approved")
+            return;
+
+        var payment = await context.Payments
+            .Include(p => p.Order)
+            .FirstOrDefaultAsync(p => p.ExternalPaymentId == externalPaymentId)
+            ?? throw new NotFoundException($"Payment with external ID {externalPaymentId} not found.");
+
+        var order = payment.Order
+            ?? throw new NotFoundException("Order associated with payment not found.");
+
+        if (payment.Status == PaymentStatus.Confirmed)
+            return;
+
+        payment.MarkAsConfirmed();
+        order.MarkAsPaid();
+
+        context.Payments.Update(payment);
+        context.Orders.Update(order);
+        await context.SaveChangesAsync();
+    }
 
     #endregion
 
     #region private methods
 
-
     private async Task<Order> GetOrderAsync(Guid userId, Guid orderId)
     {
         var order = await context.Orders
             .Include(o => o.Payments)
-            .FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == userId) 
+            .FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == userId)
             ?? throw new NotFoundException("Order not found.");
         return order;
     }
 
-    private static Payment CreatePayment(Order order, PaymentMethod method)
+
+    
+    private async Task<(Payment ,PaymentDto)> CreatePaymentAsync(Order order, PayOrderRequestDto request)
     {
-        // OBS: Fake mode (ambiente dev/teste)
+        IsDataValid(request.CustomerEmail, request.CustomerCpf);
+
+        // To test the integration without hitting the real gateway, we can return fake data when in "fake mode". In production, this would be false.
         if (IsFakeMode())
         {
-            return Payment.CreateConfirmed(
-                order.TotalAmount,
-                method,
-                order.Id
-            );
+            var fakePayment = Payment.CreateConfirmed(order.TotalAmount, request.Method, order.Id);
+            return (fakePayment, new PaymentDto { 
+                Amount = fakePayment.Amount, 
+                Method = fakePayment.Method, 
+                PixResponseDto = new PixResponseDto { 
+                    PixCopiaECola = "FAKE_PIX_CODE_12345", 
+                    PixLink = "FAKE_PIX_LINK_12345" 
+                }
+            });
         }
 
-        // Fluxo real (ainda não implementado)
-        if (method == PaymentMethod.PIX)
-            throw new BadRequestException("Payment method not available.");
-        if (method == PaymentMethod.LIGHTNING)
-            throw new BadRequestException("Payment method not available.");
+        if (request.Method == PaymentMethod.PIX)
+        {
+            
+            var description = $"Pedido {order.Id}";
+            var mpResponse = await mercadoPagoService.CreatePixPaymentAsync(order.TotalAmount, description, request.CustomerEmail, request.CustomerCpf);
 
-        throw new BadRequestException("Invalid payment method.");
+            // Create a pending payment record in our system with the external payment ID from MercadoPago
+            var payment = Payment.CreatePending(
+                order.TotalAmount,
+                request.Method,
+                order.Id,
+                mpResponse.Id?.ToString() ?? throw new BadRequestException("Failed to get external payment ID") 
+            );
+
+            
+            var pixData = new { 
+                QrCode = mpResponse.PointOfInteraction?.TransactionData?.QrCode ?? "",
+                LinkPix = mpResponse.PointOfInteraction?.TransactionData?.TicketUrl ?? ""
+            };
+
+
+            PaymentDto paymentR = new PaymentDto
+            {
+                Amount = payment.Amount,
+                Method = payment.Method,
+                ExternalPaymentId = payment.ExternalPaymentId,
+                PixResponseDto = new PixResponseDto
+                {
+                    PixCopiaECola = pixData.QrCode,
+                    PixLink = pixData.LinkPix
+                }
+            };
+
+
+            return (payment, paymentR);
+        }
+
+        throw new BadRequestException("Payment method not available.");
     }
 
-    // If necessary ,disable fake mode and implement real payment processing logic (e.g., integrating with a payment gateway).
-    // If it is on fake mode, it will create a confirmed payment without actually processing it.
     private static bool IsFakeMode()
     {
-        return true; // depois trocar por config
+        return true; // Mudamos para false para testar a integração
     }
 
     #endregion
-   
-    
+
+    private static bool IsDataValid(string email, string cpf)
+    {
+        var (isEmailValid, emailMessage) = EmailValidator.Validate(email);
+        if (!isEmailValid)
+            throw new BadRequestException(emailMessage);
+        var (isCpfValid, cpfMessage) = CpfValidator.Validate(cpf);
+        if (!isCpfValid)
+            throw new BadRequestException(cpfMessage);
+        return true;
+    }
 }

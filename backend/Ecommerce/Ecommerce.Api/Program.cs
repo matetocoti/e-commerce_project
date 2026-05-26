@@ -4,13 +4,13 @@ using Ecommerce.Api.Application.Common.Interfaces;
 using Ecommerce.Api.Application.Common.Security;
 using Ecommerce.Api.Application.Services;
 using Ecommerce.Api.Application.Services.Background;
+using Ecommerce.Api.Infrastructure.Payments.MercadoPagoProvider;
 using Ecommerce.Api.Infrastructure.Persistence;
+using MercadoPago.Config;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Ecommerce.Api.Infrastructure.Payments.MercadoPagoProvider;
-using MercadoPago.Config;
 
 
 DotNetEnv.Env.Load();
@@ -47,6 +47,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddHostedService<OrderExpirationService>();
 builder.Services.AddHostedService<ProductStockManagementService>();
+builder.Services.AddHostedService<PaymentStatusPoller>();
 builder.Services.AddScoped<MercadoPagoService>();
 
 var jwtKey = builder.Configuration["Jwt:Key"];

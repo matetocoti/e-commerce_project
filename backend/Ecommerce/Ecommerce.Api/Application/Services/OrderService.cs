@@ -75,8 +75,9 @@ public class OrderService(AppDbContext context)
         else
         {
             
-            if (string.IsNullOrWhiteSpace(createOrderDto.Email))
-                throw new BadRequestException("Email is required for digital products");
+            var (isValid, validationMessage) = EmailValidator.Validate(createOrderDto.Email);
+            if (!isValid)
+                throw new BadRequestException(validationMessage);
 
             digitalContact = new DigitalContactInfo
             {

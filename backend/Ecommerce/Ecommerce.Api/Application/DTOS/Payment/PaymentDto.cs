@@ -7,4 +7,7 @@ public class PaymentDto
     public decimal Amount { get; set; }
     public PaymentMethod Method { get; set; }
     public DateTime ?PaidAt { get; set; } 
+    public string ?ExternalPaymentId { get; set; } = string.Empty; 
+
+    public PixResponseDto? PixResponseDto { get; set; }
 }

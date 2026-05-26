@@ -13,10 +13,10 @@ using Microsoft.AspNetCore.Mvc;
 public class PaymentController(PaymentService paymentService, ICurrentUserService currentUser) : ControllerBase
 {
     [HttpPost("{orderId}")]
-    public async Task<IActionResult> Pay(Guid orderId, [FromBody] PayOrderRequestDto request)
+    public async Task<IActionResult> ProcessPaymentIntent(Guid orderId, [FromBody] PayOrderRequestDto request)
     {
         var userId = currentUser.GetUserId();
-        await paymentService.PayOrderAsync(userId, orderId, request.Method);
-        return NoContent();
+        var pixData = await paymentService.PayOrderAsync(userId, orderId, request);
+        return Ok(new { pixCopiaECola = pixData });
     }
 }
