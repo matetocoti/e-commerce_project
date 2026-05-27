@@ -2,6 +2,7 @@ import { X, Mail, FileText } from "lucide-react";
 import { useState } from "react";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
+import { formatCpf, cleanCpf, validateCpf, validateEmail } from "../../utils/data/cpf";
 
 interface PaymentDataModalProps {
   readonly isOpen: boolean;
@@ -27,22 +28,14 @@ export function PaymentDataModal({
   const validateForm = (): boolean => {
     const newErrors: { email?: string; cpf?: string } = {};
 
-    // Validate email
-    if (!email.trim()) {
-      newErrors.email = "Email é obrigatório";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = "Email inválido";
+    const emailValidation = validateEmail(email);
+    if (!emailValidation.isValid) {
+      newErrors.email = emailValidation.error;
     }
 
-    // Validate CPF (basic validation)
-    if (!cpf.trim()) {
-      newErrors.cpf = "CPF é obrigatório";
-    } else {
-      // Remove non-numeric characters
-      const cleanCpf = cpf.replace(/\D/g, "");
-      if (cleanCpf.length !== 11) {
-        newErrors.cpf = "CPF deve conter 11 dígitos";
-      }
+    const cpfValidation = validateCpf(cpf);
+    if (!cpfValidation.isValid) {
+      newErrors.cpf = cpfValidation.error;
     }
 
     setErrors(newErrors);
@@ -51,19 +44,8 @@ export function PaymentDataModal({
 
   const handleConfirm = () => {
     if (validateForm()) {
-      const cleanCpf = cpf.replace(/\D/g, "");
-      onConfirm(email, cleanCpf);
+      onConfirm(email, cleanCpf(cpf));
     }
-  };
-
-  const formatCpf = (value: string): string => {
-    const cleaned = value.replace(/\D/g, "");
-    if (cleaned.length <= 3) return cleaned;
-    if (cleaned.length <= 6)
-      return `${cleaned.slice(0, 3)}.${cleaned.slice(3)}`;
-    if (cleaned.length <= 9)
-      return `${cleaned.slice(0, 3)}.${cleaned.slice(3, 6)}.${cleaned.slice(6)}`;
-    return `${cleaned.slice(0, 3)}.${cleaned.slice(3, 6)}.${cleaned.slice(6, 9)}-${cleaned.slice(9, 11)}`;
   };
 
   const handleCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,8 +67,7 @@ export function PaymentDataModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="w-full max-w-md rounded-3xl border border-gray-200/80 bg-white shadow-2xl animate-in zoom-in-95 duration-300">
-        
-        
+        {/* Header */}
         <div className="border-b border-gray-100 px-6 py-5 flex-shrink-0">
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -122,7 +103,6 @@ export function PaymentDataModal({
         
         <div className="space-y-4 overflow-y-auto px-6 py-5">
           
-          
           <div className="space-y-2">
             <label htmlFor="payment-email" className="block text-sm font-semibold text-gray-800">
               <div className="flex items-center gap-2 mb-1">
@@ -137,7 +117,7 @@ export function PaymentDataModal({
               onChange={handleEmailChange}
               placeholder="seu@email.com"
               disabled={isLoading}
-              className={`${errors.email ? "border-red-500 focus:border-red-500" : ""}`}
+              className={errors.email ? "border-red-500 focus:border-red-500 focus:ring-red-600/20" : ""}
             />
             {errors.email && (
               <p className="text-xs text-red-600 font-medium">{errors.email}</p>
@@ -160,7 +140,7 @@ export function PaymentDataModal({
               placeholder="000.000.000-00"
               disabled={isLoading}
               maxLength={14}
-              className={`${errors.cpf ? "border-red-500 focus:border-red-500" : ""}`}
+              className={errors.cpf ? "border-red-500 focus:border-red-500 focus:ring-red-600/20" : ""}
             />
             {errors.cpf && (
               <p className="text-xs text-red-600 font-medium">{errors.cpf}</p>
@@ -175,7 +155,7 @@ export function PaymentDataModal({
           </div>
         </div>
 
-       
+        {/* Footer */}
         <div className="border-t border-gray-100 px-6 py-4 flex gap-2 flex-shrink-0 bg-white">
           <Button
             onClick={onClose}
