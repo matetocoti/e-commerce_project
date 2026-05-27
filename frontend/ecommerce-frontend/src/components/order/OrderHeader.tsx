@@ -1,6 +1,6 @@
 import type { OrderDto }  from "../../types/order";
 import { getOrderStatusInfo } from "../../utils/order/getOrderStatusInfo";
-import { formatDate } from "../../utils/date/formatDate";
+import { formatDateTime } from "../../utils/date/formatDate";
 import { Card } from "../ui/Card";
 
 interface OrderHeaderProps {
@@ -20,8 +20,8 @@ export function OrderHeader({ order }: OrderHeaderProps) {
           </h1>
 
           <div className="space-y-2 text-sm text-gray-600">
-            <p>Realizado em <span className="font-medium text-gray-700">{formatDate(order.createdAt)}</span></p>
-            <p>Expira em <span className="font-medium text-gray-700">{formatDate(order.expiresAt)}</span></p>
+            <p>Realizado em <span className="font-medium text-gray-700">{formatDateTime(order.createdAt)}</span></p>
+            <p>Expira em <span className="font-medium text-gray-700">{formatDateTime(order.expiresAt)}</span></p>
           </div>
         </div>
 
