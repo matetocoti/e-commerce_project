@@ -40,6 +40,9 @@ export function OrderDetail() {
     paymentState,
     handlePaymentClick,
     handleSelectPixPayment,
+    handlePaymentDataConfirm,
+    handleBackFromPaymentData,
+    handleBackFromPixPayment,
     handleGeneratePixPayment,
     paymentLoading,
     closePaymentModals,
@@ -135,17 +138,18 @@ export function OrderDetail() {
         order={order}
         confirm={confirm}
         paymentMethodOpen={paymentState.paymentMethodOpen}
+        paymentDataOpen={paymentState.paymentDataOpen}
         pixPaymentOpen={paymentState.pixPaymentOpen}
         generatingPayment={paymentState.generatingPayment}
         paymentLoading={paymentLoading}
         onSelectPixPayment={handleSelectPixPayment}
+        onPaymentDataConfirm={handlePaymentDataConfirm}
         onGeneratePixPayment={handleGeneratePixPayment}
         onClosePaymentMethod={closePaymentModals}
+        onClosePaymentData={closePaymentModals}
+        onBackFromPaymentData={handleBackFromPaymentData}
         onClosePixPayment={closePaymentModals}
-        onBackFromPixPayment={() => {
-          closePaymentModals();
-          handlePaymentClick(order.id);
-        }}
+        onBackFromPixPayment={handleBackFromPixPayment}
       />
       <PaymentProgress isLoading={paymentLoading} />
       <div className="mx-auto max-w-7xl w-full px-4 py-8 sm:py-12 bg-transparent min-h-[calc(100vh-16rem)]">

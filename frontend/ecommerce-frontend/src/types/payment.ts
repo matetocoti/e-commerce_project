@@ -8,6 +8,8 @@ export type PaymentMethod =
 
 export interface PayOrderRequestDto {
   method: PaymentMethod;
+  customerEmail: string;
+  customerCpf: string;
 }
 
 export interface PaymentDto {
@@ -15,4 +17,11 @@ export interface PaymentDto {
   amount: number;
   method: PaymentMethod;
   paidAt: string;
+  externalId?: string;
+  PixResponse?: PixResponseDto;
+}
+
+export interface PixResponseDto {
+  copyAndPaste: string;
+  pixLink: string;
 }

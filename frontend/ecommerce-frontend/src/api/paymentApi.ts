@@ -1,9 +1,10 @@
 import { apiFetch } from "./client";
 import type { PayOrderRequestDto } from "../types/payment";
 
-// Payment API functions -- for now fake payment method
+// Payment API functions -- for fake and real implementations 
 export const payOrder = async (orderId: string, data: PayOrderRequestDto) => {
-  return await apiFetch<PayOrderRequestDto>(`/api/Payment/${orderId}`, {
+  const url = `/api/Payment/${orderId}`;
+  return await apiFetch<PayOrderRequestDto>(url, {
     method: "POST",
     body: data,
   });

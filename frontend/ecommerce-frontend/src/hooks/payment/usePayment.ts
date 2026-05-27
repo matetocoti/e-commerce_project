@@ -14,15 +14,21 @@ export function usePayment(options?: UsePaymentOptions) {
   
 
 
-  const payOrder = async (orderId: string, method: PaymentMethod) =>{
+  const payOrder = async (orderId: string, method: PaymentMethod, email: string, cpf: string) =>{
     try {
       setLoading(true);
 
-      const payload: PayOrderRequestDto = { method };
+      const payload: PayOrderRequestDto = { 
+        method,
+        customerEmail: email,
+        customerCpf: cpf 
+      };
 
-      await payOrderApi(orderId, payload);
+      
+      const response = await payOrderApi(orderId, payload);
+      console.log("Resposta da API:", response);
 
-      // Simula processamento real (2-3 segundos) -- only for demonstration purposes, remove in production
+      // Simulate real processing (2-3 segundos) -- only for demonstration purposes, remove in production
       await new Promise(resolve => setTimeout(resolve, 2500));
 
       return true;
@@ -32,6 +38,7 @@ export function usePayment(options?: UsePaymentOptions) {
           ? err.message
           : "Erro ao processar pagamento.";
 
+      console.error("Erro no pagamento:", err);
       toast.error(message);
       return false;
     } finally {
@@ -39,8 +46,9 @@ export function usePayment(options?: UsePaymentOptions) {
     }
   };
 
-  const handlePayment = async (orderId: string) => {
-    const success = await payOrder(orderId, PaymentMethod.PIX);
+  const handlePayment = async (orderId: string, email: string, cpf: string) => {
+    
+    const success = await payOrder(orderId, PaymentMethod.PIX, email, cpf);
 
     if (success) {
       toast.success("Pagamento realizado com sucesso!");
