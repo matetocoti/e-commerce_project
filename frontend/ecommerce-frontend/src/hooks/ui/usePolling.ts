@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 
 
-export function usePolling( callback: () => Promise<void>,interval = 10000,enabled = true) {
+export function usePolling( callback: () => Promise<void>,interval = 20000,enabled = true) {
   useEffect(() => {
     if (!enabled || document.hidden) return;
 

@@ -84,7 +84,7 @@ public class PaymentService(AppDbContext context, MercadoPagoService mercadoPago
                 Amount = fakePayment.Amount, 
                 Method = fakePayment.Method, 
                 PixResponseDto = new PixResponseDto { 
-                    PixCopiaECola = "FAKE_PIX_CODE_12345", 
+                    PixCopyAndPaste = "FAKE_PIX_CODE_12345", 
                     PixLink = "FAKE_PIX_LINK_12345" 
                 }
             });
@@ -106,7 +106,7 @@ public class PaymentService(AppDbContext context, MercadoPagoService mercadoPago
 
             
             var pixData = new { 
-                QrCode = mpResponse.PointOfInteraction?.TransactionData?.QrCode ?? "",
+                QrCode = mpResponse.PointOfInteraction?.TransactionData?.QrCodeBase64 ?? "",
                 LinkPix = mpResponse.PointOfInteraction?.TransactionData?.TicketUrl ?? ""
             };
 
@@ -118,7 +118,7 @@ public class PaymentService(AppDbContext context, MercadoPagoService mercadoPago
                 ExternalPaymentId = payment.ExternalPaymentId,
                 PixResponseDto = new PixResponseDto
                 {
-                    PixCopiaECola = pixData.QrCode,
+                    PixCopyAndPaste = pixData.QrCode,
                     PixLink = pixData.LinkPix
                 }
             };

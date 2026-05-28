@@ -56,7 +56,6 @@ export function useOrderPaymentFlow({onSuccess,}: UseOrderPaymentFlowProps = {})
   };
 
   const handlePaymentDataConfirm = (email: string, cpf: string) => {
-    console.log("✅ Dados de pagamento confirmados:", { email, cpf, orderId: pendingOrderId });
     setPendingEmail(email);
     setPendingCpf(cpf);
     setPaymentState((prev) => ({
@@ -87,13 +86,6 @@ export function useOrderPaymentFlow({onSuccess,}: UseOrderPaymentFlowProps = {})
       console.warn("❌ OrderId não encontrado");
       return;
     }
-
-    console.log("🔄 Iniciando geração de PIX com dados:", {
-      orderId: pendingOrderId,
-      email: pendingEmail,
-      cpf: pendingCpf,
-    });
-
     setPaymentState((prev) => ({ ...prev, generatingPayment: true }));
     try {
       const success = await handlePayment(pendingOrderId, pendingEmail, pendingCpf);

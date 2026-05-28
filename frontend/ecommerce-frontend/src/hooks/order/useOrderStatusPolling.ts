@@ -13,7 +13,7 @@ interface UseOrderStatusPollingParams {
 export function useOrderStatusPolling({
   orderId,
   onOrderUpdate,
-  interval = 10000,
+  interval = 20000,
   enabled = true,
 }: UseOrderStatusPollingParams) {
   const pollingIdRef = useRef<ReturnType<typeof setInterval> | null>(null);

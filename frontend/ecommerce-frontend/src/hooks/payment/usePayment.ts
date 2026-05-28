@@ -24,7 +24,6 @@ export function usePayment(options?: UsePaymentOptions) {
         customerCpf: cpf 
       };
 
-      
       const response = await payOrderApi(orderId, payload);
       console.log("Resposta da API:", response);
 

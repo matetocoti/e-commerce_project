@@ -20,18 +20,12 @@ function getStoredToken(): string | null {
   }
 }
 
-export async function apiFetch<T>(
-  endpoint: string,
-  options: ApiFetchOptions = {},
-): Promise<T> {
+export async function apiFetch<T>(endpoint: string,options: ApiFetchOptions = {},): Promise<T> {
   const { token, headers, body, ...rest } = options;
 
   const authToken = token ?? getStoredToken();
   const fullUrl = `${API_BASE_URL}${endpoint}`;
 
-  console.log("🔗 apiFetch - URL completa:", fullUrl);
-  console.log("🔗 apiFetch - Método:", options.method || "GET");
-  console.log("🔗 apiFetch - Body:", body);
 
   const response = await fetch(fullUrl, {
     ...rest,
@@ -42,8 +36,6 @@ export async function apiFetch<T>(
     },
     body: body === undefined ? undefined : JSON.stringify(body),
   });
-
-  console.log("📡 Response status:", response.status, response.statusText);
 
   if (!response.ok) {
     let message = `Erro ${response.status}: ${response.statusText || "Erro desconhecido"}`;
@@ -56,7 +48,7 @@ export async function apiFetch<T>(
         message = errorMessage;
       }
     } catch {
-      // Se não conseguir parsear JSON, usa a mensagem padrão
+      throw new Error(message);
     }
 
     console.error(`API Error [${response.status}] ${endpoint}:`, message);

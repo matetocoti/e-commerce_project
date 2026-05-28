@@ -2,6 +2,6 @@
 
 public class PixResponseDto
 {
-    public string PixCopiaECola { get; set; } = string.Empty;
+    public string PixCopyAndPaste { get; set; } = string.Empty;
     public string PixLink { get; set; } = string.Empty;
 }
