@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { getOrderById } from "../../api/orderApi";
 import type { OrderDto } from "../../types/order";
 
@@ -17,28 +17,40 @@ export function useOrderStatusPolling({
   enabled = true,
 }: UseOrderStatusPollingParams) {
   const pollingIdRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const onOrderUpdateRef = useRef(onOrderUpdate);
+  const intervalRef = useRef(interval);
 
-  const pollStatus = useCallback(async () => {
-    if (!orderId) return;
-
-    try {
-      const order = await getOrderById(orderId);
-      if (onOrderUpdate) {
-        onOrderUpdate(order);
-      }
-    } catch (error) {
-      console.error("Erro ao fazer polling do status do pedido:", error);
-    }
-  }, [orderId, onOrderUpdate]);
+  // Atualizar refs com valores mais recentes
+  useEffect(() => {
+    onOrderUpdateRef.current = onOrderUpdate;
+    intervalRef.current = interval;
+  }, [onOrderUpdate, interval]);
 
   useEffect(() => {
     if (!enabled || !orderId || document.hidden) return;
 
+    const pollStatus = async () => {
+      try {
+        const order = await getOrderById(orderId);
+        if (onOrderUpdateRef.current) {
+          onOrderUpdateRef.current(order);
+        }
+      } catch (error) {
+        console.error("Erro ao fazer polling do status do pedido:", error);
+      }
+    };
+
+    // Executar poll imediato
     pollStatus().catch(console.error);
 
-    pollingIdRef.current = setInterval(() => {
-      pollStatus().catch(console.error);
-    }, interval);
+    // Configurar intervalo com delay
+    const startPolling = () => {
+      pollingIdRef.current = setInterval(() => {
+        pollStatus().catch(console.error);
+      }, intervalRef.current);
+    };
+
+    startPolling();
 
     const handleVisibilityChange = () => {
       if (document.hidden) {
@@ -48,9 +60,7 @@ export function useOrderStatusPolling({
         }
       } else {
         pollStatus().catch(console.error);
-        pollingIdRef.current = setInterval(() => {
-          pollStatus().catch(console.error);
-        }, interval);
+        startPolling();
       }
     };
 
@@ -62,5 +72,5 @@ export function useOrderStatusPolling({
       }
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [enabled, orderId, interval, pollStatus]);
+  }, [enabled, orderId]);
 }

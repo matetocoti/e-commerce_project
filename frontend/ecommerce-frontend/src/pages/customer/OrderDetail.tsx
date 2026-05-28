@@ -38,6 +38,7 @@ export function OrderDetail() {
   
   const {
     paymentState,
+    paymentData,
     handlePaymentClick,
     handleSelectPixPayment,
     handlePaymentDataConfirm,
@@ -45,7 +46,6 @@ export function OrderDetail() {
     handleBackFromPixPayment,
     handleGeneratePixPayment,
     paymentLoading,
-    paymentData,
     closePaymentModals,
   } = useOrderPaymentFlow( {onSuccess: reloadOrder,} );
 
@@ -60,7 +60,7 @@ export function OrderDetail() {
   useOrderStatusPolling({
     orderId: id ?? "",
     onOrderUpdate: updateOrderStatus,
-    interval: 10000,
+    interval: 20000,
     enabled: shouldPoll,
   });
 

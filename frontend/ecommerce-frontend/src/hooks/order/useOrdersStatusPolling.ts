@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { getOrderById } from "../../api/orderApi";
 import type { OrderDto } from "../../types/order";
 
@@ -16,39 +16,53 @@ export function useOrdersStatusPolling({
   enabled = true,
 }: UseOrdersStatusPollingParams) {
   const pollingIdRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const onOrderUpdateRef = useRef(onOrderUpdate);
+  const intervalRef = useRef(interval);
+  const orderIdsRef = useRef(orderIds);
 
-  const pollStatuses = useCallback(async () => {
-    if (!orderIds || orderIds.length === 0) return;
-
-    try {
-      const promises = orderIds.map((id) =>
-        getOrderById(id).catch((error) => {
-          console.error(`Erro ao fazer polling do pedido ${id}:`, error);
-          return null;
-        }),
-      );
-
-      const results = await Promise.all(promises);
-
-      results.forEach((order) => {
-        if (order && onOrderUpdate) {
-          onOrderUpdate(order);
-        }
-      });
-    } catch (error) {
-      console.error("Erro ao fazer polling dos status dos pedidos:", error);
-    }
-  }, [orderIds, onOrderUpdate]);
+  // Atualizar refs com valores mais recentes
+  useEffect(() => {
+    onOrderUpdateRef.current = onOrderUpdate;
+    intervalRef.current = interval;
+    orderIdsRef.current = orderIds;
+  }, [onOrderUpdate, interval, orderIds]);
 
   useEffect(() => {
-    if (!enabled || !orderIds || orderIds.length === 0 || document.hidden)
+    if (!enabled || !orderIdsRef.current || orderIdsRef.current.length === 0 || document.hidden)
       return;
 
+    const pollStatuses = async () => {
+      const orderIds = orderIdsRef.current;
+      if (!orderIds || orderIds.length === 0) return;
+
+      const promises = orderIds.map(async (id) => {
+        try {
+          return await getOrderById(id);
+        } catch (error) {
+          console.error(`Erro ao fazer polling do pedido ${id}:`, error);
+          return null;
+        }
+      });
+
+      const results = await Promise.all(promises);
+      results.forEach((order) => {
+        if (order && onOrderUpdateRef.current) {
+          onOrderUpdateRef.current(order);
+        }
+      });
+    };
+
+    // Executar poll imediato
     pollStatuses().catch(console.error);
 
-    pollingIdRef.current = setInterval(() => {
-      pollStatuses().catch(console.error);
-    }, interval);
+    // Configurar intervalo com delay
+    const startPolling = () => {
+      pollingIdRef.current = setInterval(() => {
+        pollStatuses().catch(console.error);
+      }, intervalRef.current);
+    };
+
+    startPolling();
 
     const handleVisibilityChange = () => {
       if (document.hidden) {
@@ -58,9 +72,7 @@ export function useOrdersStatusPolling({
         }
       } else {
         pollStatuses().catch(console.error);
-        pollingIdRef.current = setInterval(() => {
-          pollStatuses().catch(console.error);
-        }, interval);
+        startPolling();
       }
     };
 
@@ -72,5 +84,5 @@ export function useOrdersStatusPolling({
       }
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [enabled, orderIds, interval, pollStatuses]);
+  }, [enabled]);
 }

@@ -31,7 +31,7 @@ export function Orders() {
   useOrdersStatusPolling({
     orderIds: orders.map((order) => order.id),
     onOrderUpdate: updateOrderStatus,
-    interval: 10000,
+    interval: 20000,
     enabled: orders.length > 0 && shouldPoll(),
   });
 

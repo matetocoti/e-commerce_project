@@ -1,37 +1,61 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
+export function usePolling(
+  callback: () => Promise<void>,
+  interval = 20000,
+  enabled = true
+) {
+  const pollingIdRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const callbackRef = useRef(callback);
+  const intervalRef = useRef(interval);
 
+  useEffect(() => {
+    callbackRef.current = callback;
+    intervalRef.current = interval;
+  }, [callback, interval]);
 
-export function usePolling( callback: () => Promise<void>,interval = 20000,enabled = true) {
   useEffect(() => {
     if (!enabled || document.hidden) return;
 
-    let id = setInterval(async () => {
+    const pollOnce = async () => {
       try {
-        await callback();
+        await callbackRef.current();
       } catch (error) {
-        console.error('Polling error:', error);
+        console.error("Polling error:", error);
       }
-    }, interval);
+    };
+
+    
+    pollOnce().catch(console.error);
+
+    
+    const startPolling = () => {
+      pollingIdRef.current = setInterval(() => {
+        pollOnce().catch(console.error);
+      }, intervalRef.current);
+    };
+
+    startPolling();
 
     const handleVisibilityChange = () => {
       if (document.hidden) {
-        clearInterval(id);
+        if (pollingIdRef.current) {
+          clearInterval(pollingIdRef.current);
+          pollingIdRef.current = null;
+        }
       } else {
-        callback().catch(console.error);
-        id = setInterval(async () => {
-          try {
-            await callback();
-          } catch (error) {
-            console.error('Polling error:', error);
-          }
-        }, interval);
+        pollOnce().catch(console.error);
+        startPolling();
       }
     };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
     return () => {
-      clearInterval(id);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (pollingIdRef.current) {
+        clearInterval(pollingIdRef.current);
+      }
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [callback, interval, enabled]);
+  }, [enabled]);
 }

@@ -9,7 +9,7 @@ export function DefaultLayout() {
   const { cart, reloadCart } = useCart();
   const cartCount = cart?.items?.length ?? 0;
 
-  usePolling(() => reloadCart(), 2000);
+  usePolling(() => reloadCart(), 3000);
   
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
