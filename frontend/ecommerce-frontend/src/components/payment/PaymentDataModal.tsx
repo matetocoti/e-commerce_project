@@ -7,7 +7,7 @@ import { formatCpf, cleanCpf, validateCpf, validateEmail } from "../../utils/dat
 interface PaymentDataModalProps {
   readonly isOpen: boolean;
   readonly onClose: () => void;
-  readonly onConfirm: (email: string, cpf: string) => void;
+  readonly onConfirm: (email: string, cpf: string) => Promise<void>;
   readonly isLoading?: boolean;
   readonly initialEmail?: string;
   readonly initialCpf?: string;
@@ -24,6 +24,7 @@ export function PaymentDataModal({
   const [email, setEmail] = useState(initialEmail);
   const [cpf, setCpf] = useState(initialCpf);
   const [errors, setErrors] = useState<{ email?: string; cpf?: string }>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validateForm = (): boolean => {
     const newErrors: { email?: string; cpf?: string } = {};
@@ -42,9 +43,14 @@ export function PaymentDataModal({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (validateForm()) {
-      onConfirm(email, cleanCpf(cpf));
+      setIsSubmitting(true);
+      try {
+        await onConfirm(email, cleanCpf(cpf));
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -155,22 +161,22 @@ export function PaymentDataModal({
           </div>
         </div>
 
-        {/* Footer */}
+        
         <div className="border-t border-gray-100 px-6 py-4 flex gap-2 flex-shrink-0 bg-white">
           <Button
             onClick={onClose}
             variant="outline"
-            disabled={isLoading}
+            disabled={isLoading || isSubmitting}
             className="flex-1 py-2.5 text-sm font-semibold text-gray-700 border border-gray-300 hover:bg-gray-50 transition-all"
           >
             Voltar
           </Button>
           <Button
             onClick={handleConfirm}
-            disabled={isLoading}
+            disabled={isLoading || isSubmitting}
             className="flex-1 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 transition-all"
           >
-            {isLoading ? "Processando..." : "Confirmar"}
+            {isSubmitting ? "Processando..." : "Confirmar"}
           </Button>
         </div>
       </div>

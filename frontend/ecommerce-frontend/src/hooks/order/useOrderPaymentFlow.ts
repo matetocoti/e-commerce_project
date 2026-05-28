@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { usePayment } from "../payment/usePayment";
+import type { PaymentDataResponse } from "../../types/payment";
 
 interface PaymentFlowState {
   paymentMethodOpen: boolean;
@@ -13,10 +14,11 @@ interface UseOrderPaymentFlowResult {
   pendingOrderId: string | null;
   pendingEmail: string;
   pendingCpf: string;
+  paymentData: PaymentDataResponse | null;
   paymentLoading: boolean;
   handlePaymentClick: (orderId: string) => void;
   handleSelectPixPayment: () => void;
-  handlePaymentDataConfirm: (email: string, cpf: string) => void;
+  handlePaymentDataConfirm: (email: string, cpf: string) => Promise<void>;
   handleBackFromPaymentData: () => void;
   handleBackFromPixPayment: () => void;
   handleGeneratePixPayment: () => Promise<void>;
@@ -37,10 +39,9 @@ export function useOrderPaymentFlow({onSuccess,}: UseOrderPaymentFlowProps = {})
   const [pendingOrderId, setPendingOrderId] = useState<string | null>(null);
   const [pendingEmail, setPendingEmail] = useState("");
   const [pendingCpf, setPendingCpf] = useState("");
+  const [paymentData, setPaymentData] = useState<PaymentDataResponse | null>(null);
 
-  const { handlePayment, loading: paymentLoading } = usePayment({
-    onSuccess,
-  });
+  const { getPaymentData, loading: paymentLoading } = usePayment();
 
   const handlePaymentClick = (orderId: string) => {
     setPendingOrderId(orderId);
@@ -55,14 +56,25 @@ export function useOrderPaymentFlow({onSuccess,}: UseOrderPaymentFlowProps = {})
     }));
   };
 
-  const handlePaymentDataConfirm = (email: string, cpf: string) => {
-    setPendingEmail(email);
-    setPendingCpf(cpf);
-    setPaymentState((prev) => ({
-      ...prev,
-      paymentDataOpen: false,
-      pixPaymentOpen: true,
-    }));
+  const handlePaymentDataConfirm = async (email: string, cpf: string) => {
+    if (!pendingOrderId) {
+      console.warn("OrderId não encontrado");
+      return;
+    }
+
+   
+    const paymentDataResponse = await getPaymentData(pendingOrderId, email, cpf);
+    
+    if (paymentDataResponse) {
+      setPendingEmail(email);
+      setPendingCpf(cpf);
+      setPaymentData(paymentDataResponse);
+      setPaymentState((prev) => ({
+        ...prev,
+        paymentDataOpen: false,
+        pixPaymentOpen: true,
+      }));
+    }
   };
 
   const handleBackFromPixPayment = () => {
@@ -82,20 +94,28 @@ export function useOrderPaymentFlow({onSuccess,}: UseOrderPaymentFlowProps = {})
   };
 
   const handleGeneratePixPayment = async () => {
-    if (!pendingOrderId) {
-      console.warn("❌ OrderId não encontrado");
+    if (!pendingOrderId || !paymentData) {
+      console.warn("OrderId ou Payment Data não encontrado");
       return;
     }
+    
+    
     setPaymentState((prev) => ({ ...prev, generatingPayment: true }));
     try {
-      const success = await handlePayment(pendingOrderId, pendingEmail, pendingCpf);
-
-      if (success) {
-        setPaymentState((prev) => ({ ...prev, pixPaymentOpen: false }));
-        setPendingOrderId(null);
-        setPendingEmail("");
-        setPendingCpf("");
-      }
+      
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      console.log("Pagamento confirmado com dados PIX:", paymentData);
+      
+      // Fecha modal e limpa dados
+      setPaymentState((prev) => ({ ...prev, pixPaymentOpen: false }));
+      setPendingOrderId(null);
+      setPendingEmail("");
+      setPendingCpf("");
+      setPaymentData(null);
+      
+     
+      onSuccess?.();
     } finally {
       setPaymentState((prev) => ({ ...prev, generatingPayment: false }));
     }
@@ -111,6 +131,7 @@ export function useOrderPaymentFlow({onSuccess,}: UseOrderPaymentFlowProps = {})
     setPendingOrderId(null);
     setPendingEmail("");
     setPendingCpf("");
+    setPaymentData(null);
   };
 
   return {
@@ -118,6 +139,7 @@ export function useOrderPaymentFlow({onSuccess,}: UseOrderPaymentFlowProps = {})
     pendingOrderId,
     pendingEmail,
     pendingCpf,
+    paymentData,
     paymentLoading,
     handlePaymentClick,
     handleSelectPixPayment,

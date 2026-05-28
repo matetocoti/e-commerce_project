@@ -17,6 +17,6 @@ public class PaymentController(PaymentService paymentService, ICurrentUserServic
     {
         var userId = currentUser.GetUserId();
         var pixData = await paymentService.PayOrderAsync(userId, orderId, request);
-        return Ok(new { pixCopiaECola = pixData });
+        return Ok(pixData);
     }
 }

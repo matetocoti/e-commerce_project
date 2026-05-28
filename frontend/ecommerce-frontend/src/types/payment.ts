@@ -16,12 +16,16 @@ export interface PaymentDto {
   id: string;
   amount: number;
   method: PaymentMethod;
-  paidAt: string;
-  externalId?: string;
-  PixResponse?: PixResponseDto;
+  paidAt: string | null;
+  externalPaymentId?: string;
+  pixResponseDto?: PixResponseDto;
 }
 
 export interface PixResponseDto {
-  copyAndPaste: string;
+  pixCopyAndPaste: string;
   pixLink: string;
+}
+
+export interface PaymentDataResponse {
+  pixResponseData: PixResponseDto;
 }

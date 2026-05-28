@@ -132,7 +132,7 @@ public class PaymentService(AppDbContext context, MercadoPagoService mercadoPago
 
     private static bool IsFakeMode()
     {
-        return true; // Mudamos para false para testar a integração
+        return false; // Mudamos para false para testar a integração
     }
 
     #endregion

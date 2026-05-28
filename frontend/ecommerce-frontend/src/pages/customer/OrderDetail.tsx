@@ -45,6 +45,7 @@ export function OrderDetail() {
     handleBackFromPixPayment,
     handleGeneratePixPayment,
     paymentLoading,
+    paymentData,
     closePaymentModals,
   } = useOrderPaymentFlow( {onSuccess: reloadOrder,} );
 
@@ -142,6 +143,7 @@ export function OrderDetail() {
         pixPaymentOpen={paymentState.pixPaymentOpen}
         generatingPayment={paymentState.generatingPayment}
         paymentLoading={paymentLoading}
+        paymentData={paymentData}
         onSelectPixPayment={handleSelectPixPayment}
         onPaymentDataConfirm={handlePaymentDataConfirm}
         onGeneratePixPayment={handleGeneratePixPayment}

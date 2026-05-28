@@ -4,6 +4,7 @@ import { PaymentDataModal } from "../payment/PaymentDataModal";
 import { PixPaymentModal } from "../payment/PixPaymentModal";
 import { ConfirmModal } from "../ui/ConfirmModal";
 import type { OrderDto } from "../../types/order";
+import type { PaymentDataResponse } from "../../types/payment";
 import { useConfirm } from "../../hooks/ui/useConfirm";
 import { formatPrice } from "../../utils/currency/formatPrice";
 
@@ -17,8 +18,9 @@ interface OrderModalsProps {
   readonly pixPaymentOpen: boolean;
   readonly generatingPayment: boolean;
   readonly paymentLoading: boolean;
+  readonly paymentData: PaymentDataResponse | null;
   readonly onSelectPixPayment: () => void;
-  readonly onPaymentDataConfirm: (email: string, cpf: string) => void;
+  readonly onPaymentDataConfirm: (email: string, cpf: string) => Promise<void>;
   readonly onGeneratePixPayment: () => Promise<void>;
   readonly onClosePaymentMethod: () => void;
   readonly onClosePaymentData: () => void;
@@ -35,11 +37,11 @@ export function OrderModals({
   pixPaymentOpen,
   generatingPayment,
   paymentLoading,
+  paymentData,
   onSelectPixPayment,
   onPaymentDataConfirm,
   onGeneratePixPayment,
   onClosePaymentMethod,
-  onClosePaymentData,
   onBackFromPaymentData,
   onClosePixPayment,
   onBackFromPixPayment,
@@ -70,6 +72,7 @@ export function OrderModals({
             : "R$ 0,00"
         }
         orderId={order?.id ?? ""}
+        paymentData={paymentData}
       />
       <PaymentLoadingModal isOpen={paymentLoading} />
       <ConfirmModal
