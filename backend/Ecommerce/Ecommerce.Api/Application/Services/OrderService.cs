@@ -143,6 +143,19 @@ public class OrderService(AppDbContext context)
         return MapToDto(order);
     }
 
+    public async Task<OrderStatusDto> GetOrderStatusByIdAsync(Guid orderId)
+    {
+        var order = await _context.Orders
+            .FirstOrDefaultAsync(o => o.Id == orderId);
+        if (order == null)
+            throw new NotFoundException("Order not found.");
+        return new OrderStatusDto
+        {
+            Id = order.Id,
+            Status = order.Status
+        };
+    }
+
     // TODO: Create separate DTOs for order list and order details views.
     private OrderDto MapToDto(Order order)
     {

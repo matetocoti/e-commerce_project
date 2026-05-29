@@ -1,7 +1,6 @@
 ﻿namespace Ecommerce.Api.Controllers;
 
 using Ecommerce.Api.Application.DTOS.Order;
-using Ecommerce.Api.Application.Exceptions;
 using Ecommerce.Api.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +11,6 @@ using Ecommerce.Api.Application.Common.Interfaces;
 [Route("api/[controller]")]
 public class OrderController(OrderService orderService ,ICurrentUserService currentUser) : ControllerBase
 {
-   
     [HttpPost("checkout")]
     public async Task<IActionResult> Checkout([FromBody] CreateOrderDto dto)
     {
@@ -20,7 +18,6 @@ public class OrderController(OrderService orderService ,ICurrentUserService curr
         var order = await orderService.CheckoutAsync(userId, dto);
         return Ok(order);
     }
-
     [HttpGet]
     public async Task<IActionResult> GetUserOrders(int page = 1,int pageSize = 5){
         var userId = currentUser.GetUserId();
@@ -37,9 +34,16 @@ public class OrderController(OrderService orderService ,ICurrentUserService curr
     [HttpGet("{id}")]
     public async Task<IActionResult> GetOrderById(Guid id)
     {
-        var userId = currentUser.GetUserId();
         var order = await orderService.GetOrderByIdAsync(id);
         return Ok(order);
+    }
+
+    [HttpGet("{id}/status")]
+    public async Task<IActionResult> GetOrderStatusById(Guid id)
+    {
+
+        var orderStatus = await orderService.GetOrderStatusByIdAsync(id);
+        return Ok(orderStatus);
     }
 
     [HttpPost("{id}/cancel")]
