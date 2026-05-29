@@ -90,6 +90,7 @@ public class PaymentService(AppDbContext context, MercadoPagoService mercadoPago
             });
         }
 
+        // Real implementation for PIX payment using MercadoPago --- Sandbox environment should be used for testing to avoid real transactions
         if (request.Method == PaymentMethod.PIX)
         {
             

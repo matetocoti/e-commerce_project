@@ -168,11 +168,11 @@ public class OrderService(AppDbContext context)
                 Id = payment.Id,
                 Amount = payment.Amount,
                 Method = payment.Method,
-                PaidAt = payment.ConfirmedAt
+                PaidAt = payment.ConfirmedAt 
             }).ToList(),
         };
     }
-    private void StockReplenishmentTask(Order order)
+    private static void StockReplenishmentTask(Order order)
     {
         foreach (var item in order.OrderItems)
         {

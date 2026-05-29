@@ -12,11 +12,11 @@ using Microsoft.AspNetCore.Mvc;
 [Route("api/[controller]")]
 public class PaymentController(PaymentService paymentService, ICurrentUserService currentUser) : ControllerBase
 {
-    [HttpPost("{orderId}")]
+    [HttpPost("generate/{orderId}")]
     public async Task<IActionResult> ProcessPaymentIntent(Guid orderId, [FromBody] PayOrderRequestDto request)
     {
         var userId = currentUser.GetUserId();
-        var pixData = await paymentService.PayOrderAsync(userId, orderId, request);
-        return Ok(pixData);
+        var paymentData = await paymentService.PayOrderAsync(userId, orderId, request);
+        return Ok(paymentData);
     }
 }
