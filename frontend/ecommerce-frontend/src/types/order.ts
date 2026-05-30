@@ -42,6 +42,14 @@ export interface OrderDto {
   payments?: PaymentDto[];
 }
 
+export interface CheckOrderStatusResponse {
+  id: string;
+  status: OrderStatus;
+}
+
+
+
+
 export type CreateOrderDto = CreatePhysicalOrderDto | CreateDigitalOrderDto;
 
 

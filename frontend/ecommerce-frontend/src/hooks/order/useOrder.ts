@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { getOrderById } from "../../api/orderApi";
-import type { OrderDto } from "../../types/order";
+import type { OrderDto, CheckOrderStatusResponse } from "../../types/order";
 
 interface UseOrderParams {
   id: string;
@@ -40,8 +40,10 @@ export function useOrder({ id }: Readonly<UseOrderParams> ) {
     return order?.status === "Cancelled";
   }
 
-  const updateOrderStatus = (updatedOrder: OrderDto) => {
-    setOrder(updatedOrder);
+  const updateOrderStatus = (statusUpdate: CheckOrderStatusResponse) => {
+    setOrder((prev) =>
+      prev ? { ...prev, status: statusUpdate.status } : null
+    );
   };
 
   

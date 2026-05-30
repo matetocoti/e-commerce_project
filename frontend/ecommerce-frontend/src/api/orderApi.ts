@@ -1,5 +1,5 @@
 import { apiFetch } from "./client";
-import type { CreateOrderDto, OrderDto } from "../types/order";
+import type { CreateOrderDto, OrderDto ,CheckOrderStatusResponse} from "../types/order";
 
 export interface GetOrdersParams {
   page?: number;
@@ -34,4 +34,8 @@ export async function cancelOrder(id: string): Promise<void> {
   await apiFetch(`/api/Order/${id}/cancel`, {
     method: "POST",
   });
+}
+
+export async function checkOrderStatus(id: string): Promise<CheckOrderStatusResponse> {
+  return apiFetch<CheckOrderStatusResponse>(`/api/Order/${id}/status`);
 }

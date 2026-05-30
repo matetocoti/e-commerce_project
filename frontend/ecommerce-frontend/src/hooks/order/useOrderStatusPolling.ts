@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react";
-import { getOrderById } from "../../api/orderApi";
-import type { OrderDto } from "../../types/order";
+import { checkOrderStatus } from "../../api/orderApi";
+import type { CheckOrderStatusResponse } from "../../types/order";
 
 interface UseOrderStatusPollingParams {
   orderId: string;
   onStatusChange?: (newStatus: string, oldStatus: string) => void;
-  onOrderUpdate?: (order: OrderDto) => void;
+  onOrderUpdate?: (status: CheckOrderStatusResponse) => void;
   interval?: number;
   enabled?: boolean;
 }
@@ -20,7 +20,6 @@ export function useOrderStatusPolling({
   const onOrderUpdateRef = useRef(onOrderUpdate);
   const intervalRef = useRef(interval);
 
-  // Atualizar refs com valores mais recentes
   useEffect(() => {
     onOrderUpdateRef.current = onOrderUpdate;
     intervalRef.current = interval;
@@ -31,19 +30,19 @@ export function useOrderStatusPolling({
 
     const pollStatus = async () => {
       try {
-        const order = await getOrderById(orderId);
+        const status = await checkOrderStatus(orderId);
         if (onOrderUpdateRef.current) {
-          onOrderUpdateRef.current(order);
+          onOrderUpdateRef.current(status);
         }
       } catch (error) {
         console.error("Erro ao fazer polling do status do pedido:", error);
       }
     };
 
-    // Executar poll imediato
+    
     pollStatus().catch(console.error);
 
-    // Configurar intervalo com delay
+    
     const startPolling = () => {
       pollingIdRef.current = setInterval(() => {
         pollStatus().catch(console.error);

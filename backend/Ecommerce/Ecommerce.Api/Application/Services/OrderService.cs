@@ -152,7 +152,7 @@ public class OrderService(AppDbContext context)
         return new OrderStatusDto
         {
             Id = order.Id,
-            Status = order.Status
+            Status = order.Status.ToString(),
         };
     }
 

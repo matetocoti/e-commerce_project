@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { getOrders } from "../../api/orderApi";
-import type { OrderDto } from "../../types/order";
+import type { OrderDto, CheckOrderStatusResponse } from "../../types/order";
 
 const PAGE_SIZE = 5;
 
@@ -60,10 +60,12 @@ export function useOrders() {
     void loadOrders(1);
   }, [loadOrders]);
 
-  const updateOrderStatus = useCallback((updatedOrder: OrderDto) => {
+  const updateOrderStatus = useCallback((statusUpdate: CheckOrderStatusResponse) => {
     setOrders((prev) =>
       prev.map((order) =>
-        order.id === updatedOrder.id ? updatedOrder : order
+        order.id === statusUpdate.id
+          ? { ...order, status: statusUpdate.status }
+          : order
       )
     );
   }, []);
