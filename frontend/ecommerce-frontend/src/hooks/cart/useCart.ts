@@ -1,36 +1,17 @@
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import {
   addCartItem,
   clearCart,
-  getCart,
   removeCartItem,
 } from "../../api/cartApi";
-import type { CartDto } from "../../types/cart";
+import { useSharedCart } from "../../contexts/useSharedCart";
 
 export function useCart() {
-  const [cart, setCart] = useState<CartDto | null>(null);
-  const [loading, setLoading] = useState(false);
+  const { cart, loading, error: sharedError, reloadCart } = useSharedCart();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const loadCart = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const data = await getCart();
-      setCart(data);
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Erro ao carregar carrinho.";
-
-      setError(message);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
 
   async function handleAddItem(productId: string, quantity = 1) {
     try {
@@ -38,7 +19,7 @@ export function useCart() {
       setError(null);
 
       await addCartItem({ productId, quantity });
-      await loadCart();
+      await reloadCart();
 
       toast.success("Item adicionado ao carrinho!");
       return true;
@@ -62,7 +43,7 @@ export function useCart() {
       setError(null);
 
       await removeCartItem(productId, quantityToRemove);
-      await loadCart();
+      await reloadCart();
 
       toast.success("Item removido do carrinho!");
       return true;
@@ -86,7 +67,7 @@ export function useCart() {
       setError(null);
 
       await clearCart();
-      await loadCart();
+      await reloadCart();
 
       toast.success("Carrinho limpo com sucesso!");
       return true;
@@ -102,16 +83,12 @@ export function useCart() {
     }
   }
 
-  useEffect(() => {
-    void loadCart();
-  }, [loadCart]);
-
   return {
     cart,
     loading,
     submitting,
-    error,
-    reloadCart: loadCart,
+    error: error || sharedError,
+    reloadCart,
     addItem: handleAddItem,
     removeItem: handleRemoveItem,
     clear: handleClearCart,
