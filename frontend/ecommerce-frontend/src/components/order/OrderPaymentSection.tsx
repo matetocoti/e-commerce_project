@@ -25,7 +25,9 @@ export function OrderPaymentSection({ order, isExpanded, onToggle,}: OrderPaymen
 
   const totalPaid = payments.reduce((sum, payment) => sum + payment.amount, 0);
   const confirmedPayments = payments.filter(p => !!p.paidAt);
+  const pendingPayments = payments.filter(p => !p.paidAt);
   const hasConfirmedPayments = confirmedPayments.length > 0;
+  const hasPendingPayments = pendingPayments.length > 0;
 
   return (
     <Card className="p-0 border-0 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
@@ -34,12 +36,24 @@ export function OrderPaymentSection({ order, isExpanded, onToggle,}: OrderPaymen
         className="w-full px-6 sm:px-8 py-5 sm:py-6 flex items-center justify-between gap-4 hover:bg-gray-50 transition-colors focus:outline-none"
       >
         <div className="flex items-center gap-3 sm:gap-4">
-          <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-emerald-50 flex items-center justify-center flex-shrink-0">
-            <CreditCard className="h-5 w-5 text-emerald-600" />
+          <div className={`h-8 w-8 sm:h-10 sm:w-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+            hasPendingPayments ? "bg-amber-50" : "bg-emerald-50"
+          }`}>
+            <CreditCard className={`h-5 w-5 ${
+              hasPendingPayments ? "text-amber-600" : "text-emerald-600"
+            }`} />
           </div>
-          <h2 className="text-lg sm:text-xl font-bold text-gray-900">
-            Pagamentos ({payments.length})
-          </h2>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900">
+              Pagamentos ({payments.length})
+            </h2>
+            {hasPendingPayments && (
+              <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 animate-pulse">
+                <Clock className="h-3.5 w-3.5" />
+                <span className="text-xs font-semibold">{pendingPayments.length} Pendente{pendingPayments.length > 1 ? 's' : ''}</span>
+              </div>
+            )}
+          </div>
         </div>
         <ChevronDown
           className={`h-5 w-5 text-gray-400 transition-transform duration-300 flex-shrink-0 ${
