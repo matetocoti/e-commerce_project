@@ -16,15 +16,7 @@ public class OrderService(AppDbContext context)
 {
     private readonly AppDbContext _context = context;
 
-    // Método para checkout do carrinho e criação do pedido
-    // Este método realiza as seguintes etapas:
-    // 1. Busca o carrinho do usuário, incluindo os itens e os produtos relacionados
-    // 2. Valida se o carrinho existe e contém itens
-    // 3. Cria os OrderItems a partir dos CartItems
-    // 4. Cria a entidade Order com os OrderItems
-    // 5. Persiste o Order no banco de dados
-    // 6. Remove o carrinho do usuário
-    // 7. Retorna um OrderDto com os detalhes do pedido criado
+ 
     public async Task<OrderDto> CheckoutAsync(Guid userId, CreateOrderDto createOrderDto)
     {
         using var transaction = await _context.Database.BeginTransactionAsync();
@@ -61,28 +53,35 @@ public class OrderService(AppDbContext context)
 
         if (productType == ProductType.Physical)
         {
+             
+            
             AddressValidator.Validate(createOrderDto);
 
+            // Using ! because validation ensures these fields are not null or empty.
             address = new Address
             {
-                Street = createOrderDto.Street,
-                City = createOrderDto.City,
-                ZipCode = createOrderDto.ZipCode,
-                State = createOrderDto.State,
-                Notes = createOrderDto.Notes
+                Street = createOrderDto.Street!,
+                City = createOrderDto.City!,
+                ZipCode = createOrderDto.ZipCode!,
+                State = createOrderDto.State!,
+                Notes = createOrderDto.Notes!
             };
         }
         else
         {
             
-            var (isValid, validationMessage) = EmailValidator.Validate(createOrderDto.Email);
-            if (!isValid)
-                throw new BadRequestException(validationMessage);
+            var (isEmailValid, emailValidationMessage) = EmailValidator.Validate(createOrderDto.Email);
+            var (isPhoneNumberValid, phoneNumberValidationMessage) = PhoneValidator.Validate(createOrderDto.PhoneNumber);
+
+            if (!isEmailValid)
+                throw new BadRequestException(emailValidationMessage);
+            if (!isPhoneNumberValid)
+                throw new BadRequestException(phoneNumberValidationMessage);
 
             digitalContact = new DigitalContactInfo
             {
-                Email = createOrderDto.Email,
-                PhoneNumber = createOrderDto.PhoneNumber
+                Email = createOrderDto.Email!,
+                PhoneNumber = createOrderDto.PhoneNumber!
             };
         }
 

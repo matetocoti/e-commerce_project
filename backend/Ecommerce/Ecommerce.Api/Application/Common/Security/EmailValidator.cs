@@ -7,7 +7,7 @@ public static class EmailValidator
 {
     private const int MaxEmailLength = 254;
 
-    public static (bool IsValid, string ErrorMessage) Validate(string email)
+    public static (bool IsValid, string ErrorMessage) Validate(string? email)
     {
         if (string.IsNullOrWhiteSpace(email))
             return (false, "Email is required.");
