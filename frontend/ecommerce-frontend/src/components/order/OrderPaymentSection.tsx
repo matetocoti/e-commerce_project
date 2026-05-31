@@ -1,4 +1,4 @@
-import { ChevronDown, CreditCard } from "lucide-react";
+import { ChevronDown, CreditCard, Clock, Check } from "lucide-react";
 import type { OrderDto } from "../../types/order";
 import { Card } from "../ui/Card";
 import { formatPrice } from "../../utils/currency/formatPrice";
@@ -24,6 +24,8 @@ export function OrderPaymentSection({ order, isExpanded, onToggle,}: OrderPaymen
   }
 
   const totalPaid = payments.reduce((sum, payment) => sum + payment.amount, 0);
+  const confirmedPayments = payments.filter(p => !!p.paidAt);
+  const hasConfirmedPayments = confirmedPayments.length > 0;
 
   return (
     <Card className="p-0 border-0 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
@@ -48,29 +50,65 @@ export function OrderPaymentSection({ order, isExpanded, onToggle,}: OrderPaymen
 
       {isExpanded && (
         <div className="animate-in slide-in-from-top-2 fade-in duration-200 divide-y divide-gray-100 border-t border-gray-100">
-          {payments.map((payment) => (
-            <div
-              key={payment.id}
-              className="px-6 sm:px-8 py-4 sm:py-5 flex items-center justify-between gap-4 hover:bg-gray-50 transition-colors"
-            >
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-gray-900 text-sm sm:text-base">
-                  {PAYMENT_METHOD_LABELS[payment.method] ?? "Desconhecido"}
-                </h3>
-                <p className="text-sm text-gray-500 mt-1">
-                  {formatDateTime(payment.paidAt)}
+          {payments.map((payment) => {
+            const isConfirmed = !!payment.paidAt;
+            
+            return (
+              <div
+                key={payment.id}
+                className={`px-6 sm:px-8 py-4 sm:py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-colors ${
+                  isConfirmed ? "hover:bg-gray-50" : "bg-amber-50 hover:bg-amber-100"
+                }`}
+              >
+                <div className="flex-1 min-w-0 w-full sm:w-auto">
+                  <div className="flex items-center gap-2 mb-2">
+                    <h3 className="font-semibold text-gray-900 text-sm sm:text-base">
+                      {PAYMENT_METHOD_LABELS[payment.method] ?? "Desconhecido"}
+                    </h3>
+                    {isConfirmed ? (
+                      <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700">
+                        <Check className="h-3.5 w-3.5" />
+                        <span className="text-xs font-semibold">Confirmado</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-200 text-amber-800 animate-pulse">
+                        <Clock className="h-3.5 w-3.5" />
+                        <span className="text-xs font-semibold">Pendente</span>
+                      </div>
+                    )}
+                  </div>
+                  <p className={`text-sm ${isConfirmed ? "text-gray-500" : "text-amber-600 font-medium"}`}>
+                    {isConfirmed 
+                      ? formatDateTime(payment.paidAt!) 
+                      : "Aguardando confirmação do pagamento..."}
+                  </p>
+                </div>
+                <p className={`font-bold text-sm sm:text-base whitespace-nowrap flex-shrink-0 ${
+                  isConfirmed ? "text-emerald-600" : "text-amber-600"
+                }`}>
+                  +{formatPrice(payment.amount)}
                 </p>
               </div>
-              <p className="font-bold text-emerald-600 text-sm sm:text-base whitespace-nowrap flex-shrink-0">
-                +{formatPrice(payment.amount)}
+            );
+          })}
+          <div className={`px-6 sm:px-8 py-5 sm:py-6 flex items-center justify-between border-t-2 ${
+            hasConfirmedPayments
+              ? "bg-gradient-to-r from-emerald-50 to-emerald-100/50 border-emerald-200"
+              : "bg-gradient-to-r from-amber-50 to-amber-100/50 border-amber-200"
+          }`}>
+            <div>
+              <p className={`text-xs sm:text-sm font-semibold mb-1 ${
+                hasConfirmedPayments ? "text-emerald-600" : "text-amber-600"
+              }`}>
+                {hasConfirmedPayments ? "TOTAL CONFIRMADO" : "TOTAL PENDENTE"}
+              </p>
+              <p className="font-bold text-gray-900 text-sm sm:text-base">
+                Total pago
               </p>
             </div>
-          ))}
-          <div className="px-6 sm:px-8 py-4 sm:py-5 bg-gray-50 flex items-center justify-between">
-            <p className="font-semibold text-gray-900 text-sm sm:text-base">
-              Total pago
-            </p>
-            <p className="font-bold text-emerald-600 text-sm sm:text-base">
+            <p className={`font-bold text-lg sm:text-xl ${
+              hasConfirmedPayments ? "text-emerald-600" : "text-amber-600"
+            }`}>
               {formatPrice(totalPaid)}
             </p>
           </div>
