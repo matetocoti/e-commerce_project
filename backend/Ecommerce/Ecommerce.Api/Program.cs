@@ -47,7 +47,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddHostedService<OrderExpirationService>();
 builder.Services.AddHostedService<ProductStockManagementService>();
-//builder.Services.AddHostedService<PaymentStatusPoller>();
+builder.Services.AddHostedService<PaymentExpirationService>();
 builder.Services.AddScoped<MercadoPagoService>();
 
 var jwtKey = builder.Configuration["Jwt:Key"];

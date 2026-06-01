@@ -79,6 +79,17 @@ public class Payment
         return payment;
     }
 
+    public static void ExpirePendingPayment(Payment payment)
+    {
+        
+        if (payment.Status != PaymentStatus.Pending)
+            throw new DomainException("Only pending payments can be expired.");
+        if (!(payment.CreatedAt < DateTime.UtcNow.AddHours(-24)))
+            throw new DomainException("Only payments that have been pending for more than 24 hours can be expired.");
+        payment.Status = PaymentStatus.Expired;
+        payment.UpdatedAt = DateTime.UtcNow;
+    }
+
     #endregion
 
     #region Equality
