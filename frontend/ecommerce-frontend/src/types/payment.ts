@@ -12,12 +12,21 @@ export interface PayOrderRequestDto {
   customerCpf: string;
 }
 
+export const PaymentStatus = {
+  PENDING: 1,
+  CONFIRMED: 2,
+  FAILED: 3,
+  EXPIRED: 4,
+} as const;
+
+export type PaymentStatus =
+  (typeof PaymentStatus)[keyof typeof PaymentStatus];
 
 export interface PaymentDto {
   id: string;
   amount: number;
   method: PaymentMethod;
-
+  status: PaymentStatus;
   paidAt: string | null;
   externalPaymentId?: string;
   pixResponseDto?: PixResponseDto;
