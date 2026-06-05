@@ -180,6 +180,7 @@ public class OrderService(AppDbContext context)
                 Id = payment.Id,
                 Amount = payment.Amount,
                 Method = payment.Method,
+                PaymentStatus = payment.Status.ToString(),
                 PaidAt = payment.ConfirmedAt 
             }).ToList(),
         };
