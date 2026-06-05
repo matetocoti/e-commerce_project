@@ -12,10 +12,12 @@ export interface PayOrderRequestDto {
   customerCpf: string;
 }
 
+
 export interface PaymentDto {
   id: string;
   amount: number;
   method: PaymentMethod;
+
   paidAt: string | null;
   externalPaymentId?: string;
   pixResponseDto?: PixResponseDto;
