@@ -67,6 +67,41 @@ export function OrderPaymentSection({ order, isExpanded, onToggle,}: OrderPaymen
   const hasPendingPayments = pendingPayments.length > 0;
   const hasFailedOrExpired = failedPayments.length > 0 || expiredPayments.length > 0;
 
+  const iconBgColor = () => {
+    if (hasPendingPayments) {
+      return "bg-amber-50";
+    } else if (hasFailedOrExpired) {
+      return "bg-red-50";
+    } else {
+      return "bg-emerald-50";
+    }
+  };
+
+  const iconColor = () => {
+    if (hasPendingPayments) {
+      return "text-amber-600";
+    } else if (hasFailedOrExpired) {
+      return "text-red-600";
+    } else {
+      return "text-emerald-600";
+    }
+  };
+
+  const statusMsg = (option: PaymentStatus) => {
+    switch (option) {
+      case PaymentStatus.PENDING:
+        return "Aguardando pagamento";
+      case PaymentStatus.CONFIRMED:
+        return `Pago em ${formatDateTime(confirmedPayments[0].paidAt ?? "")}`;
+      case PaymentStatus.FAILED:
+        return "Pagamento falhou.";
+      case PaymentStatus.EXPIRED:
+        return "Pagamento expirou.";
+      default:
+        return "Status desconhecido";
+    }
+  };
+
   return (
     <Card className="p-0 border-0 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
       <button
@@ -74,12 +109,8 @@ export function OrderPaymentSection({ order, isExpanded, onToggle,}: OrderPaymen
         className="w-full px-6 sm:px-8 py-5 sm:py-6 flex items-center justify-between gap-4 hover:bg-gray-50 transition-colors focus:outline-none"
       >
         <div className="flex items-center gap-3 sm:gap-4">
-          <div className={`h-8 w-8 sm:h-10 sm:w-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-            hasPendingPayments ? "bg-amber-50" : hasFailedOrExpired ? "bg-red-50" : "bg-emerald-50"
-          }`}>
-            <CreditCard className={`h-5 w-5 ${
-              hasPendingPayments ? "text-amber-600" : hasFailedOrExpired ? "text-red-600" : "text-emerald-600"
-            }`} />
+          <div className={`h-8 w-8 sm:h-10 sm:w-10 rounded-lg flex items-center justify-center flex-shrink-0 ${iconBgColor()}`}>
+            <CreditCard className={`h-5 w-5 ${iconColor()}`} />
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
             <h2 className="text-lg sm:text-xl font-bold text-gray-900">
@@ -99,76 +130,78 @@ export function OrderPaymentSection({ order, isExpanded, onToggle,}: OrderPaymen
             )}
           </div>
         </div>
-        <ChevronDown
-          className={`h-5 w-5 text-gray-400 transition-transform duration-300 flex-shrink-0 ${
-            isExpanded ? "rotate-180" : ""
-          }`}
-        />
+        {(() => {
+          const chevronRotate = isExpanded ? "rotate-180" : "";
+          return (
+            <ChevronDown
+              className={`h-5 w-5 text-gray-400 transition-transform duration-300 flex-shrink-0 ${chevronRotate}`}
+            />
+          );
+        })()}
       </button>
 
       {isExpanded && (
         <div className="animate-in slide-in-from-top-2 fade-in duration-200 divide-y divide-gray-100 border-t border-gray-100">
           {payments.map((payment) => {
-            const colors = PAYMENT_STATUS_COLORS[payment.status];
+            const colors = PAYMENT_STATUS_COLORS[payment.status] ?? PAYMENT_STATUS_COLORS[PaymentStatus.PENDING];
             const StatusIcon = colors.icon;
-            const isConfirmed = payment.status === PaymentStatus.CONFIRMED;
+            const statusMessage = statusMsg(payment.status);
+            const shouldAnimatePulse = payment.status === PaymentStatus.PENDING ? "animate-pulse" : "";
             
             return (
               <div
                 key={payment.id}
-                className={`px-6 sm:px-8 py-4 sm:py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-colors ${
-                  colors.bg
-                }`}
+                className={`px-6 sm:px-8 py-4 sm:py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-colors ${colors.bg}`}
               >
                 <div className="flex-1 min-w-0 w-full sm:w-auto">
                   <div className="flex items-center gap-2 mb-2">
                     <h3 className="font-semibold text-gray-900 text-sm sm:text-base">
                       {PAYMENT_METHOD_LABELS[payment.method] ?? "Desconhecido"}
                     </h3>
-                    <div className={`flex items-center gap-1 px-2.5 py-1 rounded-full ${colors.badge} ${payment.status === PaymentStatus.PENDING ? "animate-pulse" : ""}`}>
+                    <div className={`flex items-center gap-1 px-2.5 py-1 rounded-full ${colors.badge} ${shouldAnimatePulse}`}>
                       <StatusIcon className="h-3.5 w-3.5" />
                       <span className="text-xs font-semibold">{PAYMENT_STATUS_LABELS[payment.status]}</span>
                     </div>
                   </div>
                   <p className={`text-sm ${colors.text}`}>
-                    {isConfirmed 
-                      ? formatDateTime(payment.paidAt!) 
-                      : payment.status === PaymentStatus.EXPIRED
-                      ? "Pagamento expirado"
-                      : payment.status === PaymentStatus.FAILED
-                      ? "Falha no pagamento"
-                      : "Aguardando confirmação do pagamento..."}
+                    {statusMessage}
                   </p>
                 </div>
-                <p className={`font-bold text-sm sm:text-base whitespace-nowrap flex-shrink-0 ${
-                  isConfirmed ? "text-emerald-600" : "text-amber-600"
-                }`}>
-                  +{formatPrice(payment.amount)}
-                </p>
+                {(() => {
+                  const amountColor = payment.status === PaymentStatus.CONFIRMED ? "text-emerald-600" : "text-amber-600";
+                  return (
+                    <p className={`font-bold text-sm sm:text-base whitespace-nowrap flex-shrink-0 ${amountColor}`}>
+                      +{formatPrice(payment.amount)}
+                    </p>
+                  );
+                })()}
               </div>
             );
           })}
-          <div className={`px-6 sm:px-8 py-5 sm:py-6 flex items-center justify-between border-t-2 ${
-            hasConfirmedPayments
+          {(() => {
+            const footerBgClass = hasConfirmedPayments
               ? "bg-gradient-to-r from-emerald-50 to-emerald-100/50 border-emerald-200"
-              : "bg-gradient-to-r from-amber-50 to-amber-100/50 border-amber-200"
-          }`}>
-            <div>
-              <p className={`text-xs sm:text-sm font-semibold mb-1 ${
-                hasConfirmedPayments ? "text-emerald-600" : "text-amber-600"
-              }`}>
-                {hasConfirmedPayments ? "TOTAL CONFIRMADO" : "TOTAL PENDENTE"}
-              </p>
-              <p className="font-bold text-gray-900 text-sm sm:text-base">
-                Total pago
-              </p>
-            </div>
-            <p className={`font-bold text-lg sm:text-xl ${
-              hasConfirmedPayments ? "text-emerald-600" : "text-amber-600"
-            }`}>
-              {formatPrice(totalPaid)}
-            </p>
-          </div>
+              : "bg-gradient-to-r from-amber-50 to-amber-100/50 border-amber-200";
+            const labelColor = hasConfirmedPayments ? "text-emerald-600" : "text-amber-600";
+            const labelText = hasConfirmedPayments ? "TOTAL CONFIRMADO" : "TOTAL PENDENTE";
+            const totalColor = hasConfirmedPayments ? "text-emerald-600" : "text-amber-600";
+            
+            return (
+              <div className={`px-6 sm:px-8 py-5 sm:py-6 flex items-center justify-between border-t-2 ${footerBgClass}`}>
+                <div>
+                  <p className={`text-xs sm:text-sm font-semibold mb-1 ${labelColor}`}>
+                    {labelText}
+                  </p>
+                  <p className="font-bold text-gray-900 text-sm sm:text-base">
+                    Total pago
+                  </p>
+                </div>
+                <p className={`font-bold text-lg sm:text-xl ${totalColor}`}>
+                  {formatPrice(totalPaid)}
+                </p>
+              </div>
+            );
+          })()}
         </div>
       )}
     </Card>
