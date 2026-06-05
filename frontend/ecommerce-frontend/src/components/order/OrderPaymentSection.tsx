@@ -1,8 +1,9 @@
-import { ChevronDown, CreditCard, Clock, Check } from "lucide-react";
+import { ChevronDown, CreditCard, Clock, Check, AlertCircle, XCircle } from "lucide-react";
 import type { OrderDto } from "../../types/order";
 import { Card } from "../ui/Card";
 import { formatPrice } from "../../utils/currency/formatPrice";
 import { formatDateTime } from "../../utils/date/formatDate";
+import { PaymentStatus } from "../../types/payment";
 
 interface OrderPaymentSectionProps {
   readonly order: OrderDto;
@@ -15,6 +16,40 @@ const PAYMENT_METHOD_LABELS = {
   2: "Lightning Network",
 } as const;
 
+const PAYMENT_STATUS_LABELS = {
+  [PaymentStatus.PENDING]: "Pendente",
+  [PaymentStatus.CONFIRMED]: "Confirmado",
+  [PaymentStatus.FAILED]: "Falhou",
+  [PaymentStatus.EXPIRED]: "Expirado",
+} as const;
+
+const PAYMENT_STATUS_COLORS = {
+  [PaymentStatus.PENDING]: {
+    badge: "bg-amber-100 text-amber-700",
+    bg: "bg-amber-50 hover:bg-amber-100",
+    text: "text-amber-600",
+    icon: Clock,
+  },
+  [PaymentStatus.CONFIRMED]: {
+    badge: "bg-emerald-100 text-emerald-700",
+    bg: "hover:bg-gray-50",
+    text: "text-gray-500",
+    icon: Check,
+  },
+  [PaymentStatus.FAILED]: {
+    badge: "bg-red-100 text-red-700",
+    bg: "bg-red-50 hover:bg-red-100",
+    text: "text-red-600",
+    icon: XCircle,
+  },
+  [PaymentStatus.EXPIRED]: {
+    badge: "bg-orange-100 text-orange-700",
+    bg: "bg-orange-50 hover:bg-orange-100",
+    text: "text-orange-600",
+    icon: AlertCircle,
+  },
+} as const;
+
 export function OrderPaymentSection({ order, isExpanded, onToggle,}: OrderPaymentSectionProps) {
   const payments = order.payments ?? [];
   const hasPayments = payments.length > 0;
@@ -24,10 +59,13 @@ export function OrderPaymentSection({ order, isExpanded, onToggle,}: OrderPaymen
   }
 
   const totalPaid = payments.reduce((sum, payment) => sum + payment.amount, 0);
-  const confirmedPayments = payments.filter(p => !!p.paidAt);
-  const pendingPayments = payments.filter(p => !p.paidAt);
+  const confirmedPayments = payments.filter(p => p.status === PaymentStatus.CONFIRMED);
+  const pendingPayments = payments.filter(p => p.status === PaymentStatus.PENDING);
+  const failedPayments = payments.filter(p => p.status === PaymentStatus.FAILED);
+  const expiredPayments = payments.filter(p => p.status === PaymentStatus.EXPIRED);
   const hasConfirmedPayments = confirmedPayments.length > 0;
   const hasPendingPayments = pendingPayments.length > 0;
+  const hasFailedOrExpired = failedPayments.length > 0 || expiredPayments.length > 0;
 
   return (
     <Card className="p-0 border-0 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
@@ -37,10 +75,10 @@ export function OrderPaymentSection({ order, isExpanded, onToggle,}: OrderPaymen
       >
         <div className="flex items-center gap-3 sm:gap-4">
           <div className={`h-8 w-8 sm:h-10 sm:w-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-            hasPendingPayments ? "bg-amber-50" : "bg-emerald-50"
+            hasPendingPayments ? "bg-amber-50" : hasFailedOrExpired ? "bg-red-50" : "bg-emerald-50"
           }`}>
             <CreditCard className={`h-5 w-5 ${
-              hasPendingPayments ? "text-amber-600" : "text-emerald-600"
+              hasPendingPayments ? "text-amber-600" : hasFailedOrExpired ? "text-red-600" : "text-emerald-600"
             }`} />
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
@@ -51,6 +89,12 @@ export function OrderPaymentSection({ order, isExpanded, onToggle,}: OrderPaymen
               <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 animate-pulse">
                 <Clock className="h-3.5 w-3.5" />
                 <span className="text-xs font-semibold">{pendingPayments.length} Pendente{pendingPayments.length > 1 ? 's' : ''}</span>
+              </div>
+            )}
+            {hasFailedOrExpired && !hasPendingPayments && (
+              <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-100 text-red-700">
+                <AlertCircle className="h-3.5 w-3.5" />
+                <span className="text-xs font-semibold">{failedPayments.length + expiredPayments.length} </span>
               </div>
             )}
           </div>
@@ -65,13 +109,15 @@ export function OrderPaymentSection({ order, isExpanded, onToggle,}: OrderPaymen
       {isExpanded && (
         <div className="animate-in slide-in-from-top-2 fade-in duration-200 divide-y divide-gray-100 border-t border-gray-100">
           {payments.map((payment) => {
-            const isConfirmed = !!payment.paidAt;
+            const colors = PAYMENT_STATUS_COLORS[payment.status];
+            const StatusIcon = colors.icon;
+            const isConfirmed = payment.status === PaymentStatus.CONFIRMED;
             
             return (
               <div
                 key={payment.id}
                 className={`px-6 sm:px-8 py-4 sm:py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-colors ${
-                  isConfirmed ? "hover:bg-gray-50" : "bg-amber-50 hover:bg-amber-100"
+                  colors.bg
                 }`}
               >
                 <div className="flex-1 min-w-0 w-full sm:w-auto">
@@ -79,21 +125,18 @@ export function OrderPaymentSection({ order, isExpanded, onToggle,}: OrderPaymen
                     <h3 className="font-semibold text-gray-900 text-sm sm:text-base">
                       {PAYMENT_METHOD_LABELS[payment.method] ?? "Desconhecido"}
                     </h3>
-                    {isConfirmed ? (
-                      <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700">
-                        <Check className="h-3.5 w-3.5" />
-                        <span className="text-xs font-semibold">Confirmado</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-200 text-amber-800 animate-pulse">
-                        <Clock className="h-3.5 w-3.5" />
-                        <span className="text-xs font-semibold">Pendente</span>
-                      </div>
-                    )}
+                    <div className={`flex items-center gap-1 px-2.5 py-1 rounded-full ${colors.badge} ${payment.status === PaymentStatus.PENDING ? "animate-pulse" : ""}`}>
+                      <StatusIcon className="h-3.5 w-3.5" />
+                      <span className="text-xs font-semibold">{PAYMENT_STATUS_LABELS[payment.status]}</span>
+                    </div>
                   </div>
-                  <p className={`text-sm ${isConfirmed ? "text-gray-500" : "text-amber-600 font-medium"}`}>
+                  <p className={`text-sm ${colors.text}`}>
                     {isConfirmed 
                       ? formatDateTime(payment.paidAt!) 
+                      : payment.status === PaymentStatus.EXPIRED
+                      ? "Pagamento expirado"
+                      : payment.status === PaymentStatus.FAILED
+                      ? "Falha no pagamento"
                       : "Aguardando confirmação do pagamento..."}
                   </p>
                 </div>
