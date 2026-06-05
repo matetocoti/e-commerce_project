@@ -76,7 +76,6 @@ export function OrderPaymentSection({ order, isExpanded, onToggle,}: OrderPaymen
       return "bg-emerald-50";
     }
   };
-
   const iconColor = () => {
     if (hasPendingPayments) {
       return "text-amber-600";
@@ -86,13 +85,12 @@ export function OrderPaymentSection({ order, isExpanded, onToggle,}: OrderPaymen
       return "text-emerald-600";
     }
   };
-
-  const statusMsg = (option: PaymentStatus) => {
+  const statusMsg = (option: PaymentStatus ,paidAt?: string | null) => {
     switch (option) {
       case PaymentStatus.PENDING:
         return "Aguardando pagamento";
       case PaymentStatus.CONFIRMED:
-        return `Pago em ${formatDateTime(confirmedPayments[0].paidAt ?? "")}`;
+        return `Pago em ${formatDateTime(paidAt ?? "")}`;
       case PaymentStatus.FAILED:
         return "Pagamento falhou.";
       case PaymentStatus.EXPIRED:
@@ -145,7 +143,7 @@ export function OrderPaymentSection({ order, isExpanded, onToggle,}: OrderPaymen
           {payments.map((payment) => {
             const colors = PAYMENT_STATUS_COLORS[payment.status] ?? PAYMENT_STATUS_COLORS[PaymentStatus.PENDING];
             const StatusIcon = colors.icon;
-            const statusMessage = statusMsg(payment.status);
+            const statusMessage = statusMsg(payment.status, payment.paidAt);
             const shouldAnimatePulse = payment.status === PaymentStatus.PENDING ? "animate-pulse" : "";
             
             return (
