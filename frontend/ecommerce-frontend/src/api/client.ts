@@ -1,5 +1,7 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:5056";
 
+const TOKEN_EXPIRED_EVENT = "token-expired";
+
 interface ApiFetchOptions extends Omit<RequestInit, "body"> {
   token?: string | null;
   body?: unknown;
@@ -20,6 +22,10 @@ function getStoredToken(): string | null {
   }
 }
 
+export function dispatchTokenExpired() {
+  globalThis.dispatchEvent(new Event(TOKEN_EXPIRED_EVENT));
+}
+
 export async function apiFetch<T>(endpoint: string,options: ApiFetchOptions = {},): Promise<T> {
   const { token, headers, body, ...rest } = options;
 
@@ -38,6 +44,11 @@ export async function apiFetch<T>(endpoint: string,options: ApiFetchOptions = {}
   });
 
   if (!response.ok) {
+    if (response.status === 401) {
+      dispatchTokenExpired();
+      throw new Error("Sua sessão expirou. Por favor, faça login novamente.");
+    }
+
     let message = `Erro ${response.status}: ${response.statusText || "Erro desconhecido"}`;
 
     try {
