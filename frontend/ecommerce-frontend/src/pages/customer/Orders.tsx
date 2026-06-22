@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Package, ShoppingBag, ArrowUp } from "lucide-react";
+import { Package, ArrowUp } from "lucide-react";
 import { useState, useEffect } from "react";
 
 import { useOrders } from "../../hooks/order/useOrders";
@@ -11,11 +11,11 @@ import { Button } from "../../components/ui/Button";
 import { formatPrice } from "../../utils/currency/formatPrice";
 import { formatDate } from "../../utils/date/formatDate";
 import { getOrderStatusInfo } from "../../utils/order/getOrderStatusInfo";
+import { NoOrder } from "../../components/order/NoOrder";
 
 // todo: refactor for better separation of concerns, maybe split into smaller components and hooks if needed. Also consider adding error handling and edge case handling as needed.
 export function Orders() {
-  const { orders, loading, error, loadMoreOrders, loadingMore, hasMore, updateOrderStatus } =
-    useOrders();
+  const { orders, loading, error, loadMoreOrders, loadingMore, hasMore, updateOrderStatus } =useOrders();
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   
@@ -42,7 +42,6 @@ export function Orders() {
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 300);
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -77,18 +76,7 @@ export function Orders() {
 
   if (orders.length === 0) {
     return (
-      <div className="mx-auto max-w-5xl px-4 py-16">
-        <div className="mx-auto max-w-md text-center">
-          <ShoppingBag className="mx-auto mb-4 h-24 w-24 text-gray-300" />
-          <h1 className="mb-2 text-2xl font-bold">Nenhum pedido encontrado</h1>
-          <p className="mb-6 text-gray-600">
-            Você ainda não realizou nenhum pedido
-          </p>
-          <Link to="/">
-            <Button size="lg">Começar a comprar</Button>
-          </Link>
-        </div>
-      </div>
+      <NoOrder />
     );
   }
 
