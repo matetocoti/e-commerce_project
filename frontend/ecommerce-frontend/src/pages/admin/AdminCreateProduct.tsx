@@ -35,7 +35,7 @@ export function AdminCreateProduct() {
       const updated = { ...prev, [name]: value };
 
       if (name === "price" || name === "stock") {
-        updated[name] = Number(value) as never;
+        updated[name] = Number(value); 
       }
 
       if (name === "type") {
