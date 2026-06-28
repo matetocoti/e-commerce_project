@@ -9,6 +9,7 @@ import { Button } from "../../components/ui/Button";
 import { Card } from "../../components/ui/Card";
 import { Loading } from "../../components/ui/Loading";
 import { ProductType, type UpdateProductDto } from "../../types/product";
+import { PageHeader } from "../../components/ui/PageHeader";
 
 export function AdminEditProduct() {
   const { id } = useParams<{ id: string }>();
@@ -132,10 +133,10 @@ export function AdminEditProduct() {
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
-        <div>
-          <h1 className="text-2xl font-bold">Editar Produto</h1>
-          <p className="text-sm text-gray-600">ID: {id}</p>
-        </div>
+        <PageHeader
+          title="Editar Produto"
+          description={`ID: ${id}`}
+        />
       </div>
 
       

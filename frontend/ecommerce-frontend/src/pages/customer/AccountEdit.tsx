@@ -5,6 +5,7 @@ import { Loading } from "../../components/ui/Loading";
 import { useAccount } from "../../hooks/account/useAccount";
 import { useAccountActions } from "../../hooks/account/useAccountActions";
 import type { UserDto } from "../../types/user";
+import { PageHeader } from "../../components/ui/PageHeader";
 
 export function AccountEdit() {
   const { user, loading } = useAccount();
@@ -67,10 +68,10 @@ function AccountEditContent({ user, updateUsername, updatePhoneNumber, goBack }:
           Voltar
         </button>
 
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Editar Perfil</h1>
-          <p className="text-gray-600 text-lg">Atualize suas informações pessoais</p>
-        </div>
+        <PageHeader
+          title="Editar Perfil"
+          description="Atualize suas informações pessoais"
+        />
 
         <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
           <UserEditForm

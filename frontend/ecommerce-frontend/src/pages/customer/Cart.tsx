@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ShoppingCart, PackageOpen, CreditCard, ChevronDown } from "lucide-react";
 
 import { Card } from "../../components/ui/Card";
+import { PageHeader } from "../../components/ui/PageHeader";
 import { Loading } from "../../components/ui/Loading";
 import { CartItemRow } from "../../components/cart/CartItemRow";
 import { CartSummary } from "../../components/cart/CartSummary";
@@ -15,6 +16,8 @@ import { useAccount } from "../../hooks/account/useAccount";
 import { ProductType } from "../../types/product";
 import { toast } from "sonner";
 
+
+//TODO: REFACTOR: Split this component into smaller components for better maintainability and readability.
 export function Cart() {
   const navigate = useNavigate();
   const { user } = useAccount();
@@ -54,11 +57,10 @@ export function Cart() {
 
   const submitting = cartSubmitting || checkoutSubmitting;
 
-  // Get first item's product to check types
+  
   const firstItemId = items[0]?.productId;
   const { product: firstProduct } = useProduct({ id: firstItemId || "" });
   
-  // Determine product types from cart items
   const hasDigitalProducts = useMemo(() => {
     return items.length > 0 && firstProduct?.type === ProductType.DIGITAL;
   }, [items.length, firstProduct]);
@@ -125,15 +127,11 @@ export function Cart() {
 
   return (
     <div className="mx-auto flex min-h-[50vh] max-w-6xl flex-col gap-6 px-4 py-10 sm:px-6 sm:py-12 lg:px-8 xl:gap-8">
-      <div className="mb-3">
-        <h1 className="flex items-center gap-3 text-3xl font-bold tracking-tight text-gray-900">
-          <ShoppingCart className="h-8 w-8 text-blue-600" />
-          Meu Carrinho
-        </h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Confira seus itens e preencha os dados para finalizar a compra.
-        </p>
-      </div>
+      <PageHeader
+        title="Carrinho de Compras"
+        description="Revise os itens do seu pedido, forneça os dados de entrega e finalize sua compra."
+        icon={<ShoppingCart className="h-6 w-6" />}
+      />
 
       {cartError && (
         <div className="mb-8 flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 shadow-sm">

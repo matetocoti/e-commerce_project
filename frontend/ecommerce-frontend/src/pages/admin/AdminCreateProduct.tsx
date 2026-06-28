@@ -7,6 +7,7 @@ import { ProductForm } from "../../components/product/admin/ProductForm";
 import { Button } from "../../components/ui/Button";
 import { Card } from "../../components/ui/Card";
 import { ProductType, type CreateProductDto } from "../../types/product";
+import { PageHeader } from "../../components/ui/PageHeader";
 
 export function AdminCreateProduct() {
   const navigate = useNavigate();
@@ -98,10 +99,10 @@ export function AdminCreateProduct() {
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
-        <div>
-          <h1 className="text-2xl font-bold">Criar Novo Produto</h1>
-          <p className="text-sm text-gray-600">Preencha os campos abaixo</p>
-        </div>
+        <PageHeader
+          title="Criar Produto"
+          description="Adicione um novo produto ao catálogo"
+        />
       </div>
 
       {successMessage && (

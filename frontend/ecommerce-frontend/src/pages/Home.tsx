@@ -12,6 +12,8 @@ import {
   PaginationNext,
 } from "../components/ui/Pagination";
 import { useProducts } from "../hooks/product/useProducts";
+import { PageHeader } from "../components/ui/PageHeader";
+
 
 const PAGE_SIZE = 9;
 
@@ -44,12 +46,10 @@ export function Home() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-5 px-4 py-6 sm:px-6 sm:py-8">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Produtos</h1>
-        <p className="text-gray-500 mt-2">
-          Descubra os melhores produtos do mercado.
-        </p>
-      </div>
+      <PageHeader
+        title="Produtos"
+        description="Explore nossa seleção de produtos disponíveis para compra."
+      />
 
       <div className="space-y-4">
         <Input

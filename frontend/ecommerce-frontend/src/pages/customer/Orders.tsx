@@ -6,6 +6,7 @@ import { MyError } from "../../components/ui/MyError";
 import { Button } from "../../components/ui/Button";
 import { NoOrder } from "../../components/order/NoOrder";
 import { OrderCard } from "../../components/order/OrderCard";
+import { PageHeader } from "../../components/ui/PageHeader";
 
 
 export function Orders() {
@@ -59,10 +60,10 @@ export function Orders() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
-      <div className="mb-8">
-        <h1 className="mb-2 text-3xl font-bold text-gray-900">Meus Pedidos</h1>
-        <p className="text-gray-600">Acompanhe o status dos seus pedidos</p>
-      </div>
+      <PageHeader
+        title="Meus Pedidos"
+        description="Acompanhe o status dos seus pedidos"
+      />
       <div className="relative space-y-4">
         {orders.map((order) => {
           return (
