@@ -42,6 +42,8 @@ export interface OrderDto {
   payments?: PaymentDto[];
 }
 
+
+
 export interface CheckOrderStatusResponse {
   id: string;
   status: OrderStatus;
