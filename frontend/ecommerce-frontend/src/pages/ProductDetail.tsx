@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Package } from "lucide-react";
+import { Package } from "lucide-react";
+import { BackButton } from "../components/ui/BackButton";
 
 import { useProduct } from "../hooks/product/useProduct";
 import { useAuth } from "../hooks/auth/useAuth";
@@ -13,6 +14,7 @@ import { ProductImage } from "../components/product/ProductImage";
 import { ProductPrice } from "../components/product/ProductPrice";
 import { ProductInfoCard } from "../components/product/ProductInfoCard";
 import { AccordionItem } from "../components/ui/AccordionItem";
+
 
 
 
@@ -90,11 +92,7 @@ export function ProductDetail() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8">
-      <Button variant="ghost" className="mb-6" onClick={() => navigate(-1)}>
-        <ArrowLeft className="mr-2 h-4 w-4" />
-        Voltar
-      </Button>
-
+      <BackButton />
       <div className="grid gap-8 md:grid-cols-2">
 
         <ProductImage src={imageSrc} alt={product.name} />

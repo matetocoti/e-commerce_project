@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
-import { ArrowLeft } from "lucide-react";
+import { BackButton } from "../../../components/ui/BackButton";
 import { useCancel } from "../../../hooks/order/useCancel";
 import { useConfirm } from "../../../hooks/ui/useConfirm";
 import { useOrderStatusPolling } from "../../../hooks/order/useOrderStatusPolling";
@@ -156,13 +156,7 @@ export function OrderDetail() {
       <PaymentProgress isLoading={paymentLoading} />
       <div className="mx-auto max-w-7xl w-full px-4 py-8 sm:py-12 bg-transparent min-h-[calc(100vh-16rem)]">
         <div className="mb-6 sm:mb-8">
-          <button
-            onClick={() => navigate(-1)}
-            className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium transition-colors"
-          >
-            <ArrowLeft className="h-5 w-5" />
-            Voltar
-          </button>
+          <BackButton />
         </div>
         <div className="flex flex-col lg:flex-row gap-6 sm:gap-8">
           <div className="flex-1 space-y-6">

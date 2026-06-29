@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, AlertCircle } from "lucide-react";
-
+import { AlertCircle } from "lucide-react";
+import { BackButton } from "../../components/ui/BackButton";
 import { useProductActions } from "../../hooks/admin/useProductActions";
 import { ProductForm } from "../../components/product/admin/ProductForm";
 import { Button } from "../../components/ui/Button";
@@ -94,11 +94,7 @@ export function AdminCreateProduct() {
   return (
     <div className="mx-auto max-w-2xl space-y-6 p-4 sm:p-6 lg:p-8">
       <div className="flex items-center gap-4">
-        <Link to="/admin/products">
-          <Button variant="outline" size="icon">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-        </Link>
+        <BackButton className="border border-gray-300 hover:bg-gray-100 border rounded-md"  />
         <PageHeader
           title="Criar Produto"
           description="Adicione um novo produto ao catálogo"
