@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
-import { UserEditForm } from "../../components/account/UserEditForm";
-import { Loading } from "../../components/ui/Loading";
-import { useAccount } from "../../hooks/account/useAccount";
-import { useAccountActions } from "../../hooks/account/useAccountActions";
-import type { UserDto } from "../../types/user";
-import { PageHeader } from "../../components/ui/PageHeader";
+import { UserEditForm } from "../../../components/account/UserEditForm";
+import { Loading } from "../../../components/ui/Loading";
+import { useAccount } from "../../../hooks/account/useAccount";
+import { useAccountActions } from "../../../hooks/account/useAccountActions";
+import type { UserDto } from "../../../types/user";
+import { PageHeader } from "../../../components/ui/PageHeader";
 
 export function AccountEdit() {
   const { user, loading } = useAccount();

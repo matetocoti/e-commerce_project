@@ -14,10 +14,10 @@ import { Login } from "../pages/auth/Login";
 import { Register } from "../pages/auth/Register";
 
 import { Cart } from "../pages/customer/Cart";
-import { Orders } from "../pages/customer/Orders";
-import { OrderDetail } from "../pages/customer/OrderDetail";
-import { Account } from "../pages/customer/Account";
-import { AccountEdit } from "../pages/customer/AccountEdit";
+import { Orders } from "../pages/customer/Order/Orders";
+import { OrderDetail } from "../pages/customer/Order/OrderDetail";
+import { Account } from "../pages/customer/Account/Account";
+import { AccountEdit } from "../pages/customer/Account/AccountEdit";
 
 import { AdminProducts } from "../pages/admin/AdminProducts";
 import { AdminEditProduct } from "../pages/admin/AdminEditProduct";

@@ -1,21 +1,21 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
-import { useCancel } from "../../hooks/order/useCancel";
-import { useConfirm } from "../../hooks/ui/useConfirm";
-import { useOrderStatusPolling } from "../../hooks/order/useOrderStatusPolling";
-import { useOrderPaymentFlow } from "../../hooks/order/useOrderPaymentFlow";
-import { PaymentProgress } from "../../components/payment/PaymentProgress";
-import { OrderModals } from "../../components/order/OrderModals";
-import { Loading } from "../../components/ui/Loading";
-import { MyError } from "../../components/ui/MyError";
-import { OrderHeader } from "../../components/order/OrderHeader";
-import { OrderItemsSection } from "../../components/order/OrderItemsSection";
-import { OrderAddressSection } from "../../components/order/OrderAddressSection";
-import { OrderPaymentSection } from "../../components/order/OrderPaymentSection";
-import { OrderSummary } from "../../components/order/OrderSummary";
-import { OrderActions } from "../../components/order/OrderActions";
-import { useOrder } from "../../hooks/order/useOrder";
+import { useCancel } from "../../../hooks/order/useCancel";
+import { useConfirm } from "../../../hooks/ui/useConfirm";
+import { useOrderStatusPolling } from "../../../hooks/order/useOrderStatusPolling";
+import { useOrderPaymentFlow } from "../../../hooks/order/useOrderPaymentFlow";
+import { PaymentProgress } from "../../../components/payment/PaymentProgress";
+import { OrderModals } from "../../../components/order/OrderModals";
+import { Loading } from "../../../components/ui/Loading";
+import { MyError } from "../../../components/ui/MyError";
+import { OrderHeader } from "../../../components/order/OrderHeader";
+import { OrderItemsSection } from "../../../components/order/OrderItemsSection";
+import { OrderAddressSection } from "../../../components/order/OrderAddressSection";
+import { OrderPaymentSection } from "../../../components/order/OrderPaymentSection";
+import { OrderSummary } from "../../../components/order/OrderSummary";
+import { OrderActions } from "../../../components/order/OrderActions";
+import { useOrder } from "../../../hooks/order/useOrder";
 
 export function OrderDetail() {
   const { id } = useParams<{ id: string }>();

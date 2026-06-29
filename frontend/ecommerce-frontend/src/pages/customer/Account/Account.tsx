@@ -1,11 +1,11 @@
 import { Edit2, RefreshCw } from "lucide-react";
 import { Link } from "react-router-dom";
 
-import { PageHeader } from "../../components/ui/PageHeader";
-import { Loading } from "../../components/ui/Loading";
-import { MyError } from "../../components/ui/MyError";
-import { UserCard } from "../../components/account/UserCard";
-import { useAccount } from "../../hooks/account/useAccount";
+import { PageHeader } from "../../../components/ui/PageHeader";
+import { Loading } from "../../../components/ui/Loading";
+import { MyError } from "../../../components/ui/MyError";
+import { UserCard } from "../../../components/account/UserCard";
+import { useAccount } from "../../../hooks/account/useAccount";
 
 export function Account() {
   const { user, loading, error, reload } = useAccount();

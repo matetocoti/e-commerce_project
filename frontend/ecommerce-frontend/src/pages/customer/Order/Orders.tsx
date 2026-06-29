@@ -1,12 +1,12 @@
-import { useOrders } from "../../hooks/order/useOrders";
-import { useOrdersStatusPolling } from "../../hooks/order/useOrdersStatusPolling";
-import { ScrollToTop } from "../../components/ui/ScrollToTop";
-import { Loading } from "../../components/ui/Loading";
-import { MyError } from "../../components/ui/MyError";
-import { Button } from "../../components/ui/Button";
-import { NoOrder } from "../../components/order/NoOrder";
-import { OrderCard } from "../../components/order/OrderCard";
-import { PageHeader } from "../../components/ui/PageHeader";
+import { useOrders } from "../../../hooks/order/useOrders";
+import { useOrdersStatusPolling } from "../../../hooks/order/useOrdersStatusPolling";
+import { ScrollToTop } from "../../../components/ui/ScrollToTop";
+import { Loading } from "../../../components/ui/Loading";
+import { MyError } from "../../../components/ui/MyError";
+import { Button } from "../../../components/ui/Button";
+import { NoOrder } from "../../../components/order/NoOrder";
+import { OrderCard } from "../../../components/order/OrderCard";
+import { PageHeader } from "../../../components/ui/PageHeader";
 
 
 export function Orders() {
