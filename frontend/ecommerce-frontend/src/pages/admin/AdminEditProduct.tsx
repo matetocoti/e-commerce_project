@@ -104,7 +104,7 @@ export function AdminEditProduct() {
           <p className="text-sm">Produto não encontrado</p>
         </div>
 
-        <BackButton className="border border-gray-300 hover:bg-gray-100 border rounded-md"/>
+        <BackButton size="medium" variant="ghost" />
       </div>
     );
   }
@@ -123,7 +123,7 @@ export function AdminEditProduct() {
   return (
     <div className="mx-auto max-w-2xl space-y-6 p-4 sm:p-6 lg:p-8">
       <div className="flex items-center gap-4">
-        <BackButton className="border border-gray-300 hover:bg-gray-100 border rounded-md"  />
+        <BackButton size="medium" variant="ghost" />
         <PageHeader
           title="Editar Produto"
           description={`ID: ${id}`}
