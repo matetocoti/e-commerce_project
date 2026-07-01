@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-
+import { Plus } from "lucide-react";
 import { ProductList } from "../../components/product/admin/ProductList";
 import { FilterBar, type FilterState } from "../../components/ui/FilterBar";
 import { Button } from "../../components/ui/Button";
@@ -75,9 +75,7 @@ export function AdminProducts() {
   const handleDeactivateProduct = async (id: string) => {
     setDeleteError(null);
     setDeleteSuccess(null);
-
     const productName = products.find((p) => p.id === id)?.name;
-
     try {
       await toggleProductStatus(id);
       updateProductLocal(id, { isActive: false });
@@ -100,19 +98,19 @@ export function AdminProducts() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-6 p-4 sm:p-6 lg:p-8">
-      <PageHeader
-        title="Gerenciar Produtos"
+      
+    <div className="mb-4 flex flex-col items-start justify-between gap-4 sm:mb-6 sm:flex-row sm:items-center">
+      <PageHeader 
+        title="Gerenciar Produtos"  
         description="Visualize, edite e gerencie o inventário da loja."
       />
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        
-        <Link to="/admin/products/create">
-          <Button className="w-full sm:w-auto shadow-md hover:shadow-lg transition-all rounded-lg font-semibold bg-blue-600 hover:bg-blue-700">
-            <span className="text-lg mr-1 leading-none">+</span> Criar Produto
-          </Button>
-        </Link>
-      </div>
-
+      <Link to="/admin/products/create" className="w-full sm:w-auto">
+        <Button className="w-full sm:w-auto rounded-lg font-semibold bg-blue-600 shadow-md transition-all hover:bg-blue-700 hover:shadow-lg">
+          <Plus className="mr-2 h-5 w-5"/>
+          Criar Produto
+        </Button>
+      </Link>
+    </div>
       {deleteSuccess && (
         <div className="rounded-md bg-green-50 border border-green-200 p-4">
           <p className="text-sm text-green-800">✓ {deleteSuccess}</p>
