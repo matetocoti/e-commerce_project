@@ -107,7 +107,6 @@ export function useOrderPaymentFlow({onSuccess,}: UseOrderPaymentFlowProps = {})
       
       console.log("Pagamento confirmado com dados PIX:", paymentData);
       
-      // Fecha modal e limpa dados
       setPaymentState((prev) => ({ ...prev, pixPaymentOpen: false }));
       setPendingOrderId(null);
       setPendingEmail("");

@@ -1,8 +1,9 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ShoppingCart, CreditCard, ChevronDown } from "lucide-react";
+import { ShoppingCart, CreditCard } from "lucide-react";
 
 import { Card } from "../../components/ui/Card";
+import { CollapsibleCard } from "../../components/ui/CollapsibleCard";
 import { PageHeader } from "../../components/ui/PageHeader";
 import { Loading } from "../../components/ui/Loading";
 import { CartItemRow } from "../../components/cart/CartItemRow";
@@ -17,8 +18,6 @@ import { ProductType } from "../../types/product";
 import { toast } from "sonner";
 import { EmptyCart } from "../../components/cart/EmptyCart";
 
-
-//TODO: REFACTOR: Split this component into smaller components for better maintainability and readability.
 export function Cart() {
   const navigate = useNavigate();
   const { user } = useAccount();
@@ -40,17 +39,19 @@ export function Cart() {
     error: checkoutError,
   } = useCheckout();
 
-  const [expandedSections, setExpandedSections] = useState({
-    items: true,
-    delivery: true,
+  const [formData, setFormData] = useState({
+    street: "",
+    city: "",
+    zipCode: "",
+    state: "",
+    notes: "",
+    email: "",
+    phoneNumber: "",
   });
-  const [street, setStreet] = useState("");
-  const [city, setCity] = useState("");
-  const [zipCode, setZipCode] = useState("");
-  const [state, setState] = useState("");
-  const [notes, setNotes] = useState("");
-  const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+
+  const handleChange = (field: keyof typeof formData, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   const items = cart?.items ?? [];
   const total = items.reduce((sum, item) => sum + item.subtotal, 0);
@@ -73,13 +74,13 @@ export function Cart() {
 
   async function handleCheckout() {
     
-    if (hasPhysicalProducts && (!street || !city || !zipCode || !state)) {
+    if (hasPhysicalProducts && (!formData.street || !formData.city || !formData.zipCode || !formData.state)) {
       toast.error("Preencha todos os dados de endereço para produtos físicos.");
       return;
     }
 
     
-    if (hasDigitalProducts && (!email || !phoneNumber)) {
+    if (hasDigitalProducts && (!formData.email || !formData.phoneNumber)) {
       toast.error("Preencha email e telefone para produtos digitais.");
       return;
     }
@@ -87,20 +88,20 @@ export function Cart() {
     const orderData: Record<string, string | undefined> = {};
     
     if (hasPhysicalProducts) {
-      orderData.street = street;
-      orderData.city = city;
-      orderData.zipCode = zipCode;
-      orderData.state = state;
-      if (notes) {
-        orderData.notes = notes;
+      orderData.street = formData.street;
+      orderData.city = formData.city;
+      orderData.zipCode = formData.zipCode;
+      orderData.state = formData.state;
+      if (formData.notes) {
+        orderData.notes = formData.notes;
       } else {
         orderData.notes = "";
       }
     }
 
     if (hasDigitalProducts) {
-      orderData.email = email;
-      orderData.phoneNumber = phoneNumber;
+      orderData.email = formData.email;
+      orderData.phoneNumber = formData.phoneNumber;
     }
 
     // @ts-expect-error - Order data is built dynamically based on product types
@@ -151,81 +152,51 @@ export function Cart() {
       ) : (
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 items-start">
           <div className="space-y-6 lg:col-span-8">
-            <Card className="overflow-hidden border-gray-200 shadow-sm transition-shadow hover:shadow-md">
-              <button
-                onClick={() => setExpandedSections(prev => ({ ...prev, items: !prev.items }))}
-                className="w-full flex items-center justify-between border-b border-gray-100 bg-gray-50/50 px-6 py-4 hover:bg-gray-100/50 transition-colors"
-              >
-                <h2 className="text-lg font-semibold text-gray-900">Itens do Pedido</h2>
-                <ChevronDown
-                  className={`h-5 w-5 text-gray-400 transition-transform duration-300 ${
-                    expandedSections.items ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-              {expandedSections.items && (
-                <div className="p-6 animate-in slide-in-from-top-2 fade-in duration-200">
-                  <div className="space-y-6">
-                    {items.map((item) => (
-                      <CartItemRow
-                        key={item.productId}
-                        item={item}
-                        disabled={submitting}
-                        onDecrease={(productId) => void removeItem(productId, 1)}
-                        onIncrease={(productId) => void addItem(productId, 1)}
-                      />
-                    ))}
-                  </div>
+            <CollapsibleCard title="Itens do Pedido" defaultExpanded>
+              <div className="space-y-6">
+                {items.map((item) => (
+                  <CartItemRow
+                    key={item.productId}
+                    item={item}
+                    disabled={submitting}
+                    onDecrease={(productId) => void removeItem(productId, 1)}
+                    onIncrease={(productId) => void addItem(productId, 1)}
+                  />
+                ))}
+              </div>
+            </CollapsibleCard>
+
+            <CollapsibleCard title="Dados da Entrega" defaultExpanded>
+              {hasPhysicalProducts && (
+                <div className="mb-2">
+                  <PhysicalOrderForm
+                    street={formData.street}
+                    city={formData.city}
+                    zipCode={formData.zipCode}
+                    state={formData.state}
+                    notes={formData.notes}
+                    onStreetChange={(value) => handleChange("street", value)}
+                    onCityChange={(value) => handleChange("city", value)}
+                    onZipCodeChange={(value) => handleChange("zipCode", value)}
+                    onStateChange={(value) => handleChange("state", value)}
+                    onNotesChange={(value) => handleChange("notes", value)}
+                  />
                 </div>
               )}
-            </Card>
 
-            <Card className="overflow-hidden border-gray-200 shadow-sm transition-shadow hover:shadow-md">
-              <button
-                onClick={() => setExpandedSections(prev => ({ ...prev, delivery: !prev.delivery }))}
-                className="w-full flex items-center justify-between border-b border-gray-100 bg-gray-50/50 px-6 py-4 hover:bg-gray-100/50 transition-colors"
-              >
-                <h2 className="text-lg font-semibold text-gray-900">Dados da Entrega</h2>
-                <ChevronDown
-                  className={`h-5 w-5 text-gray-400 transition-transform duration-300 ${
-                    expandedSections.delivery ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-              {expandedSections.delivery && (
-                <div className="p-6 animate-in slide-in-from-top-2 fade-in duration-200">
-                  {hasPhysicalProducts && (
-                    <div className="mb-2">
-                      <PhysicalOrderForm
-                        street={street}
-                        city={city}
-                        zipCode={zipCode}
-                        state={state}
-                        notes={notes}
-                        onStreetChange={setStreet}
-                        onCityChange={setCity}
-                        onZipCodeChange={setZipCode}
-                        onStateChange={setState}
-                        onNotesChange={setNotes}
-                      />
-                    </div>
-                  )}
-
-                  {hasDigitalProducts && (
-                    <div className="mt-2">
-                      <DigitalOrderForm
-                        email={email}
-                        phoneNumber={phoneNumber}
-                        userEmail={user?.email ?? undefined}
-                        userPhoneNumber={user?.phoneNumber ?? undefined}
-                        onEmailChange={setEmail}
-                        onPhoneNumberChange={setPhoneNumber}
-                      />
-                    </div>
-                  )}
+              {hasDigitalProducts && (
+                <div className="mt-2">
+                  <DigitalOrderForm
+                    email={formData.email}
+                    phoneNumber={formData.phoneNumber}
+                    userEmail={user?.email ?? undefined}
+                    userPhoneNumber={user?.phoneNumber ?? undefined}
+                    onEmailChange={(value) => handleChange("email", value)}
+                    onPhoneNumberChange={(value) => handleChange("phoneNumber", value)}
+                  />
                 </div>
               )}
-            </Card>
+            </CollapsibleCard>
           </div>
 
           <div className="lg:col-span-4">
